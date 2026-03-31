@@ -1,10 +1,40 @@
-<nav>
-  <a href="/">Home</a>
-  <a href="/Masterlist">Masterlist</a>
-  <a href="/HRProfile">HR Profile</a>
-  <a href="/ProdArea">Production Area</a>
-  <a href="/PlantingSeason">Planting Season</a>
-  <a href="/ProdPractices">Production Practices</a>
-  <a href="/Technologies">Technologies</a>
-  <a href="/IECmaterials">IEC Materials</a>
+<nav class="vertical-line">
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="/Masterlist">Masterlist</a></li>
+    <li><a href="/HRProfile">HR Profile</a></li>
+    <li><a href="/ProdArea">Production Area</a></li>
+    <li><a href="/PlantingSeason">Planting Season</a></li>
+    <li><a href="/ProdPractices">Production Practices</a></li>
+    <li><a href="/Technologies">Technologies</a></li>
+    <li><a href="/IECmaterials">IEC Materials</a></li>
+  </ul>
 </nav>
+
+<style>
+  nav {
+    position: fixed;
+    top: 12%;
+    height: 100%;
+  }
+
+  ul {
+    list-style-type: none;
+    margin: 7px;
+    padding: 3px;
+    width: 200px;
+  }
+
+  li a {
+    display: block;
+    color: #165871;
+    margin: 10px;
+    padding: 8px 16px;
+    text-decoration: none;
+  }
+
+  li a:hover {
+    color: #ede78d;
+    background-color: #165871;
+  }
+</style>
