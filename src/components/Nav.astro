@@ -1,4 +1,4 @@
-<nav class="vertical-line">
+<nav>
   <ul>
     <li><a href="/">Home</a></li>
     <li><a href="/Masterlist">Masterlist</a></li>
@@ -13,19 +13,17 @@
 
 <style>
   nav {
-    position: fixed;
-    top: 12%;
-    height: 100%;
+    flex: 1;
+    margin-top: 20px;
   }
 
-  ul {
+  nav ul {
     list-style-type: none;
-    margin: 7px;
+    margin: 7px 0;
     padding: 3px;
-    width: 200px;
   }
 
-  li a {
+  nav li a {
     display: block;
     color: #165871;
     margin: 10px;
@@ -33,7 +31,7 @@
     text-decoration: none;
   }
 
-  li a:hover {
+  nav li a:hover {
     color: #ede78d;
     background-color: #165871;
   }

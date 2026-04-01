@@ -2,6 +2,7 @@
 import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
 import Nav from '../components/Nav.astro'
+import '../styles/global.css'
 ---
 
 <html lang="en">
@@ -14,30 +15,40 @@ import Nav from '../components/Nav.astro'
 		<title>Astro</title>
 	</head>
 	<body>
-    <Header />
-    <Nav />
-     <main>
-       <slot />
-     </main>
+    <div class="container">
+      <div class="sidebar">
+        <Header />
+        <Nav />
+      </div>
+      <main>
+        <slot />
+      </main>
+    </div>
     <Footer />
 	</body>
 </html>
 
 <style>
-  body {
-    margin: 20px;
+  .container {
+    display: flex;
+    flex: 1;
+  }
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 13%;
+    padding: 10px 0;
   }
 
   main {
+    flex: 1;
     margin: 10px;
     padding: 0px 25px;
-    position: absolute;
-    left: 13%;
-    top: 1%;
-    border-top: 1px solid #C9C9C9;
-    border-left: 1px solid #C9C9C9;
+    border-top: 1px solid #c9c9c9;
+    border-left: 1px solid #c9c9c9;
     border-radius: 0.5rem;
     width: 83%;
-    height: 90%;
+    height: 95vh;
   }
 </style>
