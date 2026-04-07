@@ -1,8 +1,32 @@
+---
+import { Image } from 'astro:assets';
+import daphlogo from '../assets/daphlogo.png';
+import contacticon from '../assets/ContactIcon.png';
+import emailicon from '../assets/EmailIcon.png';
+---
+
 <footer>
   <ul>
-    <li><a href="https://car.da.gov.ph/">DEPARTMENT OF AGRICULTURE - CAR</a></li>
-    <li>+63 907 1333 091</li>
-    <li>resd@da.car.gov.ph</li>
+    <li><a href="https://car.da.gov.ph/">
+        <Image
+            src={daphlogo}
+            alt="darfocar logo"
+            width={32}
+            height={32}
+        /><span>DEPARTMENT OF AGRICULTURE - CAR</span></a>
+    </li>
+    <li><Image
+            src={contacticon}
+            alt="darfocar logo"
+            width={32}
+            height={32}
+        /><span>+63 907 1333 091</span></li>
+    <li><Image
+            src={emailicon}
+            alt="darfocar logo"
+            width={32}
+            height={32}
+        /><span>resd@da.car.gov.ph</span></li>
   </ul>
   <iframe 
     src="//gwhs.i.gov.ph/gwt-footer/footer-source.html"
@@ -19,29 +43,32 @@
   footer {
     margin-top: auto;
     background-color: #165871;
+    width: 100vw;
   }
 
   ul {
-    display: block;
-    width: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
     list-style: none;
+    font-size: 17px;
     padding: 0;
-    margin: 8px auto;
+    margin: 8px;
   }
 
-  li {
-    display: inline-block;
+  li, li a{
+    display: flex;
+    align-items: center;
     color: #ffffff;
+    text-decoration: none;
+    gap: 0.5rem;
   }
 
   li:not(:last-child)::after {
     content: "|";
-    margin: 0px 10px;
-  }
-
-  li a {
-    color: #ffffff;
-    text-decoration: none;
+    margin: 0px;
   }
 
   li a:hover {
