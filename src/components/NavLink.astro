@@ -1,30 +1,29 @@
 ---
-const { href } = Astro.props;
+const { href, class: className, ...rest } = Astro.props;
 const currentPath = Astro.url.pathname;
 const isActive = currentPath === href;
 ---
 
-<li>
-  <a href={href} class:list={isActive ? 'active' : ''}>
-    <slot />
-  </a>
-</li>
+<a href={href} class:list={[{ 'active': isActive }, className]} {...rest}>
+  <slot />
+</a>
 
 <style>
-  li a {
+  a {
     display: block;
     color: #165871;
     margin: 10px;
     padding: 8px 16px;
     text-decoration: none;
+    border-radius: 0.5rem;
   }
 
-  li a:hover {
+  a:hover {
     color: #ede78d;
     background-color: #165871;
   }
 
-  li a.active {
+  a.active {
     color: #ede78d;
     background-color: #165871;
   }

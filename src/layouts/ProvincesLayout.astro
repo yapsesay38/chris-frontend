@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import NavLink from '../components/NavLink.astro'
+---
+
+<BaseLayout>
+  <nav>
+    <NavLink href="#" class="display-ib">Profile</NavLink>
+    <NavLink href="/HRProfile" class="display-ib">HR Profile</NavLink>
+    <NavLink href="/ProdArea" class="display-ib">Production Area</NavLink>
+    <NavLink href="/PlantingSeason" class="display-ib">Planting Season</NavLink>
+    <NavLink href="/ProdPractices" class="display-ib">Production Practices</NavLink>
+    <NavLink href="/Technologies" class="display-ib">Technologies</NavLink>
+  </nav>
+  <h1>Prov</h1>
+</BaseLayout>
+
+<style>
+  .display-ib {
+    display: inline;
+  }
+</style>
