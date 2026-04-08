@@ -4,7 +4,7 @@ import NavLink from '../components/NavLink.astro'
 ---
 
 <BaseLayout>
-  <nav>
+  <nav slot="hnav">
     <NavLink href="#" class="display-ib">Profile</NavLink>
     <NavLink href="/HRProfile" class="display-ib">HR Profile</NavLink>
     <NavLink href="/ProdArea" class="display-ib">Production Area</NavLink>
@@ -12,11 +12,25 @@ import NavLink from '../components/NavLink.astro'
     <NavLink href="/ProdPractices" class="display-ib">Production Practices</NavLink>
     <NavLink href="/Technologies" class="display-ib">Technologies</NavLink>
   </nav>
-  <h1>Prov</h1>
+  <div slot="content">
+    <h1>Prov</h1>
+  </div>
 </BaseLayout>
 
 <style>
+  nav {
+    background-color: #096a8e;
+    padding: 10px;
+    border-radius: 0.5rem;
+  }
+
   .display-ib {
     display: inline;
+    color: #ffffff;
+    border-radius: 0rem;
+  }
+
+  .active {
+    background-color: #165871;
   }
 </style>
