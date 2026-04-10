@@ -1,0 +1,10 @@
+---
+import NavLink from '../components/NavLink.astro'
+
+import { pages } from '../data/navigation.js';
+const { currentLocation } = Astro.props;
+---
+
+{pages.map(page => (
+  <NavLink href={`/${currentLocation}/${page}`}>{page}</NavLink>
+))}
