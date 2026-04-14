@@ -8,13 +8,13 @@ import { locations, pages } from '../../data/navigation.js';
 export function getStaticPaths() {
   return locations.flatMap(loc =>
     pages.map(page =>({
-      params: { location: loc, page } })
+      params: { location: loc.location, page } })
     )
   );
 }
 
 const { location, page } = Astro.params;
-const { currentLocation } = Astro.props;
+const currentLocation = locations.find(loc => loc.location === location);
 ---
 
 <BaseLayout>
@@ -22,7 +22,7 @@ const { currentLocation } = Astro.props;
     <PageNav currentLocation={Astro.params.location} />
   </nav>
   <div slot="content">
-    <h1>{ page } data for { location }</h1>
+    <h1>{ page } data for { currentLocation?.name }</h1>
   </div>
 </BaseLayout>
 
@@ -31,12 +31,6 @@ const { currentLocation } = Astro.props;
     background-color: #ffffff;
     padding: 0px;
     border-radius: 0.5rem;
-  }
-
-  .display-ib {
-    display: inline;
-    color: #ffffff;
-    border-radius: 0rem;
   }
 
   .active {
