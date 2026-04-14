@@ -20,12 +20,16 @@ import '../styles/global.css'
         <Header />
         <Nav />
       </div>
-      <main>
-        <slot name="hnav"/>
-        <div class="content">
-          <slot name="content"/>
+      <div class=dash>
+        <div class="hnav">
+          <slot name="hnav"/>
         </div>
-      </main>
+        <main>
+          <div class="content">
+            <slot name="content"/>
+          </div>
+        </main>
+      </div>
     </div>
     <Footer />
 	</body>
@@ -35,6 +39,7 @@ import '../styles/global.css'
   .container {
     display: flex;
     flex: 1;
+    flex-wrap: wrap;
   }
 
   .sidebar {
@@ -51,12 +56,16 @@ import '../styles/global.css'
     border-top: 1px solid #c9c9c9;
     border-left: 1px solid #c9c9c9;
     border-radius: 0.5rem;
-    width: 83%;
-    height: 100vh;
+    width: 100%;
+    min-height: 100vh;
     background-color: #ffffff;
   }
 
   .content {
     margin: 25px;
+  }
+
+  .dash {
+    width: 83vw;
   }
 </style>
