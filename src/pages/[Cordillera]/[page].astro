@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import NavLink from '../../components/NavLink.astro'
+import PageNav from '../../components/PageNav.astro'
+
+import { locations, pages } from '../../data/navigation.js';
+
+export function getStaticPaths() {
+  return locations.flatMap(loc =>
+    pages.map(page =>({
+      params: { Cordillera: loc, page } })
+    )
+  );
+}
+
+const { Cordillera, page } = Astro.params;
+const { currentLocation } = Astro.props;
+---
+
+<BaseLayout>
+  <nav slot="hnav">
+    <PageNav currentLocation={Astro.params.Cordillera} />
+  </nav>
+  <div slot="content">
+    <h1>{ page } data for { Cordillera }</h1>
+  </div>
+</BaseLayout>
+
+<style>
+  nav {
+    background-color: #096a8e;
+    padding: 10px;
+    border-radius: 0.5rem;
+  }
+
+  .display-ib {
+    display: inline;
+    color: #ffffff;
+    border-radius: 0rem;
+  }
+
+  .active {
+    background-color: #165871;
+  }
+</style>
