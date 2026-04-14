@@ -8,21 +8,21 @@ import { locations, pages } from '../../data/navigation.js';
 export function getStaticPaths() {
   return locations.flatMap(loc =>
     pages.map(page =>({
-      params: { Cordillera: loc, page } })
+      params: { location: loc, page } })
     )
   );
 }
 
-const { Cordillera, page } = Astro.params;
+const { location, page } = Astro.params;
 const { currentLocation } = Astro.props;
 ---
 
 <BaseLayout>
   <nav slot="hnav">
-    <PageNav currentLocation={Astro.params.Cordillera} />
+    <PageNav currentLocation={Astro.params.location} />
   </nav>
   <div slot="content">
-    <h1>{ page } data for { Cordillera }</h1>
+    <h1>{ page } data for { location }</h1>
   </div>
 </BaseLayout>
 
