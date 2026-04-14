@@ -5,5 +5,5 @@ import { locations } from '../data/navigation.js';
 ---
 
 {locations.map(loc => (
-  <NavLink href={`/${loc}/Profile`}>{loc}</NavLink>
+  <NavLink href={`/${loc.location}/Profile`}>{loc.name}</NavLink>
 ))}

@@ -6,7 +6,7 @@ const { currentLocation } = Astro.props;
 ---
 
 {pages.map(page => (
-  <a href={`/${currentLocation}/${page}`}>{page}</a>
+  <NavLink href={`/${currentLocation}/${page}`}>{page}</NavLink>
 ))}
 
 <style>
@@ -21,7 +21,7 @@ const { currentLocation } = Astro.props;
 
   a:hover {
     color: #ede78d;
-    background-color: #165871;
+    background-color: #165871e6;
   }
 
   a.active {
