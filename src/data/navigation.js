@@ -7,4 +7,11 @@ export const locations = [
   { location: 'ifugao', name: 'Ifugao'},
   { location: 'benguet', name: 'Benguet' }
 ];
-export const pages = ['Profile', 'HR Profile', 'Production Area', 'Planting Season', 'Production Practices', 'Technologies'];
+export const pages = [
+  { slug: 'index', name: 'Profile' },
+  { slug: 'hrProfile', name: 'HR Profile' },
+  { slug: 'prodArea', name: 'Production Area' },
+  { slug: 'plantSeason', name: 'Planting Season' },
+  { slug: 'prodPractices', name: 'Production Practices' },
+  { slug: 'tech', name: 'Technologies' }
+];

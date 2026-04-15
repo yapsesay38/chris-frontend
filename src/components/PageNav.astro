@@ -6,7 +6,7 @@ const { currentLocation } = Astro.props;
 ---
 
 {pages.map(page => (
-  <NavLink href={`/${currentLocation}/${page}`}>{page}</NavLink>
+  <NavLink href={`/${currentLocation}/${page.slug}`}>{page.name}</NavLink>
 ))}
 
 <style>
