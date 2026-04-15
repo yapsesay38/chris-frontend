@@ -1,7 +1,10 @@
 ---
-const { href, class: className, ...rest } = Astro.props;
+const { href, class: className, type, ...rest } = Astro.props;
 const currentPath = Astro.url.pathname;
-const isActive = currentPath === href || currentPath.startsWith(href + '/');
+const isLocActive = type === 'location';
+const isActive = isLocActive
+? currentPath.startsWith(`/${href.split('/')[1]}/`)
+: currentPath === href;
 ---
 
 <a href={href} class:list={[{ 'active': isActive }, className]} {...rest}>

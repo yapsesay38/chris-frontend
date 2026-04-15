@@ -5,8 +5,8 @@ import { pages } from '../data/navigation.js';
 const { currentLocation } = Astro.props;
 ---
 
-{pages.map(page => (
-  <NavLink href={`/${currentLocation}/${page.slug}`}>{page.name}</NavLink>
+{pages.map(p => (
+  <NavLink href={`/${currentLocation}/${p.slug}`} type="page">{p.name}</NavLink>
 ))}
 
 <style>
@@ -17,15 +17,5 @@ const { currentLocation } = Astro.props;
     padding: 8px 16px;
     text-decoration: none;
     border-radius: 0.5rem;
-  }
-
-  a:hover {
-    color: #ede78d;
-    background-color: #165871e6;
-  }
-
-  a.active {
-    color: #ede78d;
-    background-color: #165871;
   }
 </style>

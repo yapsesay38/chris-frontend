@@ -7,15 +7,16 @@ import { locations, pages } from '../../data/navigation.js';
 
 export function getStaticPaths() {
   return locations.flatMap(loc =>
-    pages.map(page =>({
-      params: { location: loc.location, page: page.slug },
+    pages.map(p =>({
+      params: { location: loc.location, page: p.slug },
+      props: { page: p }
     }))
   );
 }
 
 const { location, page } = Astro.params;
 const currentLocation = locations.find(loc => loc.location === location);
-const currentPage = pages.find(page => page.slug === page);
+const currentPage = pages.find(p => p.slug === page);
 ---
 
 <BaseLayout>
