@@ -9,7 +9,6 @@ export function getStaticPaths() {
   return locations.flatMap(loc =>
     pages.map(p =>({
       params: { location: loc.location, page: p.slug },
-      props: { page: p }
     }))
   );
 }
