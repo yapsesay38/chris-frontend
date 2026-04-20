@@ -22,6 +22,25 @@ const PlantVigorAndLeaf = defineTable({
     flag_leaf_and_penultimate_leaf_width: column.number({ default: 0 }),
   }
 })
+
+const Culm = defineTable({
+  columns: {
+    date: column.date(),
+    plant_id: column.text(),
+    culm_habit_angle: column.number ({ default: 0 }),
+    node_anthocyanin_coloration: column.number ({ default: 0 }),
+    underlying_node_color: column.number ({ default: 0 }),
+    internode_anthocyanin_coloration: column.number ({ default: 0 }),
+    underlying_internode_color: column.number ({ default: 0 }),
+    culm_lodging_resistance: column.number ({ default: 0 }),
+    culm_length: column.number ({ default: 0 }),
+    culm_diameter: column.number ({ default: 0 }),
+    number_of_culms_per_hill: column.number ({ default: 0 }),
+  }
+})
 export default defineDb({
-  tables: { PlantVigorAndLeaf }
+  tables: {
+    PlantVigorAndLeaf,
+    Culm
+  }
 });
