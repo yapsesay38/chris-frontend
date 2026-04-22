@@ -5,6 +5,8 @@ const PlantVigorAndLeaf = defineTable({
   columns: {
     date: column.date(),
     plant_id: column.text(),
+    heirloom_rice_landraces: column.text(),
+    province: column.text(),
     plant_vigor: column.number({ default: 0 }),
     basal_leaf_sheath_color: column.number({ default: 0 }),
     leaf_sheath_anthocyanin_coloration: column.number({ default: 0 }),
@@ -27,6 +29,8 @@ const Culm = defineTable({
   columns: {
     date: column.date(),
     plant_id: column.text(),
+    heirloom_rice_landraces: column.text(),
+    province: column.text(),
     culm_habit_angle: column.number ({ default: 0 }),
     node_anthocyanin_coloration: column.number ({ default: 0 }),
     underlying_node_color: column.number ({ default: 0 }),
@@ -43,6 +47,8 @@ const Panicle = defineTable({
   columns: {
     date: column.date(),
     plant_id: column.text(),
+    heirloom_rice_landraces: column.text(),
+    province: column.text(),
     panicle_exsertion: column.number ({ default: 0 }),
     panicle_attitude_of_the_main_axis: column.number ({ default: 0 }),
     panicle_attitude_of_branches: column.number ({ default: 0 }),
@@ -57,6 +63,8 @@ const GrainCharactersAndGrainYield = defineTable({
   columns: {
     date: column.date(),
     plant_id: column.text(),
+    heirloom_rice_landraces: column.text(),
+    province: column.text(),
     awn_color: column.number ({ default: 0 }),
     awn_distribution: column.number ({ default: 0 }),
     apiculus_color: column.number ({ default: 0 }),
@@ -76,6 +84,8 @@ const GrowthCycle = defineTable({
   columns: {
     date: column.date(),
     plant_id: column.text(),
+    heirloom_rice_landraces: column.text(),
+    province: column.text(),
     number_of_days_from_transplanting_to_tillering: column.number ({ default: 0 }),
     number_of_days_from_transplanting_to_booting: column.number ({ default: 0 }),
     number_of_days_from_transplanting_to_heading: column.number ({ default: 0 }),
