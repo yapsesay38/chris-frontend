@@ -15,5 +15,9 @@ export const pages = [
   { page: 'tech', name: 'Technologies' }
 ];
 export const tables = [
-  { table: 'plantVigorAndLeaf', name: 'Plant Vigor and Leaf Characteristics'}
+  { table: 'plantVigorAndLeaf', name: 'Plant Vigor and Leaf Characteristics' },
+  { table: 'culm', name: 'Culm Characteristics' },
+  { table: 'panicle', name: 'Panicle Characteristics' },
+  { table: 'grainCharactersAndGrainYield', name: 'Grain Characters and Grain Yield' },
+  { table: 'growthCycle', name: 'Growth Cycle' }
 ];

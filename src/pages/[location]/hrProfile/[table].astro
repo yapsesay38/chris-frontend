@@ -3,14 +3,16 @@ import BaseLayout from '../../../layouts/BaseLayout.astro'
 import NavLink from '../../../components/NavLink.astro'
 import PageNav from '../../../components/PageNav.astro'
 
-import { locations, tables } from '../../../data/navigation.js';
+import { locations, tables } from '../../../data/navigation.js'
 
 export function getStaticPaths() {
-  return locations.flatMap(loc =>
-    tables.map(t => ({
-      params: { location: loc.location, table: t.table },
-    }))
-  );
+  return [
+    ...locations.flatMap(loc =>
+       tables.map(t => ({
+         params: { location: loc.location, table: t.table },
+       }))
+    )
+  ];
 }
 
 const { location, table } = Astro.params;
