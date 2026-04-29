@@ -1,12 +1,39 @@
 ---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import NavLink from '../../../components/NavLink.astro'
+import PageNav from '../../../components/PageNav.astro'
+
 import { locations, tables } from '../../../data/navigation.js';
 
 export function getStaticPaths() {
   return locations.flatMap(loc =>
-    tables.map(t =>({
+    tables.map(t => ({
       params: { location: loc.location, table: t.table },
     }))
   );
 }
+
+const { location, table } = Astro.params;
+const currentLocation = locations.find(loc => loc.location === location);
+const currentTable = tables.find(t => t.table === table);
 ---
-<h1>test</h1>
+<BaseLayout>
+  <nav slot="hnav">
+    <PageNav currentLocation={Astro.params.location} />
+  </nav>
+  <div slot="content">
+    <h1>{ currentTable?.name } data for { currentLocation?.name }</h1>
+  </div>
+</BaseLayout>
+
+<style>
+  nav {
+    background-color: #ffffff;
+    padding: 0px;
+    border-radius: 0.5rem;
+  }
+
+  .active {
+    background-color: #165871;
+  }
+</style>
