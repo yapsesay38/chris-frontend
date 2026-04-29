@@ -1,0 +1,12 @@
+---
+import { locations, tables } from '../../../data/navigation.js';
+
+export function getStaticPaths() {
+  return locations.flatMap(loc =>
+    tables.map(t =>({
+      params: { location: loc.location, table: t.table },
+    }))
+  );
+}
+---
+<h1>test</h1>

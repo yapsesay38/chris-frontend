@@ -3,19 +3,19 @@ import BaseLayout from '../../layouts/BaseLayout.astro'
 import NavLink from '../../components/NavLink.astro'
 import PageNav from '../../components/PageNav.astro'
 
-import { locations, pages } from '../../data/navigation.js';
+import { locations, pages, tables } from '../../data/navigation.js';
 
 export function getStaticPaths() {
   return locations.flatMap(loc =>
     pages.map(p =>({
-      params: { location: loc.location, page: p.slug },
+      params: { location: loc.location, page: p.page },
     }))
   );
 }
 
 const { location, page } = Astro.params;
 const currentLocation = locations.find(loc => loc.location === location);
-const currentPage = pages.find(p => p.slug === page);
+const currentPage = pages.find(p => p.page === page);
 ---
 
 <BaseLayout>
