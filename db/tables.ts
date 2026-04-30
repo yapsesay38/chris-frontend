@@ -3,7 +3,7 @@ import { defineTable, column } from 'astro:db';
 const PlantVigorAndLeaf = defineTable({
   columns: {
     date: column.date(),
-    plant_id: column.text(),
+    plant_id: column.text({ primaryKey: true }),
     heirloom_rice_landraces: column.text(),
     province: column.text(),
     plant_vigor: column.number({ default: 0 }),
@@ -27,7 +27,7 @@ const PlantVigorAndLeaf = defineTable({
 const Culm = defineTable({
   columns: {
     date: column.date(),
-    plant_id: column.text(),
+    plant_id: column.text({ primaryKey: true }),
     heirloom_rice_landraces: column.text(),
     province: column.text(),
     culm_habit_angle: column.number ({ default: 0 }),
@@ -45,7 +45,7 @@ const Culm = defineTable({
 const Panicle = defineTable({
   columns: {
     date: column.date(),
-    plant_id: column.text(),
+    plant_id: column.text({ primaryKey: true }),
     heirloom_rice_landraces: column.text(),
     province: column.text(),
     panicle_exsertion: column.number ({ default: 0 }),
@@ -61,7 +61,7 @@ const Panicle = defineTable({
 const GrainCharactersAndGrainYield = defineTable({
   columns: {
     date: column.date(),
-    plant_id: column.text(),
+    plant_id: column.text({ primaryKey: true }),
     heirloom_rice_landraces: column.text(),
     province: column.text(),
     awn_color: column.number ({ default: 0 }),
@@ -82,7 +82,7 @@ const GrainCharactersAndGrainYield = defineTable({
 const GrowthCycle = defineTable({
   columns: {
     date: column.date(),
-    plant_id: column.text(),
+    plant_id: column.text({ primaryKey: true }),
     heirloom_rice_landraces: column.text(),
     province: column.text(),
     number_of_days_from_transplanting_to_tillering: column.number ({ default: 0 }),
