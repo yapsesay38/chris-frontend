@@ -8,10 +8,16 @@ export const locations = [
   { location: 'benguet', name: 'Benguet' }
 ];
 export const pages = [
-  { slug: 'index', name: 'Profile' },
-  { slug: 'hrProfile', name: 'HR Profile' },
-  { slug: 'prodArea', name: 'Production Area' },
-  { slug: 'plantSeason', name: 'Planting Season' },
-  { slug: 'prodPractices', name: 'Production Practices' },
-  { slug: 'tech', name: 'Technologies' }
+  { page: 'index', name: 'Profile' },
+  { page: 'prodArea', name: 'Production Area' },
+  { page: 'plantSeason', name: 'Planting Season' },
+  { page: 'prodPractices', name: 'Production Practices' },
+  { page: 'tech', name: 'Technologies' }
+];
+export const tables = [
+  { table: 'plantVigorAndLeaf', name: 'Plant Vigor and Leaf Characteristics' },
+  { table: 'culm', name: 'Culm Characteristics' },
+  { table: 'panicle', name: 'Panicle Characteristics' },
+  { table: 'grainCharactersAndGrainYield', name: 'Grain Characters and Grain Yield' },
+  { table: 'growthCycle', name: 'Growth Cycle' }
 ];
