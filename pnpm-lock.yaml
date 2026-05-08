@@ -11,7 +11,7 @@ importers:
       '@astrojs/db':
         specifier: ^0.20.1
         version: 0.20.1
-      '@revolist/revogrid':
+      '@revolist/vue3-datagrid':
         specifier: ^4.21.8
         version: 4.21.8
       astro:
@@ -449,6 +449,9 @@ packages:
 
   '@revolist/revogrid@4.21.8':
     resolution: {integrity: sha512-AnnO4rVfYeVKEe9CkN+K8SuUlK9LZKmuxBS8Vs5hVjwAcVrhHYm3wAHz6Bbhupz69tRWBvOU672vcOF7nI/HJg==}
+
+  '@revolist/vue3-datagrid@4.21.8':
+    resolution: {integrity: sha512-13rxQ+L6JTdf/Qm5mDybCciTw9GgKAKe3PkM13KWnkvD660DNctnDM8sOBfbIURHPOSS39SILwVJXPYz8vG+Mg==}
 
   '@rollup/pluginutils@5.3.0':
     resolution: {integrity: sha512-5EdhGZtnu3V88ces7s53hhfK5KSASnJZv8Lulpc04cWO3REESroJXg73DFsOmgbU2BhwV0E20bu2IDZb3VKW4Q==}
@@ -1990,6 +1993,10 @@ snapshots:
   '@oslojs/encoding@1.1.0': {}
 
   '@revolist/revogrid@4.21.8': {}
+
+  '@revolist/vue3-datagrid@4.21.8':
+    dependencies:
+      '@revolist/revogrid': 4.21.8
 
   '@rollup/pluginutils@5.3.0(rollup@4.60.3)':
     dependencies:

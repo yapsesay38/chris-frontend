@@ -26,7 +26,6 @@ const currentPage = pages.find(p => p.page === page);
   </nav>
   <div slot="content">
     <h1>{ currentPage?.name } data for { currentLocation?.name }</h1>
-    <revo-grid columns={columns} source{rows}></revo-grid>
   </div>
 </BaseLayout>
 

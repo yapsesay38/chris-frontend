@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@astrojs/db": "^0.20.1",
-    "@revolist/revogrid": "^4.21.8",
+    "@revolist/vue3-datagrid": "^4.21.8",
     "astro": "^6.3.1"
   }
 }
