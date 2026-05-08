@@ -2,8 +2,7 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro'
 import NavLink from '../../../components/NavLink.astro'
 import PageNav from '../../../components/PageNav.astro'
-import RevoGrid from '@revolist/vue3-datagrid'
-import { ref } from 'vue'
+import RevoGrid from '../../../components/RevoGrid.vue'
 
 import { locations, tables } from '../../../data/navigation.js'
 
@@ -27,7 +26,7 @@ const currentTable = tables.find(t => t.table === table);
   </nav>
   <div slot="content">
     <h1>{ currentTable?.name } data for { currentLocation?.name }</h1>
-    <RevoGrid :columns="columns" :source="rows" />
+    <RevoGrid client:load />
   </div>
 </BaseLayout>
 
