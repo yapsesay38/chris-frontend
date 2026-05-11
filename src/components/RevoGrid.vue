@@ -67,10 +67,16 @@ const selectedTable = ref('vigorTable')
 const changeTable = () => {
   // const table = selectedTable.value === 'vigorTable' ? vigorTable : culmTable;
   let table;
-  if (selectedTable.value === 'vigorTable') {
-  table = vigorTable;
-  } else if (selectedTable.value === 'culmTable') {
-  table = culmTable;
+  switch (selectedTable.value) {
+    case 'vigorTable':
+      table = vigorTable;
+      break;
+    case 'culmTable':
+      table = culmTable;
+      break;
+  
+    default:
+      table = vigorTable;
   }
   columns.value = [...table.columns];
   rows.value = [...table.rows];
