@@ -15,6 +15,7 @@ export const pages = [
   { page: 'tech', name: 'Technologies' }
 ];
 export const tables = [
+  { table: 'hrTables', name: 'HR Tables' },
   { table: 'plantVigorAndLeaf', name: 'Plant Vigor and Leaf Characteristics' },
   { table: 'culm', name: 'Culm Characteristics' },
   { table: 'panicle', name: 'Panicle Characteristics' },
