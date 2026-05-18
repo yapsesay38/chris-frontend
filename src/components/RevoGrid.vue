@@ -2,9 +2,12 @@
   <select v-model="selectedTable" @change="changeTable">
     <option value="vigorTable">Plant Vigor And Leaf</option>
     <option value="culmTable">Culm</option>
+    <option value="panicleTable">Panicle</option>
+    <option value="grainTable">Grain</option>
+    <option value="growthTable">Growth</option>
   </select>
 
-  <VGrid :columns="columns" :source="rows" />
+  <VGrid :columns="columns" :source="source" />
 </template>
 
 <script setup>
@@ -14,7 +17,6 @@ import { ref } from 'vue'
 const vigorTable = {
   columns: [
   { prop: 'date', name: 'Date' },
-  { prop: 'id', name: 'ID' },
   { prop: 'hrLandraces', name: 'Heirloom Rice Landraces' },
   { prop: 'province', name: 'Province' },
   { prop: 'vigor', name: 'Plant Vigor' },
@@ -33,15 +35,13 @@ const vigorTable = {
   { prop: 'flagLeafPenLen', name: 'Flag Leaf and Penultimate Leaf Length' },
   { prop: 'flagLeafPenWid', name: 'Flag Leaf and Penultimate Leaf Width' }
   ],
-  rows: [
-  { date: 'May 11, 2026', id: 'B12', hrLandraces: 'Red Rice', province: 'Abra', vigor: 3 }
+  source: [
   ]
 }
 
 const culmTable = {
   columns: [
   { prop: 'date', name: 'Date' },
-  { prop: 'id', name: 'ID' },
   { prop: 'hrLandraces', name: 'Heirloom Rice Landraces' },
   { prop: 'province', name: 'Province' },
   { prop: 'culmAngle', name: 'Culm Habit Angle' },
@@ -52,16 +52,67 @@ const culmTable = {
   { prop: 'culmRes', name: 'Culm Lodging Resistance' },
   { prop: 'culmLen', name: 'Culm Length' },
   { prop: 'culmDia', name: 'Culm Diameter' },
-  { prop: 'culmHill', name: 'Number of Culms per Hill' },
+  { prop: 'culmNum', name: 'Number of Culms per Hill' },
   ],
-  rows: [
-  { date: 'May 8, 2026', id: 'C1', hrLandraces: 'Rice', province: 'Abra', culmAngle: 2 },
-  { date: 'May 9, 2026', id: 'C2', hrLandraces: 'Black', province: 'Abra', culmAngle: 5 },
+  source: [
   ]
 }
 
+const panicleTable = {
+  columns: [
+  { prop: 'date', name: 'Date' },
+  { prop: 'hrLandraces', name: 'Heirloom Rice Landraces' },
+  { prop: 'province', name: 'Province' },
+  { prop: 'panicleExsertion', name: 'Panicle Exsertion' },
+  { prop: 'panicleAttAxis', name: 'Panicle Attitude of the Main Axis' },
+  { prop: 'panicleAttBranch', name: 'Panicle Attitude of Branches' },
+  { prop: 'panicleSecBranch', name: 'Panicle Secondary Branching' },
+  { prop: 'panicleShat', name: 'Panicle Shattering' },
+  { prop: 'panicleLen', name: 'Panicle Length' },
+  { prop: 'panicleNum', name: 'Number of Filled and Unfilled Grains per Panicle' },
+  ],
+  source: [
+  ]
+}
+
+const grainTable = {
+  columns: [
+  { prop: 'date', name: 'Date' },
+  { prop: 'hrLandraces', name: 'Heirloom Rice Landraces' },
+  { prop: 'province', name: 'Province' },
+  { prop: 'awnColor', name: 'Awn Color' },
+  { prop: 'awnDistribution', name: 'Awn Distribution' },
+  { prop: 'apiculusColor', name: 'Apiculus Color' },
+  { prop: 'apiculusAnth', name: 'Anthocyanin Coloration Below Apiculus' },
+  { prop: 'lemmaColor', name: 'Lemma and Palea Color' },
+  { prop: 'stigmaColor', name: 'Stigma Color' },
+  { prop: 'awnLen', name: 'Awn Length' },
+  { prop: 'grainLen', name: 'Grain Length' },
+  { prop: 'grainWid', name: 'Grain Width' },
+  { prop: 'grainWeight', name: '1000 Grain-weight' },
+  { prop: 'lemmaPub', name: 'Lemma and Palea Pubescence' },
+  { prop: 'yield', name: 'Yield per Plot (kg/5m^2)' },
+  ],
+  source: [
+  ]
+}
+
+const growthTable = {
+  columns: [
+  { prop: 'date', name: 'Date' },
+  { prop: 'hrLandraces', name: 'Heirloom Rice Landraces' },
+  { prop: 'province', name: 'Province' },
+  { prop: 'numTill', name: 'Number of Days from Transplanting to Tillering' },
+  { prop: 'numBoot', name: 'Number of Days from Transplanting to Booting' },
+  { prop: 'numHead', name: 'Number of Days from Transplanting to Heading' },
+  { prop: 'numMat', name: 'Number of Days from Transplanting to Maturity' },
+  { prop: 'height', name: 'Height at Maturity (cm)' },
+  ],
+  source: [
+  ]
+}
 const columns = ref([...vigorTable.columns])
-const rows = ref([...vigorTable.rows])
+const source = ref([...vigorTable.source])
 const selectedTable = ref('vigorTable')
 
 const changeTable = () => {
@@ -74,12 +125,21 @@ const changeTable = () => {
     case 'culmTable':
       table = culmTable;
       break;
+    case 'panicleTable':
+      table = panicleTable;
+      break;
+    case 'grainTable':
+      table = grainTable;
+      break;
+    case 'growthTable':
+      table = growthTable;
+      break;
   
     default:
       table = vigorTable;
   }
-  columns.value = [...table.columns];
-  rows.value = [...table.rows];
+  columns.value = [...table.columns.map(col => ({...col}))];
+  source.value = [...table.source];
 }
 </script>
 
