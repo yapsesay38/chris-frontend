@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Record Rice Characteristics - CAR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <div class="header-content">
+                <a class='btn-back' href='/index.html'>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                </a>
+                <div class="header-titles">
+                    <h1 id="province-display">Loading...</h1>
+                    <p class="subtitle">Agromorphological Data Collection</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="form-container">
+            <form id="rice-form">
+                <input type="hidden" name="province" id="province-input">
+                <input type="hidden" name="edit-index" id="edit-index" value="-1">
+                
+                <div class="metadata-grid">
+                    <div class="input-group">
+                        <label for="treatment-no">Block No. / Treatment No.</label>
+                        <input type="text" id="treatment-no" name="treatment-no" required placeholder="e.g. B1-T1">
+                    </div>
+                    <div class="input-group">
+                        <label for="landrace">Landrace Name</label>
+                        <input type="text" id="landrace" name="landrace" required placeholder="e.g. Traditional Rice A">
+                    </div>
+                </div>
+
+                <div class="section-divider">
+                    <span>Agromorphological Parameters (5 Trials)</span>
+                </div>
+            <div class="form-group" data-param="plant-vigor">
+                <label>Plant Vigor and Leaf Characteristics</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1">
+                        <select id="plant-vigor-1" name="plant-vigor-1">
+                            <option value="">Select...</option>
+                            <option value="1">1-Very Vigorous</option>
+                            <option value="2">2-Vigorous</option>
+                            <option value="3">3-Normal</option>
+                            <option value="4">4-Weak</option>
+                            <option value="5">5-Very Weak</option>
+                        </select>
+                    </div>
+                    <div class="trial-input-wrapper" data-trial="T2"><select id="plant-vigor-2" name="plant-vigor-2"><option value="">Select...</option><option value="1">1-Very Vigorous</option><option value="2">2-Vigorous</option><option value="3">3-Normal</option><option value="4">4-Weak</option><option value="5">5-Very Weak</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><select id="plant-vigor-3" name="plant-vigor-3"><option value="">Select...</option><option value="1">1-Very Vigorous</option><option value="2">2-Vigorous</option><option value="3">3-Normal</option><option value="4">4-Weak</option><option value="5">5-Very Weak</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><select id="plant-vigor-4" name="plant-vigor-4"><option value="">Select...</option><option value="1">1-Very Vigorous</option><option value="2">2-Vigorous</option><option value="3">3-Normal</option><option value="4">4-Weak</option><option value="5">5-Very Weak</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><select id="plant-vigor-5" name="plant-vigor-5"><option value="">Select...</option><option value="1">1-Very Vigorous</option><option value="2">2-Vigorous</option><option value="3">3-Normal</option><option value="4">4-Weak</option><option value="5">5-Very Weak</option></select></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="plant-vigor-avg" name="plant-vigor-avg" class="avg-field" readonly placeholder="0.0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="basal-leaf-sheet">
+                <label>Basal Leaf Sheet</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1">
+                        <select id="basal-leaf-sheet-1" name="basal-leaf-sheet-1">
+                            <option value="">Select...</option>
+                            <option value="1">1-Green</option>
+                            <option value="2">2-Purple Lines</option>
+                            <option value="3">3-Light Purple</option>
+                            <option value="4">4-Purple</option>
+                        </select>
+                    </div>
+                    <div class="trial-input-wrapper" data-trial="T2"><select id="basal-leaf-sheet-2" name="basal-leaf-sheet-2"><option value="">Select...</option><option value="1">1-Green</option><option value="2">2-Purple Lines</option><option value="3">3-Light Purple</option><option value="4">4-Purple</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><select id="basal-leaf-sheet-3" name="basal-leaf-sheet-3"><option value="">Select...</option><option value="1">1-Green</option><option value="2">2-Purple Lines</option><option value="3">3-Light Purple</option><option value="4">4-Purple</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><select id="basal-leaf-sheet-4" name="basal-leaf-sheet-4"><option value="">Select...</option><option value="1">1-Green</option><option value="2">2-Purple Lines</option><option value="3">3-Light Purple</option><option value="4">4-Purple</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><select id="basal-leaf-sheet-5" name="basal-leaf-sheet-5"><option value="">Select...</option><option value="1">1-Green</option><option value="2">2-Purple Lines</option><option value="3">3-Light Purple</option><option value="4">4-Purple</option></select></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="basal-leaf-sheet-avg" name="basal-leaf-sheet-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="leaf-sheath-anthocyanin">
+                <label>Leaf Sheath Anthocyanin Coloration</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1">
+                        <select id="leaf-sheath-anthocyanin-1" name="leaf-sheath-anthocyanin-1">
+                            <option value="">Select...</option>
+                            <option value="0">0-Absent</option>
+                            <option value="3">3-Weak</option>
+                            <option value="5">5-Medium</option>
+                            <option value="7">7-Strong</option>
+                        </select>
+                    </div>
+                    <div class="trial-input-wrapper" data-trial="T2"><select id="leaf-sheath-anthocyanin-2" name="leaf-sheath-anthocyanin-2"><option value="">Select...</option><option value="0">0-Absent</option><option value="3">3-Weak</option><option value="5">5-Medium</option><option value="7">7-Strong</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><select id="leaf-sheath-anthocyanin-3" name="leaf-sheath-anthocyanin-3"><option value="">Select...</option><option value="0">0-Absent</option><option value="3">3-Weak</option><option value="5">5-Medium</option><option value="7">7-Strong</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><select id="leaf-sheath-anthocyanin-4" name="leaf-sheath-anthocyanin-4"><option value="">Select...</option><option value="0">0-Absent</option><option value="3">3-Weak</option><option value="5">5-Medium</option><option value="7">7-Strong</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><select id="leaf-sheath-anthocyanin-5" name="leaf-sheath-anthocyanin-5"><option value="">Select...</option><option value="0">0-Absent</option><option value="3">3-Weak</option><option value="5">5-Medium</option><option value="7">7-Strong</option></select></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="leaf-sheath-anthocyanin-avg" name="leaf-sheath-anthocyanin-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="blade-anthocyanin">
+                <label>Blade Anthocyanin Coloration</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1">
+                        <select id="blade-anthocyanin-1" name="blade-anthocyanin-1">
+                            <option value="">Select...</option>
+                            <option value="1">1-Tips Only</option>
+                            <option value="2">2-On Margins Only</option>
+                            <option value="3">3-In Blotches</option>
+                            <option value="4">4-Even (Uniform Purple)</option>
+                        </select>
+                    </div>
+                    <div class="trial-input-wrapper" data-trial="T2"><select id="blade-anthocyanin-2" name="blade-anthocyanin-2"><option value="">Select...</option><option value="1">1-Tips Only</option><option value="2">2-On Margins Only</option><option value="3">3-In Blotches</option><option value="4">4-Even (Uniform Purple)</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><select id="blade-anthocyanin-3" name="blade-anthocyanin-3"><option value="">Select...</option><option value="1">1-Tips Only</option><option value="2">2-On Margins Only</option><option value="3">3-In Blotches</option><option value="4">4-Even (Uniform Purple)</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><select id="blade-anthocyanin-4" name="blade-anthocyanin-4"><option value="">Select...</option><option value="1">1-Tips Only</option><option value="2">2-On Margins Only</option><option value="3">3-In Blotches</option><option value="4">4-Even (Uniform Purple)</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><select id="blade-anthocyanin-5" name="blade-anthocyanin-5"><option value="">Select...</option><option value="1">1-Tips Only</option><option value="2">2-On Margins Only</option><option value="3">3-In Blotches</option><option value="4">4-Even (Uniform Purple)</option></select></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="blade-anthocyanin-avg" name="blade-anthocyanin-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="blade-intensity-green">
+                <label>Blade Intensity of Green Color</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1">
+                        <select id="blade-intensity-green-1" name="blade-intensity-green-1">
+                            <option value="">Select...</option>
+                            <option value="0">0-No Green Color</option>
+                            <option value="3">3-Light Green</option>
+                            <option value="5">5-Medium Green</option>
+                            <option value="7">7-Dark Green</option>
+                        </select>
+                    </div>
+                    <div class="trial-input-wrapper" data-trial="T2"><select id="blade-intensity-green-2" name="blade-intensity-green-2"><option value="">Select...</option><option value="0">0-No Green Color</option><option value="3">3-Light Green</option><option value="5">5-Medium Green</option><option value="7">7-Dark Green</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><select id="blade-intensity-green-3" name="blade-intensity-green-3"><option value="">Select...</option><option value="0">0-No Green Color</option><option value="3">3-Light Green</option><option value="5">5-Medium Green</option><option value="7">7-Dark Green</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><select id="blade-intensity-green-4" name="blade-intensity-green-4"><option value="">Select...</option><option value="0">0-No Green Color</option><option value="3">3-Light Green</option><option value="5">5-Medium Green</option><option value="7">7-Dark Green</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><select id="blade-intensity-green-5" name="blade-intensity-green-5"><option value="">Select...</option><option value="0">0-No Green Color</option><option value="3">3-Light Green</option><option value="5">5-Medium Green</option><option value="7">7-Dark Green</option></select></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="blade-intensity-green-avg" name="blade-intensity-green-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="blade-pubescence">
+                <label>Blade Pubescence</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1">
+                        <select id="blade-pubescence-1" name="blade-pubescence-1">
+                            <option value="">Select...</option>
+                            <option value="1">1-Glabrous</option>
+                            <option value="2">2-Intermediate</option>
+                            <option value="3">3-Pubescent</option>
+                        </select>
+                    </div>
+                    <div class="trial-input-wrapper" data-trial="T2"><select id="blade-pubescence-2" name="blade-pubescence-2"><option value="">Select...</option><option value="1">1-Glabrous</option><option value="2">2-Intermediate</option><option value="3">3-Pubescent</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><select id="blade-pubescence-3" name="blade-pubescence-3"><option value="">Select...</option><option value="1">1-Glabrous</option><option value="2">2-Intermediate</option><option value="3">3-Pubescent</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><select id="blade-pubescence-4" name="blade-pubescence-4"><option value="">Select...</option><option value="1">1-Glabrous</option><option value="2">2-Intermediate</option><option value="3">3-Pubescent</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><select id="blade-pubescence-5" name="blade-pubescence-5"><option value="">Select...</option><option value="1">1-Glabrous</option><option value="2">2-Intermediate</option><option value="3">3-Pubescent</option></select></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="blade-pubescence-avg" name="blade-pubescence-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="auricle-color">
+                <label>Auricle Color</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1">
+                        <select id="auricle-color-1" name="auricle-color-1">
+                            <option value="">Select...</option>
+                            <option value="0">0-Absent</option>
+                            <option value="1">1-Whitish</option>
+                            <option value="2">2-Yellowish Green</option>
+                            <option value="3">3-Purple</option>
+                            <option value="4">4-Light Purple</option>
+                            <option value="5">5-Purple Lines</option>
+                        </select>
+                    </div>
+                    <div class="trial-input-wrapper" data-trial="T2"><select id="auricle-color-2" name="auricle-color-2"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Whitish</option><option value="2">2-Yellowish Green</option><option value="3">3-Purple</option><option value="4">4-Light Purple</option><option value="5">5-Purple Lines</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><select id="auricle-color-3" name="auricle-color-3"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Whitish</option><option value="2">2-Yellowish Green</option><option value="3">3-Purple</option><option value="4">4-Light Purple</option><option value="5">5-Purple Lines</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><select id="auricle-color-4" name="auricle-color-4"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Whitish</option><option value="2">2-Yellowish Green</option><option value="3">3-Purple</option><option value="4">4-Light Purple</option><option value="5">5-Purple Lines</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><select id="auricle-color-5" name="auricle-color-5"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Whitish</option><option value="2">2-Yellowish Green</option><option value="3">3-Purple</option><option value="4">4-Light Purple</option><option value="5">5-Purple Lines</option></select></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="auricle-color-avg" name="auricle-color-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="collar-color">
+                <label>Collar Color</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1">
+                        <select id="collar-color-1" name="collar-color-1">
+                            <option value="">Select...</option>
+                            <option value="0">0-Absent</option>
+                            <option value="1">1-Green</option>
+                            <option value="2">2-Light Green</option>
+                            <option value="3">3-Purple</option>
+                            <option value="4">4-Purple Lines</option>
+                        </select>
+                    </div>
+                    <div class="trial-input-wrapper" data-trial="T2"><select id="collar-color-2" name="collar-color-2"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Green</option><option value="2">2-Light Green</option><option value="3">3-Purple</option><option value="4">4-Purple Lines</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><select id="collar-color-3" name="collar-color-3"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Green</option><option value="2">2-Light Green</option><option value="3">3-Purple</option><option value="4">4-Purple Lines</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><select id="collar-color-4" name="collar-color-4"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Green</option><option value="2">2-Light Green</option><option value="3">3-Purple</option><option value="4">4-Purple Lines</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><select id="collar-color-5" name="collar-color-5"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Green</option><option value="2">2-Light Green</option><option value="3">3-Purple</option><option value="4">4-Purple Lines</option></select></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="collar-color-avg" name="collar-color-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="ligule-shape">
+                <label>Ligule Shape</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1">
+                        <select id="ligule-shape-1" name="ligule-shape-1">
+                            <option value="">Select...</option>
+                            <option value="0">0-Absent</option>
+                            <option value="1">1-Truncate</option>
+                            <option value="2">2-Acute to Acuminate</option>
+                            <option value="3">3-2-Cleft</option>
+                        </select>
+                    </div>
+                    <div class="trial-input-wrapper" data-trial="T2"><select id="ligule-shape-2" name="ligule-shape-2"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Truncate</option><option value="2">2-Acute to Acuminate</option><option value="3">3-2-Cleft</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><select id="ligule-shape-3" name="ligule-shape-3"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Truncate</option><option value="2">2-Acute to Acuminate</option><option value="3">3-2-Cleft</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><select id="ligule-shape-4" name="ligule-shape-4"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Truncate</option><option value="2">2-Acute to Acuminate</option><option value="3">3-2-Cleft</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><select id="ligule-shape-5" name="ligule-shape-5"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Truncate</option><option value="2">2-Acute to Acuminate</option><option value="3">3-2-Cleft</option></select></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="ligule-shape-avg" name="ligule-shape-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="ligule-color">
+                <label>Ligule Color</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1">
+                        <select id="ligule-color-1" name="ligule-color-1">
+                            <option value="">Select...</option>
+                            <option value="0">0-Absent</option>
+                            <option value="1">1-Whitish</option>
+                            <option value="2">2-Yellowish Green</option>
+                            <option value="3">3-Purple</option>
+                            <option value="4">4-Light Purple</option>
+                            <option value="5">5-Purple Lines</option>
+                        </select>
+                    </div>
+                    <div class="trial-input-wrapper" data-trial="T2"><select id="ligule-color-2" name="ligule-color-2"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Whitish</option><option value="2">2-Yellowish Green</option><option value="3">3-Purple</option><option value="4">4-Light Purple</option><option value="5">5-Purple Lines</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><select id="ligule-color-3" name="ligule-color-3"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Whitish</option><option value="2">2-Yellowish Green</option><option value="3">3-Purple</option><option value="4">4-Light Purple</option><option value="5">5-Purple Lines</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><select id="ligule-color-4" name="ligule-color-4"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Whitish</option><option value="2">2-Yellowish Green</option><option value="3">3-Purple</option><option value="4">4-Light Purple</option><option value="5">5-Purple Lines</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><select id="ligule-color-5" name="ligule-color-5"><option value="">Select...</option><option value="0">0-Absent</option><option value="1">1-Whitish</option><option value="2">2-Yellowish Green</option><option value="3">3-Purple</option><option value="4">4-Light Purple</option><option value="5">5-Purple Lines</option></select></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="ligule-color-avg" name="ligule-color-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="ligule-length">
+                <label>Ligule Length (mm)</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1"><input type="number" step="0.1" id="ligule-length-1" name="ligule-length-1" placeholder="T1"></div>
+                    <div class="trial-input-wrapper" data-trial="T2"><input type="number" step="0.1" id="ligule-length-2" name="ligule-length-2" placeholder="T2"></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><input type="number" step="0.1" id="ligule-length-3" name="ligule-length-3" placeholder="T3"></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><input type="number" step="0.1" id="ligule-length-4" name="ligule-length-4" placeholder="T4"></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><input type="number" step="0.1" id="ligule-length-5" name="ligule-length-5" placeholder="T5"></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="ligule-length-avg" name="ligule-length-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="flag-leaf-attitude">
+                <label>Flag Leaf Attitude</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1">
+                        <select id="flag-leaf-attitude-1" name="flag-leaf-attitude-1">
+                            <option value="">Select...</option>
+                            <option value="1">1-Erect</option>
+                            <option value="3">3-Intermediate</option>
+                            <option value="5">5-Horizontal</option>
+                            <option value="7">7-Descending</option>
+                        </select>
+                    </div>
+                    <div class="trial-input-wrapper" data-trial="T2"><select id="flag-leaf-attitude-2" name="flag-leaf-attitude-2"><option value="">Select...</option><option value="1">1-Erect</option><option value="3">3-Intermediate</option><option value="5">5-Horizontal</option><option value="7">7-Descending</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><select id="flag-leaf-attitude-3" name="flag-leaf-attitude-3"><option value="">Select...</option><option value="1">1-Erect</option><option value="3">3-Intermediate</option><option value="5">5-Horizontal</option><option value="7">7-Descending</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><select id="flag-leaf-attitude-4" name="flag-leaf-attitude-4"><option value="">Select...</option><option value="1">1-Erect</option><option value="3">3-Intermediate</option><option value="5">5-Horizontal</option><option value="7">7-Descending</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><select id="flag-leaf-attitude-5" name="flag-leaf-attitude-5"><option value="">Select...</option><option value="1">1-Erect</option><option value="3">3-Intermediate</option><option value="5">5-Horizontal</option><option value="7">7-Descending</option></select></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="flag-leaf-attitude-avg" name="flag-leaf-attitude-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="leaf-length">
+                <label>Flag Leaf and Penultimate Leaf Length (cm)</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1"><input type="number" step="0.1" id="leaf-length-1" name="leaf-length-1" placeholder="T1"></div>
+                    <div class="trial-input-wrapper" data-trial="T2"><input type="number" step="0.1" id="leaf-length-2" name="leaf-length-2" placeholder="T2"></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><input type="number" step="0.1" id="leaf-length-3" name="leaf-length-3" placeholder="T3"></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><input type="number" step="0.1" id="leaf-length-4" name="leaf-length-4" placeholder="T4"></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><input type="number" step="0.1" id="leaf-length-5" name="leaf-length-5" placeholder="T5"></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="leaf-length-avg" name="leaf-length-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="leaf-width">
+                <label>Flag Leaf and Penultimate Leaf Width (cm)</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1"><input type="number" step="0.1" id="leaf-width-1" name="leaf-width-1" placeholder="T1"></div>
+                    <div class="trial-input-wrapper" data-trial="T2"><input type="number" step="0.1" id="leaf-width-2" name="leaf-width-2" placeholder="T2"></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><input type="number" step="0.1" id="leaf-width-3" name="leaf-width-3" placeholder="T3"></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><input type="number" step="0.1" id="leaf-width-4" name="leaf-width-4" placeholder="T4"></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><input type="number" step="0.1" id="leaf-width-5" name="leaf-width-5" placeholder="T5"></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="leaf-width-avg" name="leaf-width-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="culm-habit-angle">
+                <label>Culm Habit Angle</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1">
+                        <select id="culm-habit-angle-1" name="culm-habit-angle-1">
+                            <option value="">Select...</option>
+                            <option value="1">1-Erect (<15°)</option>
+                            <option value="3">3-Semi-erect (20°)</option>
+                            <option value="5">5-Open (40°)</option>
+                            <option value="7">7-Spreading (>60°-80°)</option>
+                            <option value="9">9-Procumbent</option>
+                        </select>
+                    </div>
+                    <div class="trial-input-wrapper" data-trial="T2"><select id="culm-habit-angle-2" name="culm-habit-angle-2"><option value="">Select...</option><option value="1">1-Erect (&lt;15°)</option><option value="3">3-Semi-erect (20°)</option><option value="5">5-Open (40°)</option><option value="7">7-Spreading (&gt;60°-80°)</option><option value="9">9-Procumbent</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><select id="culm-habit-angle-3" name="culm-habit-angle-3"><option value="">Select...</option><option value="1">1-Erect (&lt;15°)</option><option value="3">3-Semi-erect (20°)</option><option value="5">5-Open (40°)</option><option value="7">7-Spreading (&gt;60°-80°)</option><option value="9">9-Procumbent</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><select id="culm-habit-angle-4" name="culm-habit-angle-4"><option value="">Select...</option><option value="1">1-Erect (&lt;15°)</option><option value="3">3-Semi-erect (20°)</option><option value="5">5-Open (40°)</option><option value="7">7-Spreading (&gt;60°-80°)</option><option value="9">9-Procumbent</option></select></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><select id="culm-habit-angle-5" name="culm-habit-angle-5"><option value="">Select...</option><option value="1">1-Erect (&lt;15°)</option><option value="3">3-Semi-erect (20°)</option><option value="5">5-Open (40°)</option><option value="7">7-Spreading (&gt;60°-80°)</option><option value="9">9-Procumbent</option></select></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="culm-habit-angle-avg" name="culm-habit-angle-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" data-param="tiller-count">
+                <label>Tiller Count</label>
+                <div class="trial-row">
+                    <div class="trial-input-wrapper" data-trial="T1"><input type="number" id="tiller-count-1" name="tiller-count-1" placeholder="T1"></div>
+                    <div class="trial-input-wrapper" data-trial="T2"><input type="number" id="tiller-count-2" name="tiller-count-2" placeholder="T2"></div>
+                    <div class="trial-input-wrapper" data-trial="T3"><input type="number" id="tiller-count-3" name="tiller-count-3" placeholder="T3"></div>
+                    <div class="trial-input-wrapper" data-trial="T4"><input type="number" id="tiller-count-4" name="tiller-count-4" placeholder="T4"></div>
+                    <div class="trial-input-wrapper" data-trial="T5"><input type="number" id="tiller-count-5" name="tiller-count-5" placeholder="T5"></div>
+                    <div class="trial-avg-wrapper">
+                        <span class="avg-label">AVG</span>
+                        <input type="text" id="tiller-count-avg" name="tiller-count-avg" class="avg-field" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="button-group">
+                <a class='btn btn-secondary' href='/index.html'>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    Back
+                </a>
+                <button type="submit" id="submit-btn" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    <span id="submit-btn-text">Save Data</span>
+                </button>
+                <button type="button" id="cancel-edit" class="btn btn-secondary" style="display: none;">Cancel Edit</button>
+            </div>
+        </form>
+    </div>
+            <div class="section-header">
+                <h2>Records Preview</h2>
+                <button id="export-csv" class="export-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Export to Excel (CSV)
+                </button>
+            </div>
+            <div class="table-container">
+                <table id="records-table">
+                    <thead>
+                        <tr>
+                            <th>Province</th>
+                            <th>Block/Treatment</th>
+                            <th>Landrace</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="records-body">
+                        <!-- Records will be injected here -->
+                    </tbody>
+                </table>
+                <div id="no-records" class="empty-state" style="display: none;">
+                    No records found yet. Start by entering data above!
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // CONFIGURATION
+        const STORAGE_KEY = 'heirloom_rice_records';
+        
+        // UTILITIES
+        window.getRecords = () => JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        window.saveRecords = (records) => localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+
+        // Get province from URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const province = urlParams.get('province');
+        
+        if (province) {
+            document.getElementById('province-display').textContent = province;
+            document.getElementById('province-input').value = province;
+        }
+
+        // DRAFT PERSISTENCE
+        const getDraftKey = () => `rice_draft_${province || 'unknown'}`;
+        
+        // Helper to calculate average
+        window.updateAverage = (paramId) => {
+            let sum = 0;
+            let count = 0;
+            for (let i = 1; i <= 5; i++) {
+                const el = document.getElementById(`${paramId}-${i}`);
+                if (!el) continue;
+                const val = el.value;
+                if (val !== "" && !isNaN(val)) {
+                    sum += parseFloat(val);
+                    count++;
+                }
+            }
+            const avgField = document.getElementById(`${paramId}-avg`);
+            if (avgField) {
+                if (count > 0) {
+                    avgField.value = (sum / count).toFixed(2);
+                } else {
+                    avgField.value = "";
+                }
+            }
+            window.saveDraft();
+        };
+
+        window.saveDraft = () => {
+            const formData = new FormData(document.getElementById('rice-form'));
+            const data = Object.fromEntries(formData.entries());
+            // Save if any field (except metadata) has a value
+            const hasData = Object.entries(data).some(([key, val]) => {
+                return val && !['province', 'edit-index', 'province-input', 'treatment-no', 'landrace'].includes(key) && !key.endsWith('-avg');
+            });
+            if (!hasData) return;
+            localStorage.setItem(getDraftKey(), JSON.stringify(data));
+        };
+
+        window.loadDraft = () => {
+            const draft = JSON.parse(localStorage.getItem(getDraftKey()));
+            if (!draft) return;
+            
+            // Only restore if we are not in edit mode
+            if (document.getElementById('edit-index').value !== '-1') return;
+
+            Object.entries(draft).forEach(([key, value]) => {
+                const el = document.getElementById(key);
+                if (el && value) el.value = value;
+            });
+            
+            // Trigger all averages
+            document.querySelectorAll('.form-group[data-param]').forEach(group => {
+                window.updateAverage(group.dataset.param);
+            });
+        };
+
+        window.clearDraft = () => {
+            localStorage.removeItem(getDraftKey());
+        };
+
+        // Attach listeners to all trial inputs
+        document.querySelectorAll('.form-group[data-param]').forEach(group => {
+            const paramId = group.dataset.param;
+            for (let i = 1; i <= 5; i++) {
+                const el = document.getElementById(`${paramId}-${i}`);
+                if (!el) continue;
+                el.addEventListener('input', () => window.updateAverage(paramId));
+                if (el.tagName === 'SELECT') {
+                    el.addEventListener('change', () => {
+                        setTimeout(() => el.blur(), 100);
+                        window.updateAverage(paramId);
+                    });
+                }
+            }
+        });
+
+        window.renderTable = () => {
+            const records = window.getRecords();
+            const tbody = document.getElementById('records-body');
+            const noRecords = document.getElementById('no-records');
+            
+            tbody.innerHTML = '';
+            
+            if (records.length === 0) {
+                noRecords.style.display = 'block';
+                return;
+            }
+            
+            noRecords.style.display = 'none';
+            
+            records.forEach((record, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${record.province}</td>
+                    <td>${record['treatment-no']}</td>
+                    <td><strong>${record.landrace}</strong></td>
+                    <td class="action-btns">
+                        <button class="btn-icon edit" onclick="window.editRecord(${index})" title="Edit Record">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </button>
+                        <button class="btn-icon delete" onclick="window.deleteRecord(${index})" title="Delete Record">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2-2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        };
+
+        window.editRecord = (index) => {
+            const records = window.getRecords();
+            const record = records[index];
+            
+            // Populate form
+            document.getElementById('edit-index').value = index;
+            document.getElementById('province-input').value = record.province;
+            document.getElementById('province-display').textContent = record.province;
+            
+            // Populate all fields
+            Object.entries(record).forEach(([key, value]) => {
+                const el = document.getElementById(key);
+                if (el) el.value = value;
+            });
+            
+            // Update UI
+            document.getElementById('submit-btn-text').textContent = 'Update Record';
+            document.getElementById('cancel-edit').style.display = 'block';
+            
+            // Trigger all averages
+            document.querySelectorAll('.form-group[data-param]').forEach(group => {
+                window.updateAverage(group.dataset.param);
+            });
+            
+            // Scroll to form
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.deleteRecord = (index) => {
+            if (confirm('Are you sure you want to delete this record?')) {
+                const records = window.getRecords();
+                records.splice(index, 1);
+                window.saveRecords(records);
+                window.renderTable();
+            }
+        };
+
+        window.cancelEdit = () => {
+            document.getElementById('rice-form').reset();
+            document.getElementById('edit-index').value = '-1';
+            document.getElementById('submit-btn-text').textContent = 'Save Data';
+            document.getElementById('cancel-edit').style.display = 'none';
+            if (province) {
+                document.getElementById('province-display').textContent = province;
+                document.getElementById('province-input').value = province;
+            }
+        };
+
+        document.getElementById('cancel-edit').addEventListener('click', window.cancelEdit);
+
+        // Form submission handler
+        document.getElementById('rice-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            const index = parseInt(data['edit-index']);
+            
+            const records = window.getRecords();
+            
+            if (index === -1) {
+                records.push(data);
+            } else {
+                records[index] = data;
+                window.cancelEdit();
+            }
+            
+            window.saveRecords(records);
+            window.renderTable();
+            window.clearDraft();
+            
+            if (index === -1) {
+                e.target.reset();
+                if (province) {
+                    document.getElementById('province-display').textContent = province;
+                    document.getElementById('province-input').value = province;
+                }
+                alert('Data saved successfully!');
+            } else {
+                alert('Record updated successfully!');
+            }
+        });
+
+        // DATA MAPPINGS FOR EXPORT
+        const PARAM_LABELS = {
+            'plant-vigor': { '1': 'Very Vigorous', '2': 'Vigorous', '3': 'Normal', '4': 'Weak', '5': 'Very Weak' },
+            'basal-leaf-sheet': { '1': 'Green', '2': 'Purple Lines', '3': 'Light Purple', '4': 'Purple' },
+            'leaf-sheath-anthocyanin': { '0': 'Absent', '3': 'Weak', '5': 'Medium', '7': 'Strong' },
+            'blade-anthocyanin': { '1': 'Tips Only', '2': 'On Margins Only', '3': 'In Blotches', '4': 'Even (Uniform Purple)' },
+            'blade-intensity-green': { '0': 'No Green Color', '3': 'Light Green', '5': 'Medium Green', '7': 'Dark Green' },
+            'blade-pubescence': { '1': 'Glabrous', '2': 'Intermediate', '3': 'Pubescent' },
+            'auricle-color': { '0': 'Absent', '1': 'Whitish', '2': 'Yellowish Green', '3': 'Purple', '4': 'Light Purple', '5': 'Purple Lines' },
+            'collar-color': { '0': 'Absent', '1': 'Green', '2': 'Light Green', '3': 'Purple', '4': 'Purple Lines' },
+            'ligule-shape': { '0': 'Absent', '1': 'Truncate', '2': 'Acute to Acuminate', '3': '2-Cleft' },
+            'ligule-color': { '0': 'Absent', '1': 'Whitish', '2': 'Yellowish Green', '3': 'Purple', '4': 'Light Purple', '5': 'Purple Lines' },
+            'flag-leaf-attitude': { '1': 'Erect', '3': 'Intermediate', '5': 'Horizontal', '7': 'Descending' },
+            'culm-habit-angle': { '1': 'Erect (<15°)', '3': 'Semi-erect (20°)', '5': 'Open (40°)', '7': 'Spreading (>60°-80°)', '9': 'Procumbent' }
+        };
+
+        // CSV Export Logic
+        document.getElementById('export-csv').addEventListener('click', () => {
+            const records = window.getRecords();
+            if (records.length === 0) {
+                alert('No records to export.');
+                return;
+            }
+            
+            const categoricalParams = Object.keys(PARAM_LABELS);
+            const paramsInOrder = [
+                'plant-vigor', 'basal-leaf-sheet', 'leaf-sheath-anthocyanin', 'blade-anthocyanin', 'blade-intensity-green',
+                'blade-pubescence', 'auricle-color', 'collar-color', 'ligule-shape', 'ligule-color', 'ligule-length',
+                'flag-leaf-attitude', 'leaf-length', 'leaf-width', 'culm-habit-angle', 'tiller-count'
+            ];
+
+            // Define CSV headers
+            const headers = ['Province', 'Block/Treatment No.', 'Landrace Name'];
+            paramsInOrder.forEach(p => {
+                const label = p.replace(/-/g, ' ').toUpperCase();
+                headers.push(`${label} AVG`);
+                for (let i = 1; i <= 5; i++) {
+                    if (categoricalParams.includes(p)) {
+                        headers.push(`${label} T${i} (ID)`);
+                        headers.push(`${label} T${i} (Description)`);
+                    } else {
+                        headers.push(`${label} T${i}`);
+                    }
+                }
+            });
+
+            const csvRows = [
+                headers.join(","),
+                ...records.map(record => {
+                    const row = [record.province, record['treatment-no'], record.landrace];
+                    paramsInOrder.forEach(p => {
+                        row.push(record[`${p}-avg`] || '');
+                        for (let i = 1; i <= 5; i++) {
+                            const val = record[`${p}-${i}`] || '';
+                            if (categoricalParams.includes(p)) {
+                                row.push(val);
+                                row.push(PARAM_LABELS[p] && val ? PARAM_LABELS[p][val] || '' : '');
+                            } else {
+                                row.push(val);
+                            }
+                        }
+                    });
+                    return row.map(val => `"${(val || '').toString().replace(/"/g, '""')}"`).join(',');
+                })
+            ].join("\n");
+            
+            const csvContent = "\ufeff" + csvRows; // Add UTF-8 BOM for Excel
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            // Create download link
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `heirloom_rice_records_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        });
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then((registration) => {
+                    console.log('ServiceWorker registration successful');
+                }, (err) => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+
+        // Initialize table on load
+        window.renderTable();
+        // Restore draft if available
+        window.loadDraft();
+    </script>
+</body>
+</html>
