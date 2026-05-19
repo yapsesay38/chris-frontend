@@ -1,10 +1,10 @@
 const CACHE_NAME = 'car-rice-v9';
 const ASSETS_TO_CACHE = [
   './',
-  'index.html',
-  'form.html',
-  'style.css',
-  'icon.png',
+  './index.html',
+  './form.html',
+  './style.css',
+  './icon.png',
   'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap'
 ];
 

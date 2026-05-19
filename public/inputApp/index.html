@@ -16,6 +16,13 @@
     <link rel="apple-touch-icon" href="icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <style>
+      footer { 
+        margin-top: 50px;
+        display: grid;
+        grid-template-columns: [first] 300px;
+      }
+    </style>
 </head>
 
 <body>
@@ -28,7 +35,7 @@
         <section class="provinces-container" aria-label="Provinces of CAR">
 
             <!-- Abra -->
-            <a class='province-link' href='/form.html?province=Abra'>
+            <a class='province-link' href='/inputApp/form.html?province=Abra'>
                 <article class="province-card block-abra" id="card-abra">
                     <div class="card-content">
                         <h2>Abra</h2>
@@ -40,7 +47,7 @@
             </a>
 
             <!-- Apayao -->
-            <a class='province-link' href='/form.html?province=Apayao'>
+            <a class='province-link' href='/inputApp/form.html?province=Apayao'>
                 <article class="province-card block-apayao" id="card-apayao">
                     <div class="card-content">
                         <h2>Apayao</h2>
@@ -51,7 +58,7 @@
             </a>
 
             <!-- Benguet -->
-            <a class='province-link' href='/form.html?province=Benguet'>
+            <a class='province-link' href='/inputApp/form.html?province=Benguet'>
                 <article class="province-card block-benguet" id="card-benguet">
                     <div class="card-content">
                         <h2>Benguet</h2>
@@ -62,7 +69,7 @@
             </a>
 
             <!-- Ifugao -->
-            <a class='province-link' href='/form.html?province=Ifugao'>
+            <a class='province-link' href='/inputApp/form.html?province=Ifugao'>
                 <article class="province-card block-ifugao" id="card-ifugao">
                     <div class="card-content">
                         <h2>Ifugao</h2>
@@ -73,7 +80,7 @@
             </a>
 
             <!-- Kalinga -->
-            <a class='province-link' href='/form.html?province=Kalinga'>
+            <a class='province-link' href='/inputApp/form.html?province=Kalinga'>
                 <article class="province-card block-kalinga" id="card-kalinga">
                     <div class="card-content">
                         <h2>Kalinga</h2>
@@ -84,7 +91,7 @@
             </a>
 
             <!-- Mountain Province -->
-            <a class='province-link' href='/form.html?province=Mountain+Province'>
+            <a class='province-link' href='/inputApp/form.html?province=Mountain+Province'>
                 <article class="province-card block-mountain" id="card-mountain">
                     <div class="card-content">
                         <h2>Mountain Province</h2>
@@ -96,6 +103,15 @@
 
 
         </section>
+        <footer>
+          <a class='btn btn-secondary' href='/'>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              Back to CHRIS
+          </a>
+        </footer>
     </div>
     <script>
         if ('serviceWorker' in navigator) {
