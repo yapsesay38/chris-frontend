@@ -34,6 +34,19 @@
             </div>
         </header>
 
+        <!-- Trial Count Configuration -->
+        <div class="config-bar" style="background: var(--bg-input); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <label style="font-weight: 600;">Number of Trials:</label>
+                <input type="number" x-model="trialCount" @change="updateTrialCount()" 
+                       min="1" max="100" style="width: 80px; padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;">
+                <span style="color: var(--text-muted); font-size: 12px;">(1-100 trials)</span>
+            </div>
+            <div style="color: var(--accent-success); font-size: 14px;">
+                 Currently: <span x-text="trialCount"></span> trial(s)
+            </div>
+        </div>
+
         <div class="form-container">
             <form @submit.prevent="saveRecord()">
                 <input type="hidden" name="province" x-model="currentProvince">
@@ -55,15 +68,15 @@
                 </div>
 
                 <div class="section-divider">
-                    <span>Agromorphological Parameters (5 Trials)</span>
+                    <span>Agromorphological Parameters (<span x-text="trialCount"></span> Trials)</span>
                 </div>
 
-                <!--FORM-->
+                <!-- DATA-DRIVEN FORM with DYNAMIC TRIALS -->
                 <template x-for="param in parameters" :key="param.id">
                     <div class="form-group">
                         <label x-text="param.label"></label>
-                        <div class="trial-row">
-                            <!-- 5 trials -->
+                        <div class="trial-row" :style="`grid-template-columns: repeat(${trialCount + 1}, 1fr);`">
+                            <!-- Dynamic trials based on trialCount -->
                             <template x-for="(trial, idx) in trials" :key="idx">
                                 <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
                                     <!-- Select dropdown for categorical parameters -->
@@ -86,7 +99,7 @@
                                 </div>
                             </template>
                             
-                            <!-- Average field -->
+                            <!-- Average field (always present) -->
                             <div class="trial-avg-wrapper">
                                 <span class="avg-label">AVG</span>
                                 <input type="text" class="avg-field" readonly 
@@ -163,11 +176,11 @@
                                             <line x1="14" y1="11" x2="14" y2="17"></line>
                                         </svg>
                                     </button>
-                                </td>
-                            </tr>
+                                 </div>
+                             '</div>
                         </template>
                     </tbody>
-                </table>
+                </div>
                 <div class="empty-state" x-show="filteredRecords.length === 0" style="text-align: center; padding: 40px; color: #8b949e;">
                     No records found yet. Start by entering data above!
                 </div>
@@ -179,9 +192,10 @@
         function riceDataApp() {
             const STORAGE_KEY = 'heirloom_rice_records';
             
-            // ============================================
-            // DATA-DRIVEN PARAMETERS - Add/remove easily!
-            // ============================================
+            const DEFAULT_TRIAL_COUNT = 5; 
+            const MAX_TRIALS = 100;
+            const MIN_TRIALS = 1;
+            
             const parameters = [
                 {
                     id: 'plantVigor',
@@ -355,13 +369,18 @@
             const urlParams = new URLSearchParams(window.location.search);
             const provinceFromUrl = urlParams.get('province') || '';
             
-            // Build initial trials object dynamically from parameters
+            // Build empty trial object from parameters
             const buildEmptyTrial = () => {
                 const trial = {};
                 parameters.forEach(param => {
                     trial[param.id] = '';
                 });
                 return trial;
+            };
+            
+            // Build trials array with dynamic count
+            const buildTrials = (count) => {
+                return Array(count).fill().map(() => buildEmptyTrial());
             };
             
             return {
@@ -372,8 +391,9 @@
                 editMode: false,
                 editIndex: -1,
                 isOnline: navigator.onLine,
-                parameters: parameters,  // Expose to template
-                trials: Array(5).fill().map(() => buildEmptyTrial()),
+                parameters: parameters,
+                trialCount: DEFAULT_TRIAL_COUNT,
+                trials: buildTrials(DEFAULT_TRIAL_COUNT),
                 averages: {},
                 records: loadRecords(),
                 
@@ -381,6 +401,41 @@
                 get filteredRecords() {
                     if (!this.currentProvince) return this.records;
                     return this.records.filter(r => r.province === this.currentProvince);
+                },
+                
+                // Update trial count dynamically
+                updateTrialCount() {
+                    let newCount = parseInt(this.trialCount);
+                    
+                    // Validate range
+                    if (isNaN(newCount)) newCount = MIN_TRIALS;
+                    if (newCount < MIN_TRIALS) newCount = MIN_TRIALS;
+                    if (newCount > MAX_TRIALS) newCount = MAX_TRIALS;
+                    
+                    if (newCount === this.trials.length) return;
+                    
+                    const oldTrials = this.trials;
+                    const newTrials = [];
+                    
+                    for (let i = 0; i < newCount; i++) {
+                        if (i < oldTrials.length) {
+                            // Keep existing data for trials that still exist
+                            newTrials.push(oldTrials[i]);
+                        } else {
+                            // Add empty trials for new ones
+                            newTrials.push(buildEmptyTrial());
+                        }
+                    }
+                    
+                    this.trials = newTrials;
+                    this.trialCount = newCount;
+                    
+                    // Recalculate all averages
+                    this.parameters.forEach(param => {
+                        this.updateAverage(param.id);
+                    });
+                    
+                    this.saveDraft();
                 },
                 
                 // Update average for a parameter
@@ -410,6 +465,7 @@
                         const draft = {
                             treatmentNo: this.treatmentNo,
                             landrace: this.landrace,
+                            trialCount: this.trialCount,
                             trials: this.trials,
                             averages: this.averages
                         };
@@ -427,7 +483,10 @@
                     if (draft) {
                         this.treatmentNo = draft.treatmentNo || '';
                         this.landrace = draft.landrace || '';
-                        if (draft.trials) this.trials = draft.trials;
+                        if (draft.trialCount) {
+                            this.trialCount = draft.trialCount;
+                            this.trials = draft.trials || buildTrials(this.trialCount);
+                        }
                         if (draft.averages) this.averages = draft.averages;
                     }
                 },
@@ -449,6 +508,7 @@
                         province: this.currentProvince,
                         treatmentNo: this.treatmentNo,
                         landrace: this.landrace,
+                        trialCount: this.trialCount,
                         trials: JSON.parse(JSON.stringify(this.trials)),
                         averages: JSON.parse(JSON.stringify(this.averages)),
                         timestamp: Date.now()
@@ -479,6 +539,7 @@
                     this.currentProvince = record.province;
                     this.treatmentNo = record.treatmentNo;
                     this.landrace = record.landrace;
+                    this.trialCount = record.trialCount || 5;
                     this.trials = JSON.parse(JSON.stringify(record.trials));
                     this.averages = JSON.parse(JSON.stringify(record.averages));
                     
@@ -505,13 +566,14 @@
                 resetForm() {
                     this.treatmentNo = '';
                     this.landrace = '';
-                    this.trials = Array(5).fill().map(() => buildEmptyTrial());
+                    this.trialCount = DEFAULT_TRIAL_COUNT;
+                    this.trials = buildTrials(DEFAULT_TRIAL_COUNT);
                     this.averages = {};
                     
                     if (this.currentProvince) this.loadDraft();
                 },
                 
-                // Export to CSV
+                // Export to CSV (handles dynamic trial counts)
                 exportToCSV() {
                     if (this.records.length === 0) {
                         alert('No records to export.');
@@ -523,18 +585,27 @@
                     
                     params.forEach(p => {
                         headers.push(`${p.toUpperCase()} AVG`);
-                        for (let i = 1; i <= 5; i++) headers.push(`${p.toUpperCase()} T${i}`);
+                        // Use the record's trial count, not current setting
+                        // We'll handle this dynamically in the loop
+                        for (let i = 1; i <= 20; i++) { // Max 20 trials, will show empty if not present
+                            headers.push(`${p.toUpperCase()} T${i}`);
+                        }
                     });
                     
                     const csvRows = [headers.join(',')];
                     
                     this.records.forEach(record => {
                         const row = [record.province, record.treatmentNo, record.landrace];
+                        const trialCount = record.trialCount || 5;
                         
                         params.forEach(param => {
                             row.push(record.averages[param] || '');
-                            for (let i = 0; i < 5; i++) {
-                                row.push(record.trials[i][param] || '');
+                            for (let i = 0; i < 20; i++) { // Max 20 trials
+                                if (i < trialCount && record.trials[i]) {
+                                    row.push(record.trials[i][param] || '');
+                                } else {
+                                    row.push('');
+                                }
                             }
                         });
                         
@@ -584,7 +655,7 @@
         // Service Worker registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch((err) => {
+                navigator.serviceWorker.register('/sw.js').catch((err) => {
                     console.log('ServiceWorker registration failed: ', err);
                 });
             });
