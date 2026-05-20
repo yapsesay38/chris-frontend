@@ -14,6 +14,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
+    <script src="./offline.js"></script>
+    <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body>
@@ -37,15 +39,28 @@
             </div>
         </header>
 
+        <!-- TABLE SELECTOR & TRIAL CONFIGURATION -->
         <div class="config-bar" style="background: var(--bg-input); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+            <!-- Table/Dataset Selector -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <label style="font-weight: 600;">Data Table:</label>
+                <select x-model="currentTableId" @change="changeTable()" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;">
+                    <template x-for="table in availableTables" :key="table.id">
+                        <option :value="table.id" x-text="table.name"></option>
+                    </template>
+                </select>
+            </div>
+            
+            <!-- Trial Count -->
             <div style="display: flex; align-items: center; gap: 8px;">
                 <label style="font-weight: 600;">Number of Trials:</label>
                 <input type="number" x-model="trialCount" @change="updateTrialCount()" 
-                       min="1" max="100" style="width: 80px; padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;">
-                <span style="color: var(--text-muted); font-size: 12px;">(1-100 trials)</span>
+                       min="1" max="20" style="width: 80px; padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;">
+                <span style="color: var(--text-muted); font-size: 12px;">(1-20 trials)</span>
             </div>
+            
             <div style="color: var(--accent-success); font-size: 14px;">
-                 Currently: <span x-text="trialCount"></span> trial(s)
+                 <span x-text="currentTableName"></span> | ⚡ <span x-text="trialCount"></span> trial(s) | 📋 <span x-text="parameters.length"></span> parameters
             </div>
         </div>
 
@@ -53,6 +68,7 @@
             <form @submit.prevent="saveRecord()">
                 <input type="hidden" name="province" x-model="currentProvince">
                 <input type="hidden" name="edit-index" x-model="editIndex">
+                <input type="hidden" name="tableId" x-model="currentTableId">
                 
                 <div class="metadata-grid">
                     <div class="input-group">
@@ -62,7 +78,7 @@
                                placeholder="e.g. B1-T1">
                     </div>
                     <div class="input-group">
-                        <label for="landrace">Landrace Name</label>
+                        <label for="landrace">Landrace Name / Sample ID</label>
                         <input type="text" id="landrace" name="landrace" required 
                                x-model="landrace"
                                placeholder="e.g. Traditional Rice A">
@@ -70,10 +86,10 @@
                 </div>
 
                 <div class="section-divider">
-                    <span>Agromorphological Parameters (<span x-text="trialCount"></span> Trials)</span>
+                    <span x-text="`${currentTableName} Parameters (${trialCount} Trials)`"></span>
                 </div>
 
-                <!-- SINGLE LOOP - Preserves original parameter order -->
+                <!-- DYNAMIC PARAMETERS -->
                 <template x-for="param in parameters" :key="param.id">
                     <div class="form-group">
                         <label x-text="param.label"></label>
@@ -99,6 +115,17 @@
                                     <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
                                         <input type="number" 
                                                :step="param.step || '1'"
+                                               x-model="trials[idx][param.id]"
+                                               :placeholder="`T${idx + 1}`">
+                                    </div>
+                                </template>
+                            </template>
+                            
+                            <!-- For TEXT parameters -->
+                            <template x-if="param.type === 'text'">
+                                <template x-for="(trial, idx) in trials" :key="idx">
+                                    <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
+                                        <input type="text" 
                                                x-model="trials[idx][param.id]"
                                                :placeholder="`T${idx + 1}`">
                                     </div>
@@ -150,8 +177,9 @@
                     <thead>
                         <tr>
                             <th>Province</th>
+                            <th>Table</th>
                             <th>Block/Treatment</th>
-                            <th>Landrace</th>
+                            <th>Sample ID</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -159,6 +187,7 @@
                         <template x-for="(record, idx) in filteredRecords" :key="idx">
                             <tr>
                                 <td x-text="record.province"></td>
+                                <td x-text="record.tableId || 'agromorphological'"></td>
                                 <td x-text="record.treatmentNo"></td>
                                 <td><strong x-text="record.landrace"></strong></td>
                                 <td class="action-btns">
@@ -193,130 +222,238 @@
             const STORAGE_KEY = 'heirloom_rice_records';
             
             const DEFAULT_TRIAL_COUNT = 5;
-            const MAX_TRIALS = 100;
+            const MAX_TRIALS = 20;
             const MIN_TRIALS = 1;
             
-            // PARAMETERS IN ORIGINAL ORDER - mixed types
-            const parameters = [
-                // Select parameters
-                { id: 'plantVigor', label: 'Plant Vigor and Leaf Characteristics', type: 'select', options: { '1': 'Very Vigorous', '2': 'Vigorous', '3': 'Normal', '4': 'Weak', '5': 'Very Weak' } },
-                { id: 'basalLeafSheet', label: 'Basal Leaf Sheet', type: 'select', options: { '1': 'Green', '2': 'Purple Lines', '3': 'Light Purple', '4': 'Purple' } },
-                { id: 'leafSheathAnthocyanin', label: 'Leaf Sheath Anthocyanin Coloration', type: 'select', options: { '0': 'Absent', '3': 'Weak', '5': 'Medium', '7': 'Strong' } },
-                { id: 'bladeAnthocyanin', label: 'Blade Anthocyanin Coloration', type: 'select', options: { '1': 'Tips Only', '2': 'On Margins Only', '3': 'In Blotches', '4': 'Even (Uniform Purple)' } },
-                { id: 'bladeIntensityGreen', label: 'Blade Intensity of Green Color', type: 'select', options: { '0': 'No Green Color', '3': 'Light Green', '5': 'Medium Green', '7': 'Dark Green' } },
-                { id: 'bladePubescence', label: 'Blade Pubescence', type: 'select', options: { '1': 'Glabrous', '2': 'Intermediate', '3': 'Pubescent' } },
-                { id: 'auricleColor', label: 'Auricle Color', type: 'select', options: { '0': 'Absent', '1': 'Whitish', '2': 'Yellowish Green', '3': 'Purple', '4': 'Light Purple', '5': 'Purple Lines' } },
-                { id: 'collarColor', label: 'Collar Color', type: 'select', options: { '0': 'Absent', '1': 'Green', '2': 'Light Green', '3': 'Purple', '4': 'Purple Lines' } },
-                { id: 'liguleShape', label: 'Ligule Shape', type: 'select', options: { '0': 'Absent', '1': 'Truncate', '2': 'Acute to Acuminate', '3': '2-Cleft' } },
-                { id: 'liguleColor', label: 'Ligule Color', type: 'select', options: { '0': 'Absent', '1': 'Whitish', '2': 'Yellowish Green', '3': 'Purple', '4': 'Light Purple', '5': 'Purple Lines' } },
-                { id: 'liguleLength', label: 'Ligule Length (mm)', type: 'number', step: '0.1' },
-                { id: 'flagLeafAttitude', label: 'Flag Leaf Attitude', type: 'select', options: { '1': 'Erect', '3': 'Intermediate', '5': 'Horizontal', '7': 'Descending' } },
-                { id: 'leafLength', label: 'Flag Leaf and Penultimate Leaf Length (cm)', type: 'number', step: '0.1' },
-                { id: 'leafWidth', label: 'Flag Leaf and Penultimate Leaf Width (cm)', type: 'number', step: '0.1' },
-                { id: 'culmHabitAngle', label: 'Culm Habit Angle', type: 'select', options: { '1': 'Erect (<15°)', '3': 'Semi-erect (20°)', '5': 'Open (40°)', '7': 'Spreading (>60°-80°)', '9': 'Procumbent' } },
-                { id: 'tillerCount', label: 'Tiller Count', type: 'number', step: '1' }
+            const availableTables = [
+                {
+                    id: 'agromorphological',
+                    name: '🌾 Agromorphological Parameters',
+                    description: 'Standard rice plant characteristics',
+                    parameters: [
+                        { id: 'plantVigor', label: 'Plant Vigor and Leaf Characteristics', type: 'select', options: { '1': 'Very Vigorous', '2': 'Vigorous', '3': 'Normal', '4': 'Weak', '5': 'Very Weak' } },
+                        { id: 'basalLeafSheet', label: 'Basal Leaf Sheet', type: 'select', options: { '1': 'Green', '2': 'Purple Lines', '3': 'Light Purple', '4': 'Purple' } },
+                        { id: 'leafSheathAnthocyanin', label: 'Leaf Sheath Anthocyanin Coloration', type: 'select', options: { '0': 'Absent', '3': 'Weak', '5': 'Medium', '7': 'Strong' } },
+                        { id: 'bladeAnthocyanin', label: 'Blade Anthocyanin Coloration', type: 'select', options: { '1': 'Tips Only', '2': 'On Margins Only', '3': 'In Blotches', '4': 'Even (Uniform Purple)' } },
+                        { id: 'bladeIntensityGreen', label: 'Blade Intensity of Green Color', type: 'select', options: { '0': 'No Green Color', '3': 'Light Green', '5': 'Medium Green', '7': 'Dark Green' } },
+                        { id: 'bladePubescence', label: 'Blade Pubescence', type: 'select', options: { '1': 'Glabrous', '2': 'Intermediate', '3': 'Pubescent' } },
+                        { id: 'auricleColor', label: 'Auricle Color', type: 'select', options: { '0': 'Absent', '1': 'Whitish', '2': 'Yellowish Green', '3': 'Purple', '4': 'Light Purple', '5': 'Purple Lines' } },
+                        { id: 'collarColor', label: 'Collar Color', type: 'select', options: { '0': 'Absent', '1': 'Green', '2': 'Light Green', '3': 'Purple', '4': 'Purple Lines' } },
+                        { id: 'liguleShape', label: 'Ligule Shape', type: 'select', options: { '0': 'Absent', '1': 'Truncate', '2': 'Acute to Acuminate', '3': '2-Cleft' } },
+                        { id: 'liguleColor', label: 'Ligule Color', type: 'select', options: { '0': 'Absent', '1': 'Whitish', '2': 'Yellowish Green', '3': 'Purple', '4': 'Light Purple', '5': 'Purple Lines' } },
+                        { id: 'liguleLength', label: 'Ligule Length (mm)', type: 'number', step: '0.1' },
+                        { id: 'flagLeafAttitude', label: 'Flag Leaf Attitude', type: 'select', options: { '1': 'Erect', '3': 'Intermediate', '5': 'Horizontal', '7': 'Descending' } },
+                        { id: 'leafLength', label: 'Flag Leaf Length (cm)', type: 'number', step: '0.1' },
+                        { id: 'leafWidth', label: 'Flag Leaf Width (cm)', type: 'number', step: '0.1' },
+                        { id: 'culmHabitAngle', label: 'Culm Habit Angle', type: 'select', options: { '1': 'Erect (<15°)', '3': 'Semi-erect (20°)', '5': 'Open (40°)', '7': 'Spreading (>60°-80°)', '9': 'Procumbent' } },
+                        { id: 'tillerCount', label: 'Tiller Count', type: 'number', step: '1' }
+                    ]
+                },
+                {
+                    id: 'grainQuality',
+                    name: '🍚 Grain Quality Parameters',
+                    description: 'Rice grain characteristics',
+                    parameters: [
+                        { id: 'grainLength', label: 'Grain Length (mm)', type: 'number', step: '0.1' },
+                        { id: 'grainWidth', label: 'Grain Width (mm)', type: 'number', step: '0.1' },
+                        { id: 'grainShape', label: 'Grain Shape', type: 'select', options: { '1': 'Slender', '2': 'Medium', '3': 'Bold', '4': 'Round' } },
+                        { id: 'grainColor', label: 'Grain Color', type: 'select', options: { '1': 'White', '2': 'Brown', '3': 'Red', '4': 'Black', '5': 'Purple' } },
+                        { id: 'chalkiness', label: 'Chalkiness (%)', type: 'number', step: '5' },
+                        { id: 'amyloseContent', label: 'Amylose Content (%)', type: 'number', step: '1' },
+                        { id: 'aroma', label: 'Aroma Intensity', type: 'select', options: { '0': 'None', '1': 'Mild', '2': 'Moderate', '3': 'Strong' } },
+                        { id: 'gelConsistency', label: 'Gel Consistency (mm)', type: 'number', step: '1' }
+                    ]
+                },
+                {
+                    id: 'pestDisease',
+                    name: '🐛 Pest & Disease Resistance',
+                    description: 'Resistance scoring',
+                    parameters: [
+                        { id: 'pestResistance', label: 'Pest Resistance Score', type: 'select', options: { '1': 'Highly Resistant', '2': 'Resistant', '3': 'Moderate', '4': 'Susceptible', '5': 'Highly Susceptible' } },
+                        { id: 'diseaseResistance', label: 'Disease Resistance Score', type: 'select', options: { '1': 'Highly Resistant', '2': 'Resistant', '3': 'Moderate', '4': 'Susceptible', '5': 'Highly Susceptible' } },
+                        { id: 'pestObserved', label: 'Pest Observed', type: 'text' },
+                        { id: 'diseaseObserved', label: 'Disease Observed', type: 'text' },
+                        { id: 'severity', label: 'Severity Score (1-10)', type: 'number', step: '1' },
+                        { id: 'controlMethod', label: 'Control Method Used', type: 'text' }
+                    ]
+                },
+                {
+                    id: 'soilAnalysis',
+                    name: '🌱 Soil Analysis',
+                    description: 'Soil chemical properties',
+                    parameters: [
+                        { id: 'soilPh', label: 'Soil pH', type: 'number', step: '0.1' },
+                        { id: 'organicMatter', label: 'Organic Matter (%)', type: 'number', step: '0.1' },
+                        { id: 'nitrogen', label: 'Total Nitrogen (g/kg)', type: 'number', step: '0.1' },
+                        { id: 'phosphorus', label: 'Available Phosphorus (ppm)', type: 'number', step: '1' },
+                        { id: 'potassium', label: 'Exchangeable Potassium (cmol/kg)', type: 'number', step: '0.1' },
+                        { id: 'soilTexture', label: 'Soil Texture', type: 'select', options: { '1': 'Clay', '2': 'Silty Clay', '3': 'Silty Clay Loam', '4': 'Clay Loam', '5': 'Silt Loam', '6': 'Loam', '7': 'Sandy Loam' } }
+                    ]
+                },
+                {
+                    id: 'yieldComponents',
+                    name: '📊 Yield Components',
+                    description: 'Yield and productivity parameters',
+                    parameters: [
+                        { id: 'panicleLength', label: 'Panicle Length (cm)', type: 'number', step: '0.1' },
+                        { id: 'grainsPerPanicle', label: 'Number of Grains per Panicle', type: 'number', step: '1' },
+                        { id: 'filledGrains', label: 'Filled Grains (%)', type: 'number', step: '1' },
+                        { id: 'thousandGrainWeight', label: '1000-Grain Weight (g)', type: 'number', step: '0.1' },
+                        { id: 'yieldPerHill', label: 'Yield per Hill (g)', type: 'number', step: '1' },
+                        { id: 'harvestIndex', label: 'Harvest Index', type: 'number', step: '0.01' }
+                    ]
+                }
             ];
             
+            // Helper functions
             const loadRecords = () => JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
             const saveRecords = (records) => localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
             
+            // Get province from URL
             const urlParams = new URLSearchParams(window.location.search);
             const provinceFromUrl = urlParams.get('province') || '';
             
-            const buildEmptyTrial = () => {
+            // Build empty trial object from parameters
+            const buildEmptyTrial = (params) => {
                 const trial = {};
-                parameters.forEach(param => {
+                params.forEach(param => {
                     trial[param.id] = '';
                 });
                 return trial;
             };
             
-            const buildTrials = (count) => {
-                return Array(count).fill().map(() => buildEmptyTrial());
+            // Build trials array with dynamic count
+            const buildTrials = (count, params) => {
+                return Array(count).fill().map(() => buildEmptyTrial(params));
             };
             
             return {
+                // State
                 currentProvince: provinceFromUrl,
                 treatmentNo: '',
                 landrace: '',
                 editMode: false,
                 editIndex: -1,
                 isOnline: navigator.onLine,
-                parameters: parameters,
+                availableTables: availableTables,
+                currentTableId: 'agromorphological',
+                currentTableName: '🌾 Agromorphological Parameters',
+                currentParameters: [],
                 trialCount: DEFAULT_TRIAL_COUNT,
-                trials: buildTrials(DEFAULT_TRIAL_COUNT),
+                trials: [],
                 records: loadRecords(),
                 
+                // Computed: Get current parameters
+                get parameters() {
+                    return this.currentParameters;
+                },
+                
+                // Computed: Filter records by current province
                 get filteredRecords() {
                     if (!this.currentProvince) return this.records;
                     return this.records.filter(r => r.province === this.currentProvince);
                 },
                 
+                // Change table/dataset
+                changeTable() {
+                    const selectedTable = this.availableTables.find(t => t.id === this.currentTableId);
+                    if (selectedTable) {
+                        this.currentTableName = selectedTable.name;
+                        this.currentParameters = JSON.parse(JSON.stringify(selectedTable.parameters));
+                        
+                        // Reset trials with new parameter structure
+                        this.trials = buildTrials(this.trialCount, this.currentParameters);
+                        
+                        // Clear averages and drafts for new table
+                        this.saveDraft();
+                    }
+                },
+                
+                // Update trial count dynamically
                 updateTrialCount() {
                     let newCount = parseInt(this.trialCount);
                     if (isNaN(newCount)) newCount = MIN_TRIALS;
                     if (newCount < MIN_TRIALS) newCount = MIN_TRIALS;
                     if (newCount > MAX_TRIALS) newCount = MAX_TRIALS;
+                    
                     if (newCount === this.trials.length) return;
                     
                     const oldTrials = this.trials;
                     const newTrials = [];
+                    
                     for (let i = 0; i < newCount; i++) {
                         if (i < oldTrials.length) {
                             newTrials.push(oldTrials[i]);
                         } else {
-                            newTrials.push(buildEmptyTrial());
+                            newTrials.push(buildEmptyTrial(this.currentParameters));
                         }
                     }
+                    
                     this.trials = newTrials;
                     this.trialCount = newCount;
                     this.saveDraft();
                 },
                 
+                // Save draft to localStorage
                 saveDraft() {
-                    const draftKey = `rice_draft_${this.currentProvince || 'unknown'}`;
-                    const hasData = this.trials.some(trial => Object.values(trial).some(v => v !== '' && v !== null)) || this.treatmentNo || this.landrace;
+                    const draftKey = `rice_draft_${this.currentProvince || 'unknown'}_${this.currentTableId}`;
+                    const hasData = this.trials.some(trial => 
+                        Object.values(trial).some(v => v !== '' && v !== null)
+                    ) || this.treatmentNo || this.landrace;
+                    
                     if (hasData) {
-                        localStorage.setItem(draftKey, JSON.stringify({
+                        const draft = {
                             treatmentNo: this.treatmentNo,
                             landrace: this.landrace,
                             trialCount: this.trialCount,
+                            tableId: this.currentTableId,
                             trials: this.trials
-                        }));
+                        };
+                        localStorage.setItem(draftKey, JSON.stringify(draft));
                     }
                 },
                 
+                // Load draft from localStorage
                 loadDraft() {
                     if (this.editMode) return;
-                    const draftKey = `rice_draft_${this.currentProvince || 'unknown'}`;
+                    
+                    const draftKey = `rice_draft_${this.currentProvince || 'unknown'}_${this.currentTableId}`;
                     const draft = JSON.parse(localStorage.getItem(draftKey));
+                    
                     if (draft) {
                         this.treatmentNo = draft.treatmentNo || '';
                         this.landrace = draft.landrace || '';
                         if (draft.trialCount) {
                             this.trialCount = draft.trialCount;
-                            this.trials = draft.trials || buildTrials(this.trialCount);
+                            this.trials = draft.trials || buildTrials(this.trialCount, this.currentParameters);
                         }
                     }
                 },
                 
+                // Clear draft
                 clearDraft() {
-                    localStorage.removeItem(`rice_draft_${this.currentProvince || 'unknown'}`);
+                    const draftKey = `rice_draft_${this.currentProvince || 'unknown'}_${this.currentTableId}`;
+                    localStorage.removeItem(draftKey);
                 },
                 
+                // Save record
                 saveRecord() {
                     if (!this.treatmentNo || !this.landrace) {
                         alert('Please fill in Block/Treatment No. and Landrace Name');
                         return;
                     }
+                    
                     const record = {
                         province: this.currentProvince,
+                        tableId: this.currentTableId,
+                        tableName: this.currentTableName,
                         treatmentNo: this.treatmentNo,
                         landrace: this.landrace,
                         trialCount: this.trialCount,
                         trials: JSON.parse(JSON.stringify(this.trials)),
                         timestamp: Date.now()
                     };
+                    
                     if (this.editMode && this.editIndex >= 0) {
                         this.records[this.editIndex] = record;
                         alert('Record updated successfully!');
@@ -326,13 +463,22 @@
                         alert('Data saved successfully!');
                         this.resetForm();
                     }
+                    
                     saveRecords(this.records);
                     this.clearDraft();
                     this.records = loadRecords();
                 },
                 
+                // Edit record
                 editRecord(index) {
                     const record = this.records[index];
+                    
+                    // First, switch to the correct table
+                    if (record.tableId !== this.currentTableId) {
+                        this.currentTableId = record.tableId;
+                        this.changeTable();
+                    }
+                    
                     this.editMode = true;
                     this.editIndex = index;
                     this.currentProvince = record.province;
@@ -340,9 +486,11 @@
                     this.landrace = record.landrace;
                     this.trialCount = record.trialCount || DEFAULT_TRIAL_COUNT;
                     this.trials = JSON.parse(JSON.stringify(record.trials));
+                    
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 },
                 
+                // Delete record
                 deleteRecord(index) {
                     if (confirm('Are you sure you want to delete this record?')) {
                         this.records.splice(index, 1);
@@ -351,82 +499,106 @@
                     }
                 },
                 
+                // Cancel edit
                 cancelEdit() {
                     this.editMode = false;
                     this.editIndex = -1;
                     this.resetForm();
                 },
                 
+                // Reset form
                 resetForm() {
                     this.treatmentNo = '';
                     this.landrace = '';
                     this.trialCount = DEFAULT_TRIAL_COUNT;
-                    this.trials = buildTrials(DEFAULT_TRIAL_COUNT);
+                    this.trials = buildTrials(DEFAULT_TRIAL_COUNT, this.currentParameters);
                     if (this.currentProvince) this.loadDraft();
                 },
                 
+                // Export to CSV
                 exportToCSV() {
                     if (this.records.length === 0) {
                         alert('No records to export.');
                         return;
                     }
-                    const headers = ['Province', 'Block/Treatment No.', 'Landrace Name'];
-                    const params = this.parameters.map(p => p.id);
-                    params.forEach(param => {
-                        for (let i = 1; i <= 20; i++) {
-                            headers.push(`${param.toUpperCase()} T${i}`);
-                        }
-                    });
-                    const csvRows = [headers.join(',')];
+                    
+                    // Build headers dynamically based on all tables
+                    const headers = ['Province', 'Table', 'Block/Treatment No.', 'Sample ID'];
+                    
+                    // Get unique parameters across all records? Or export each record with its own structure
+                    // For simplicity, we'll export each record with its own parameters
+                    const csvRows = [];
+                    
                     this.records.forEach(record => {
-                        const row = [record.province, record.treatmentNo, record.landrace];
-                        const trialCount = record.trialCount || DEFAULT_TRIAL_COUNT;
+                        const params = this.availableTables.find(t => t.id === record.tableId)?.parameters || [];
+                        const recordHeaders = [...headers];
                         params.forEach(param => {
-                            for (let i = 0; i < 20; i++) {
-                                if (i < trialCount && record.trials[i]) {
-                                    let value = record.trials[i][param] || '';
-                                    const paramConfig = this.parameters.find(p => p.id === param);
-                                    if (paramConfig?.type === 'select' && value && paramConfig.options[value]) {
-                                        value = `${value}-${paramConfig.options[value]}`;
-                                    }
-                                    row.push(value);
-                                } else {
-                                    row.push('');
+                            for (let i = 1; i <= (record.trialCount || 5); i++) {
+                                recordHeaders.push(`${param.label} T${i}`);
+                            }
+                        });
+                        
+                        if (csvRows.length === 0) {
+                            csvRows.push(recordHeaders.join(','));
+                        }
+                        
+                        const row = [record.province, record.tableName || record.tableId, record.treatmentNo, record.landrace];
+                        params.forEach(param => {
+                            for (let i = 0; i < (record.trialCount || 5); i++) {
+                                let value = record.trials[i]?.[param.id] || '';
+                                if (param.type === 'select' && value && param.options[value]) {
+                                    value = `${value}-${param.options[value]}`;
                                 }
+                                row.push(value);
                             }
                         });
                         csvRows.push(row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','));
                     });
+                    
                     const csvContent = "\uFEFF" + csvRows.join('\n');
                     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = `heirloom_rice_records_${new Date().toISOString().slice(0,10)}.csv`;
+                    link.download = `rice_data_${new Date().toISOString().slice(0,10)}.csv`;
                     link.click();
                     URL.revokeObjectURL(url);
                 },
                 
+                // Update offline banner
                 updateOfflineBanner(isOffline) {
                     const banner = document.getElementById('offline-banner');
                     if (banner) banner.style.display = isOffline ? 'block' : 'none';
                 },
                 
+                // Initialize
                 init() {
+                    // Set up event listeners
                     window.addEventListener('online', () => { this.isOnline = true; this.updateOfflineBanner(false); });
                     window.addEventListener('offline', () => { this.isOnline = false; this.updateOfflineBanner(true); });
+                    
+                    // Initialize with default table
+                    this.changeTable();
+                    
+                    // Load draft
                     this.loadDraft();
-                    if (this.currentProvince) document.title = `${this.currentProvince} - CAR Rice Collection`;
+                    
+                    if (this.currentProvince) {
+                        document.title = `${this.currentProvince} - CAR Rice Collection`;
+                    }
+                    
                     this.updateOfflineBanner(!navigator.onLine);
                 }
             };
         }
         
+        // Immediate offline check
         (function() {
             const banner = document.getElementById('offline-banner');
             if (banner && !navigator.onLine) banner.style.display = 'block';
         })();
         
+        // Service Worker registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch((err) => console.log('SW failed:', err)));
         }
