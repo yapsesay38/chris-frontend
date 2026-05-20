@@ -127,6 +127,12 @@ header p {
     line-height: 1.6;
 }
 
+footer { 
+   margin-top: 50px;
+   display: grid;
+   grid-template-columns: [first] 300px;
+}
+
 /* Individual Province Card Accents */
 .block-abra {
     background: linear-gradient(145deg, #1e1b4b, #4338ca);
