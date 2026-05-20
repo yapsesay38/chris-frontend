@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Cordillera Administrative Region – Philippines</title>
+    <meta name="description"
+        content="Explore the six provinces and one city of the Cordillera Administrative Region (CAR) in the Philippines: Abra, Apayao, Benguet, Ifugao, Kalinga, Mountain Province, and Baguio City." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#10b981" />
+    <link rel="apple-touch-icon" href="icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <style>
+      footer { 
+        margin-top: 50px;
+        display: grid;
+        grid-template-columns: [first] 300px;
+      }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Cordillera Administrative Region</h1>
+            <p>The highlands of the Philippines</p>
+        </header>
+
+        <section class="provinces-container" aria-label="Provinces of CAR">
+
+            <!-- Abra -->
+            <a class='province-link' href='/inputApp/form.html?province=Abra'>
+                <article class="province-card block-abra" id="card-abra">
+                    <div class="card-content">
+                        <h2>Abra</h2>
+                        <p>A landlocked province known for its weaving traditions, the Abra River, and the historic
+                            capital of Bangued. It is celebrated for its vibrant Ilocano-Tingguian heritage and lush
+                            river valleys.</p>
+                    </div>
+                </article>
+            </a>
+
+            <!-- Apayao -->
+            <a class='province-link' href='/inputApp/form.html?province=Apayao'>
+                <article class="province-card block-apayao" id="card-apayao">
+                    <div class="card-content">
+                        <h2>Apayao</h2>
+                        <p>Home to dense rainforests, the Apayao River, and the indigenous Isneg people. A frontier
+                            province of pristine nature, untouched waterfalls, and rich biodiversity.</p>
+                    </div>
+                </article>
+            </a>
+
+            <!-- Benguet -->
+            <a class='province-link' href='/inputApp/form.html?province=Benguet'>
+                <article class="province-card block-benguet" id="card-benguet">
+                    <div class="card-content">
+                        <h2>Benguet</h2>
+                        <p>Known as the "Salad Bowl of the Philippines," Benguet is rich in minerals, cool-climate
+                            vegetables, and the iconic strawberry farms of La Trinidad in the highlands.</p>
+                    </div>
+                </article>
+            </a>
+
+            <!-- Ifugao -->
+            <a class='province-link' href='/inputApp/form.html?province=Ifugao'>
+                <article class="province-card block-ifugao" id="card-ifugao">
+                    <div class="card-content">
+                        <h2>Ifugao</h2>
+                        <p>Home to the 2,000-year-old Banaue Rice Terraces — a UNESCO World Heritage Site carved into
+                            the mountains by the Ifugao people, reflecting ancient engineering and culture.</p>
+                    </div>
+                </article>
+            </a>
+
+            <!-- Kalinga -->
+            <a class='province-link' href='/inputApp/form.html?province=Kalinga'>
+                <article class="province-card block-kalinga" id="card-kalinga">
+                    <div class="card-content">
+                        <h2>Kalinga</h2>
+                        <p>A province of warriors and weavers, famous for the traditional Kalinga tattoo art (batok) and
+                            the Chico River cutting through its dramatic, rugged mountain terrain.</p>
+                    </div>
+                </article>
+            </a>
+
+            <!-- Mountain Province -->
+            <a class='province-link' href='/inputApp/form.html?province=Mountain+Province'>
+                <article class="province-card block-mountain" id="card-mountain">
+                    <div class="card-content">
+                        <h2>Mountain Province</h2>
+                        <p>Where the ancient Sagada hanging coffins cling to limestone cliffs. A land of caves, misty
+                            peaks, and the living Kankana-ey culture, drawing adventurers from across the world.</p>
+                    </div>
+                </article>
+            </a>
+
+
+        </section>
+        <footer>
+          <a class='btn btn-secondary' href='/'>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              Back to CHRIS
+          </a>
+        </footer>
+    </div>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then((registration) => {
+                    console.log('ServiceWorker registration successful');
+                }, (err) => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
