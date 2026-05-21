@@ -63,7 +63,7 @@
             </div>
             
             <div style="color: var(--accent-success); font-size: 14px;">
-                📊 <span x-text="currentTableName"></span> | ⚡ <span x-text="trialCount"></span> trials | 📋 <span x-text="parameters.length"></span> parameters
+                📊 <span x-text="currentTableName"></span> | 📏 <span x-text="trialCount"></span> trials | 📋 <span x-text="parameters.length"></span> parameters
             </div>
         </div>
 
@@ -92,47 +92,71 @@
                     <span x-text="`${currentTableName} (${trialCount} Trials per Sample)`"></span>
                 </div>
 
-                <!-- Dynamic Parameters -->
-                <template x-for="param in parameters" :key="param.id">
-                    <div class="form-group">
-                        <label x-text="param.label"></label>
-                        <div class="trial-row" :style="`grid-template-columns: repeat(${trialCount}, 1fr);`">
-                            <template x-if="param.type === 'select'">
-                                <template x-for="(trial, idx) in trials" :key="idx">
-                                    <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
-                                        <select x-model="trials[idx][param.id]">
-                                            <option value="">Select...</option>
-                                            <template x-for="(label, value) in param.options">
-                                                <option :value="value" x-text="`${value}-${label}`"></option>
-                                            </template>
-                                        </select>
-                                    </div>
-                                </template>
-                            </template>
-                            
-                            <template x-if="param.type === 'number'">
-                                <template x-for="(trial, idx) in trials" :key="idx">
-                                    <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
-                                        <input type="number" 
-                                               :step="param.step || '1'"
-                                               x-model="trials[idx][param.id]"
-                                               :placeholder="`T${idx + 1}`">
-                                    </div>
-                                </template>
-                            </template>
-                            
-                            <template x-if="param.type === 'text'">
-                                <template x-for="(trial, idx) in trials" :key="idx">
-                                    <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
-                                        <input type="text" 
-                                               x-model="trials[idx][param.id]"
-                                               :placeholder="`T${idx + 1}`">
-                                    </div>
-                                </template>
-                            </template>
-                        </div>
-                    </div>
-                </template>
+          <!-- Dynamic Parameters with per-trial conditional visibility -->
+          <template x-for="param in parameters" :key="param.id">
+              <div class="form-group">
+                  <label x-text="param.label"></label>
+                  <div class="trial-row" :style="`grid-template-columns: repeat(${trialCount}, 1fr);`">
+            
+                      <!-- SELECT parameters - with per-trial visibility -->
+                      <template x-if="param.type === 'select'">
+                          <template x-for="(trial, idx) in trials" :key="idx">
+                              <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
+                                  <!-- Show dropdown only if condition is met for this trial -->
+                                  <select x-show="isParamVisibleForTrial(param, idx)"
+                                          x-model="trials[idx][param.id]"
+                                          @change="onControlChange(param.id, idx)">
+                                      <option value="">Select...</option>
+                                      <template x-for="(label, value) in param.options">
+                                          <option :value="value" x-text="`${value}-${label}`"></option>
+                                      </template>
+                                  </select>
+                                  <!-- Show disabled placeholder when condition not met -->
+                                  <div x-show="!isParamVisibleForTrial(param, idx)"
+                                       style="color: var(--text-muted); text-align: center; padding: 8px; background: var(--bg-input); border-radius: 6px; font-size: 12px;">
+                                      ⚡ Not applicable
+                                  </div>
+                              </div>
+                          </template>
+                      </template>
+            
+                      <!-- NUMBER parameters - with per-trial visibility -->
+                      <template x-if="param.type === 'number'">
+                          <template x-for="(trial, idx) in trials" :key="idx">
+                              <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
+                                  <input x-show="isParamVisibleForTrial(param, idx)"
+                                         type="number" 
+                                         :step="param.step || '1'"
+                                         :min="param.min || 0"
+                                         x-model="trials[idx][param.id]"
+                                         @input="updateTrialValue(param.id, idx)"
+                                         :placeholder="`T${idx + 1}`">
+                                  <div x-show="!isParamVisibleForTrial(param, idx)"
+                                       style="color: var(--text-muted); text-align: center; padding: 8px; background: var(--bg-input); border-radius: 6px; font-size: 12px;">
+                                      ⚡ Not applicable
+                                  </div>
+                              </div>
+                          </template>
+                      </template>
+            
+                      <!-- TEXT parameters - with per-trial visibility -->
+                      <template x-if="param.type === 'text'">
+                          <template x-for="(trial, idx) in trials" :key="idx">
+                              <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
+                                  <input x-show="isParamVisibleForTrial(param, idx)"
+                                         type="text" 
+                                         x-model="trials[idx][param.id]"
+                                         :placeholder="`T${idx + 1}`">
+                                  <div x-show="!isParamVisibleForTrial(param, idx)"
+                                       style="color: var(--text-muted); text-align: center; padding: 8px; background: var(--bg-input); border-radius: 6px; font-size: 12px;">
+                                      ⚡ Not applicable
+                                  </div>
+                              </div>
+                          </template>
+                      </template>
+                  </div>
+              </div>
+          </template>
 
                 <div class="button-group">
                     <a class='btn btn-secondary' href='index.html'>

@@ -1,4 +1,4 @@
-// js/app.js - Main application logic
+// js/app.js - Main application logic (UPDATED)
 function riceDataApp() {
     const STORAGE_KEY = 'heirloom_rice_records';
     const DEFAULT_TRIAL_COUNT = 5;
@@ -30,14 +30,29 @@ function riceDataApp() {
         editIndex: -1,
         isOnline: navigator.onLine,
         availableTables: window.availableTables,
-        currentTableId: 'agromorphological',
-        currentTableName: '🌾 Agromorphological Parameters',
+        currentTableId: 'plantvigorandleaf',
+        currentTableName: '🌾 Plant Vigor and Leaf Characters',
         currentParameters: [],
         trialCount: DEFAULT_TRIAL_COUNT,
         trials: [],
         records: loadRecords(),
         
-        get parameters() { return this.currentParameters; },
+        get parameters() { 
+            // Return ALL parameters - no filtering
+            // We'll handle visibility in the template instead
+            return this.currentParameters;
+        },
+        
+        // NEW: Check if a parameter should be visible for a specific trial
+        isParamVisibleForTrial(param, trialIndex) {
+            if (!param.dependsOn) return true;
+            
+            const controlParam = param.dependsOn.param;
+            const requiredValue = param.dependsOn.value;
+            const controlValue = this.trials[trialIndex]?.[controlParam];
+            
+            return controlValue === requiredValue;
+        },
         
         get filteredRecords() {
             if (!this.currentProvince) return this.records;
@@ -52,6 +67,37 @@ function riceDataApp() {
                 this.trials = buildTrials(this.trialCount, this.currentParameters);
                 this.saveDraft();
             }
+        },
+        
+        // Handle when a controlling parameter changes
+        onControlChange(controlParamId, trialIndex) {
+            // Find parameters that depend on this control
+            const dependentParams = this.currentParameters.filter(p => 
+                p.dependsOn && p.dependsOn.param === controlParamId
+            );
+            
+            if (dependentParams.length === 0) return;
+            
+            // For dependent parameters, clear their values if the condition is no longer met
+            const controlValue = this.trials[trialIndex]?.[controlParamId];
+            dependentParams.forEach(depParam => {
+                if (controlValue !== depParam.dependsOn.value) {
+                    // Clear the dependent parameter value (keeps the field in data structure, but empty)
+                    this.trials[trialIndex][depParam.id] = '';
+                }
+            });
+            
+            this.saveDraft();
+        },
+        
+        updateTrialValue(paramId, trialIndex) {
+            // Get the value and ensure it's not negative
+            let value = this.trials[trialIndex][paramId];
+            if (value !== '' && !isNaN(value) && parseFloat(value) < 0) {
+                this.trials[trialIndex][paramId] = 0;
+            }
+            
+            this.saveDraft();
         },
         
         updateTrialCount() {
