@@ -14,16 +14,27 @@
     <link rel="apple-touch-icon" href="icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <script src="./offline.js"></script>
-    <!-- Alpine.js -->
+    
+    <script defer src="js/provinces.js"></script>
+    <script defer src="js/offline.js"></script>
+    <script defer src="js/sw-register.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body>
-    <div class="container" x-data="provincesApp()" x-init="init()">
+    <!-- Offline banner - standalone component -->
+    <div x-data="offlineBanner()" 
+         x-show="isOffline"
+         x-init="init()"
+         style="display: none; background: #f85149; color: white; text-align: center; padding: 12px; font-size: 14px; position: sticky; top: 0; z-index: 10000; font-weight: 500; cursor: pointer;"
+         @click="hideBanner()">
+         📡 You are offline. Data will be saved locally.
+    </div>
+    <div class="container" x-data="provincesApp()">
         <header>
             <h1>Cordillera Administrative Region</h1>
             <p>The highlands of the Philippines</p>
         </header>
+        
         <section class="provinces-container" aria-label="Provinces of CAR">
             <template x-for="province in provinces">
                 <a class="province-link" :href="`form.html?province=${province.name}`">
@@ -36,65 +47,16 @@
                 </a>
             </template>
         </section>
-        <!-- Offline indicator -->
-        <div id="offline-banner" style="display: none; background: #f85149; color: white; text-align: center; padding: 12px; font-size: 14px; position: sticky; top: 0; z-index: 10000;">
-            📡 You are offline. Data will be saved locally.
-        </div>
+        
         <footer>
-          <a class='btn btn-secondary' href='/'>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="19" y1="12" x2="5" y2="12"></line>
-                <polyline points="12 19 5 12 12 5"></polyline>
-              </svg>
-              Back to CHRIS
-          </a>
+            <a class='btn btn-secondary' href='/'>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to CHRIS
+            </a>
         </footer>
     </div>
-    <script>
-        function provincesApp() {
-            return {
-                provinces: [
-                    { name: 'Abra', desc: 'A landlocked province known for its weaving traditions, the Abra River, and the historic capital of Bangued.  It is celebrated for its vibrant Ilocano-Tingguian heritage and lush river valleys.', color: 'abra' },
-                    { name: 'Apayao', desc: 'Home to dense rainforests, the Apayao River, and the indigenous Isneg people. A frontier province of pristine nature, untouched waterfalls, and rich biodiversity.', color: 'apayao' },
-                    { name: 'Benguet', desc: 'Known as the "Salad Bowl of the Philippines," Benguet is rich in minerals and cool-climate vegetables, and the iconic strawberry farms of La Trinidad in the highlands.', color: 'benguet' },
-                    { name: 'Ifugao', desc: 'Home to the 2,000-year-old Banaue Rice Terraces — a UNESCO World Heritage Site carved into the mountains by the Ifugao people, reflecting ancient engineering and culture.', color: 'ifugao' },
-                    { name: 'Kalinga', desc: 'A province of warriors and weavers, famous for traditional Kalinga tattoo art (batok) and the Chico River cutting through its dramatic, rugged mountain terrain.', color: 'kalinga' },
-                    { name: 'Mountain Province', desc: 'Where the ancient Sagada hanging coffins cling to limestone cliffs. A land of caves, misty peaks, and the living Kankana-ey culture, drawing adventurers from across the world.', color: 'mountain' }
-                ],
-                isOnline: navigator.onLine,
-                
-                init() {
-                    // Monitor online/offline status
-                    window.addEventListener('online', () => { this.isOnline = true; });
-                    window.addEventListener('offline', () => { this.isOnline = false; });
-                }
-            };
-        }
-        
-        // Service Worker registration
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then((registration) => {
-                    console.log('ServiceWorker registration successful');
-                }).catch((err) => {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
-            });
-        }
-        (function() {
-        const banner = document.getElementById('offline-banner');
-        if (banner && !navigator.onLine) {
-            banner.style.display = 'block';
-        }
-        
-        window.addEventListener('online', () => {
-            if (banner) banner.style.display = 'none';
-        });
-        
-        window.addEventListener('offline', () => {
-            if (banner) banner.style.display = 'block';
-        });
-        })();
-    </script>
 </body>
 </html>
