@@ -77,9 +77,9 @@ const availableTables = [
             { id: 'stigmaColor', label: 'Stigma Color', type: 'select', options: { '1': 'White', '2': 'Light Green', '3': 'Yellow', '4': 'Light Purple', '5': 'Purple' } },
             { id: 'awnLength', label: 'Awn Length (mm)', type: 'number', step: '0.1', min: 0 },
             { id: 'grainLength', label: 'Grain Length (mm)', type: 'number', step: '0.1', min: 0 },
-            { id: 'grainWidth', label: 'Grain Width (mm)', type: 'number', step: '0.1', min: 0 }
-            { id: 'grainWeight', label: '1000 Grain-Weight (g)', type: 'number', step: '1', min: 0 }
-            { id: 'lemmaAndPaleaColor', label: 'Lemma and Palea Pubescence', type: 'select', options: { '0': 'Absent', '1': 'Green', '2': 'Light Green', '3': 'Purple', '4': 'Purple Lines', '5': '', '6': '', '7': '' } },
+            { id: 'grainWidth', label: 'Grain Width (mm)', type: 'number', step: '0.1', min: 0 },
+            { id: 'grainWeight', label: '1000 Grain-Weight (g)', type: 'number', step: '1', min: 0 },
+            { id: 'lemmaAndPaleaPub', label: 'Lemma and Palea Pubescence', type: 'select', options: { '0': 'Absent', '1': 'Green', '2': 'Light Green', '3': 'Purple', '4': 'Purple Lines', '5': '', '6': '', '7': '' } },
             { id: 'yield', label: 'Yield per Plot (kg/5m^2)', type: 'number', step: '1', min: 0 }
         ]
     },
