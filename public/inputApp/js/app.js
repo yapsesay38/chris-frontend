@@ -1,4 +1,3 @@
-// js/app.js - Main application logic (UPDATED)
 function riceDataApp() {
     const STORAGE_KEY = 'heirloom_rice_records';
     const DEFAULT_TRIAL_COUNT = 5;
@@ -22,7 +21,6 @@ function riceDataApp() {
     };
     
     return {
-        // State
         currentProvince: provinceFromUrl,
         treatmentNo: '',
         landrace: '',
@@ -38,19 +36,14 @@ function riceDataApp() {
         records: loadRecords(),
         
         get parameters() { 
-            // Return ALL parameters - no filtering
-            // We'll handle visibility in the template instead
             return this.currentParameters;
         },
         
-        // NEW: Check if a parameter should be visible for a specific trial
         isParamVisibleForTrial(param, trialIndex) {
             if (!param.dependsOn) return true;
-            
             const controlParam = param.dependsOn.param;
             const requiredValue = param.dependsOn.value;
             const controlValue = this.trials[trialIndex]?.[controlParam];
-            
             return controlValue === requiredValue;
         },
         
@@ -69,34 +62,25 @@ function riceDataApp() {
             }
         },
         
-        // Handle when a controlling parameter changes
         onControlChange(controlParamId, trialIndex) {
-            // Find parameters that depend on this control
             const dependentParams = this.currentParameters.filter(p => 
                 p.dependsOn && p.dependsOn.param === controlParamId
             );
-            
             if (dependentParams.length === 0) return;
-            
-            // For dependent parameters, clear their values if the condition is no longer met
             const controlValue = this.trials[trialIndex]?.[controlParamId];
             dependentParams.forEach(depParam => {
                 if (controlValue !== depParam.dependsOn.value) {
-                    // Clear the dependent parameter value (keeps the field in data structure, but empty)
                     this.trials[trialIndex][depParam.id] = '';
                 }
             });
-            
             this.saveDraft();
         },
         
         updateTrialValue(paramId, trialIndex) {
-            // Get the value and ensure it's not negative
             let value = this.trials[trialIndex][paramId];
             if (value !== '' && !isNaN(value) && parseFloat(value) < 0) {
                 this.trials[trialIndex][paramId] = 0;
             }
-            
             this.saveDraft();
         },
         
@@ -106,7 +90,6 @@ function riceDataApp() {
             if (newCount < MIN_TRIALS) newCount = MIN_TRIALS;
             if (newCount > MAX_TRIALS) newCount = MAX_TRIALS;
             if (newCount === this.trials.length) return;
-            
             const oldTrials = this.trials;
             const newTrials = [];
             for (let i = 0; i < newCount; i++) {
@@ -154,7 +137,6 @@ function riceDataApp() {
                 alert('Please fill in Block/Treatment No. and Landrace Name');
                 return;
             }
-            
             const record = {
                 province: this.currentProvince,
                 tableId: this.currentTableId,
@@ -165,7 +147,6 @@ function riceDataApp() {
                 trials: JSON.parse(JSON.stringify(this.trials)),
                 timestamp: Date.now()
             };
-            
             if (this.editMode && this.editIndex >= 0) {
                 this.records[this.editIndex] = record;
                 alert('Record updated successfully!');
@@ -242,7 +223,7 @@ function riceDataApp() {
                 const tableParams = tableConfig?.parameters || [];
                 const paramIds = tableParams.map(p => p.id);
                 
-                const headers = ['province', 'block_treatment_no', 'sample_id', 'trial_number', 'record_date'];
+                const headers = ['province', 'table_id', 'block_treatment_no', 'landrace_id', 'trial_number', 'record_date'];
                 paramIds.forEach(paramId => {
                     headers.push(paramId.replace(/([A-Z])/g, '_$1').toLowerCase());
                 });
@@ -254,7 +235,7 @@ function riceDataApp() {
                     const recordDate = new Date(record.timestamp).toISOString().slice(0, 10);
                     
                     for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
-                        const row = [record.province, record.treatmentNo, record.landrace, trialIdx + 1, recordDate];
+                        const row = [record.province, record.tableId, record.treatmentNo, record.landrace, trialIdx + 1, recordDate];
                         
                         paramIds.forEach(paramId => {
                             let value = record.trials[trialIdx]?.[paramId] || '';
@@ -281,21 +262,18 @@ function riceDataApp() {
                 filesCreated++;
                 fileList.push(fileName);
             }
-            
             alert(`✅ Exported ${filesCreated} CSV file(s):\n\n${fileList.join('\n')}`);
         },
         
-        async uploadToServer() {
+        async uploadToServer(event) {
             if (this.records.length === 0) {
-               alert('No records to upload.');
+                alert('No records to upload.');
                 return;
             }
-
             if (!navigator.onLine) {
                 alert('You are offline. Please connect to the internet and try again.');
                 return;
             }
-
             const confirmed = confirm(`Upload ${this.records.length} record(s) to server?`);
             if (!confirmed) return;
 
@@ -303,37 +281,28 @@ function riceDataApp() {
             const pb = new PocketBase(PB_URL);
 
             const uploadData = [];
-    
             for (const record of this.records) {
                 const trialCount = record.trialCount || 5;
                 const tableConfig = this.availableTables.find(t => t.id === record.tableId);
-        
                 for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
                     const agroParams = {};
-            
                     if (tableConfig) {
                         for (const param of tableConfig.parameters) {
                             agroParams[param.id] = record.trials[trialIdx]?.[param.id] || '';
                         }
                     }
-            
-                    const row = {
+                    uploadData.push({
                         province: record.province,
                         table_id: record.tableId,
-                        treatment_no: record.treatmentNo,
-                        sample_id: record.landrace,
+                        block_treatment_no: record.treatmentNo,
+                        landrace_id: record.landrace,
                         trial_number: trialIdx + 1,
                         recorded_at: new Date(record.timestamp).toISOString(),
-                        agro_params: agroParams  // Now contains ONLY relevant fields
-                    };
-            
-                    uploadData.push(row);
+                        agro_params: agroParams
+                    });
                 }
             }
 
-        }
-
-            // Show uploading indicator
             const uploadBtn = event?.target?.closest?.('.export-btn');
             const originalText = uploadBtn ? uploadBtn.innerHTML : 'Upload';
             if (uploadBtn) {
@@ -343,9 +312,7 @@ function riceDataApp() {
 
             let successCount = 0;
             let failCount = 0;
-
             try {
-                // Send records one by one (or batch if you prefer)
                 for (const record of uploadData) {
                     try {
                         await pb.collection('rice_data').create(record);
@@ -355,7 +322,6 @@ function riceDataApp() {
                         failCount++;
                     }
                 }
-
                 alert(`✅ Upload complete!\nSuccess: ${successCount}\nFailed: ${failCount}`);
             } catch (error) {
                 console.error('Upload error:', error);
@@ -367,7 +333,7 @@ function riceDataApp() {
                 }
             }
         },
-
+        
         init() {
             window.addEventListener('online', () => this.isOnline = true);
             window.addEventListener('offline', () => this.isOnline = false);
