@@ -287,7 +287,7 @@ function riceDataApp() {
         
         async uploadToServer() {
             if (this.records.length === 0) {
-                alert('No records to upload.');
+               alert('No records to upload.');
                 return;
             }
 
@@ -296,16 +296,12 @@ function riceDataApp() {
                 return;
             }
 
-            // Confirm with user
             const confirmed = confirm(`Upload ${this.records.length} record(s) to server?`);
             if (!confirmed) return;
 
-            // Initialize PocketBase client
-            // Change URL to your PocketBase server address
-            const PB_URL = 'http://localhost:8090'; // Update to your server URL
+            const PB_URL = 'http://localhost:8090';
             const pb = new PocketBase(PB_URL);
 
-            // Prepare data: convert each record into trial rows
             const uploadData = [];
     
             for (const record of this.records) {
@@ -313,29 +309,29 @@ function riceDataApp() {
                 const tableConfig = this.availableTables.find(t => t.id === record.tableId);
         
                 for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
+                    const agroParams = {};
+            
+                    if (tableConfig) {
+                        for (const param of tableConfig.parameters) {
+                            agroParams[param.id] = record.trials[trialIdx]?.[param.id] || '';
+                        }
+                    }
+            
                     const row = {
                         province: record.province,
                         table_id: record.tableId,
                         treatment_no: record.treatmentNo,
                         sample_id: record.landrace,
                         trial_number: trialIdx + 1,
-                        recorded_at: new Date(record.timestamp).toISOString()
+                        recorded_at: new Date(record.timestamp).toISOString(),
+                        agro_params: agroParams  // Now contains ONLY relevant fields
                     };
             
-                    // Add each parameter value
-                    if (tableConfig) {
-                        for (const param of tableConfig.parameters) {
-                            let value = record.trials[trialIdx]?.[param.id] || '';
-                            // For select options, store the code (not the description)
-                            if (param.type === 'select' && value && param.options[value]) {
-                                // Keep the code as is; PocketBase will store the code.
-                            }
-                            row[param.id] = value;
-                        }
-                    }
                     uploadData.push(row);
                 }
             }
+
+        }
 
             // Show uploading indicator
             const uploadBtn = event?.target?.closest?.('.export-btn');
