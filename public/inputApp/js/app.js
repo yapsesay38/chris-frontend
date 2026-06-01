@@ -297,7 +297,7 @@ function riceDataApp() {
                         block_treatment_no: record.treatmentNo,
                         landrace_id: record.landrace,
                         trial_number: trialIdx + 1,
-                        recorded_at: new Date(record.timestamp).toISOString(),
+                        record_date: new Date(record.timestamp).toISOString(),
                         agro_params: agroParams
                     });
                 }
@@ -332,6 +332,208 @@ function riceDataApp() {
                     uploadBtn.disabled = false;
                 }
             }
+        },
+        
+        triggerImport() {
+            document.getElementById('csvImportInput').click();
+        },
+
+        async importCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+    
+            if (!file.name.endsWith('.csv')) {
+               alert('Please select a CSV file.');
+                event.target.value = '';
+                return;
+            }
+    
+            const confirmed = confirm(`Import data from "${file.name}"? This will ADD records to your existing data (no duplicates will be removed).`);
+            if (!confirmed) {
+                event.target.value = '';
+                return;
+            }
+    
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const csvText = e.target.result;
+                const importedRecords = await this.parseCSVToRecords(csvText, file.name);
+        
+                if (importedRecords.length === 0) {
+                    alert('No valid records found in the CSV file.');
+                    event.target.value = '';
+                    return;
+                }
+        
+                const existingRecords = this.records;
+                const mergedRecords = [...existingRecords, ...importedRecords];
+        
+                const STORAGE_KEY = 'heirloom_rice_records';
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(mergedRecords));
+                this.records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        
+                alert(`✅ Successfully imported ${importedRecords.length} record(s) from "${file.name}".\nTotal records now: ${this.records.length}`);
+        
+                event.target.value = '';
+        
+                this.$forceUpdate();
+            };
+            reader.onerror = () => {
+                alert('Error reading file.');
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        },
+
+        async parseCSVToRecords(csvText, fileName) {
+            const lines = csvText.split('\n');
+            if (lines.length < 2) {
+                alert('CSV file is empty or invalid.');
+                return [];
+            }
+    
+            const headers = this.parseCSVRow(lines[0]);
+    
+            let tableId = null;
+            let tableConfig = null;
+    
+            const fileNameMatch = fileName.match(/^(.+?)_\d{4}-\d{2}-\d{2}\.csv$/);
+            if (fileNameMatch) {
+                const tableNameFromFile = fileNameMatch[1];
+                tableConfig = this.availableTables.find(t => 
+                    t.name.toLowerCase().replace(/[^a-z0-9]/g, '_') === tableNameFromFile
+                );
+                if (tableConfig) {
+                    tableId = tableConfig.id;
+                }
+            }
+    
+            if (!tableId) {
+                for (const table of this.availableTables) {
+                    const expectedParams = table.parameters.map(p => p.id.replace(/([A-Z])/g, '_$1').toLowerCase());
+                    const matchCount = expectedParams.filter(p => headers.includes(p)).length;
+                    if (matchCount > 5) { // If many parameters match, assume it's this table
+                        tableId = table.id;
+                        tableConfig = table;
+                        break;
+                    }
+                }
+            }
+    
+            if (!tableId || !tableConfig) {
+                alert(`Could not identify the table type for file: ${fileName}. Please ensure this CSV was exported from this app.`);
+                return [];
+            }
+    
+            const provinceIdx = headers.indexOf('province');
+            const treatmentIdx = headers.indexOf('block_treatment_no');
+            const landraceIdx = headers.indexOf('landrace_id');
+            const trialNumIdx = headers.indexOf('trial_number');
+            const recordDateIdx = headers.indexOf('record_date');
+    
+            if (provinceIdx === -1 || treatmentIdx === -1 || landraceIdx === -1 || trialNumIdx === -1) {
+                alert('CSV is missing required columns (province, block_treatment_no, landrace_id, trial_number).');
+                return [];
+            }
+    
+            const sampleMap = new Map();
+    
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+        
+                const values = this.parseCSVRow(lines[i]);
+                if (values.length < headers.length) continue;
+        
+                const province = values[provinceIdx];
+                const treatmentNo = values[treatmentIdx];
+                const landrace = values[landraceIdx];
+                const trialNumber = parseInt(values[trialNumIdx]);
+                const recordDate = recordDateIdx !== -1 ? values[recordDateIdx] : new Date().toISOString().slice(0, 10);
+        
+                const sampleKey = `${province}|${treatmentNo}|${landrace}`;
+        
+                if (!sampleMap.has(sampleKey)) {
+                    sampleMap.set(sampleKey, {
+                        province: province,
+                        treatmentNo: treatmentNo,
+                        landrace: landrace,
+                        tableId: tableId,
+                        tableName: tableConfig.name,
+                        trials: {},
+                        trialCount: 0,
+                        timestamp: new Date(recordDate).getTime() || Date.now()
+                    });
+                }
+        
+                const sample = sampleMap.get(sampleKey);
+        
+                const trialData = {};
+                for (const param of tableConfig.parameters) {
+                    const paramHeader = param.id.replace(/([A-Z])/g, '_$1').toLowerCase();
+                    const paramIdx = headers.indexOf(paramHeader);
+                    if (paramIdx !== -1 && values[paramIdx]) {
+                        let value = values[paramIdx];
+                        const match = value.match(/^(\d+)-/);
+                        if (match) {
+                            value = match[1];
+                        }
+                        trialData[param.id] = value;
+                    } else {
+                        trialData[param.id] = '';
+                    }
+                }
+        
+                sample.trials[trialNumber] = trialData;
+                if (trialNumber > sample.trialCount) sample.trialCount = trialNumber;
+            }
+    
+            const importedRecords = [];
+            for (const sample of sampleMap.values()) {
+                const trialsArray = [];
+                for (let i = 1; i <= sample.trialCount; i++) {
+                    trialsArray.push(sample.trials[i] || this.buildEmptyTrial(tableConfig.parameters));
+                }
+        
+                importedRecords.push({
+                    province: sample.province,
+                    tableId: sample.tableId,
+                    tableName: sample.tableName,
+                    treatmentNo: sample.treatmentNo,
+                    landrace: sample.landrace,
+                    trialCount: sample.trialCount,
+                    trials: trialsArray,
+                    timestamp: sample.timestamp
+                });
+            }
+    
+            return importedRecords;
+        },
+
+        parseCSVRow(line) {
+            const result = [];
+            let inQuotes = false;
+            let currentValue = '';
+    
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(currentValue.trim());
+                    currentValue = '';
+                } else {
+                    currentValue += char;
+                }
+            }
+            result.push(currentValue.trim());
+    
+            return result.map(v => v.replace(/^"|"$/g, ''));
+        },
+
+        buildEmptyTrial(params) {
+            const trial = {};
+            params.forEach(param => { trial[param.id] = ''; });
+            return trial;
         },
         
         init() {
