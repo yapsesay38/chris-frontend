@@ -266,6 +266,8 @@ function riceDataApp() {
         },
         
         async uploadToServer(event) {
+            console.log('Upload started');
+            console.log('PB_URL:', window.location.origin);
             if (this.records.length === 0) {
                 alert('No records to upload.');
                 return;
@@ -277,8 +279,9 @@ function riceDataApp() {
             const confirmed = confirm(`Upload ${this.records.length} record(s) to server?`);
             if (!confirmed) return;
 
-            const PB_URL = `${window.location.protocol}//${window.location.hostname}:8090`;
+            const PB_URL = window.location.origin;
             const pb = new PocketBase(PB_URL);
+            console.log('PocketBase client created');
 
             const uploadData = [];
             for (const record of this.records) {
