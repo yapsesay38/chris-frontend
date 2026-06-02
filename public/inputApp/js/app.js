@@ -277,7 +277,7 @@ function riceDataApp() {
             const confirmed = confirm(`Upload ${this.records.length} record(s) to server?`);
             if (!confirmed) return;
 
-            const PB_URL = 'http://localhost:8090';
+            const PB_URL = `${window.location.protocol}//${window.location.hostname}:8090`;
             const pb = new PocketBase(PB_URL);
 
             const uploadData = [];
