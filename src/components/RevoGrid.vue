@@ -51,7 +51,6 @@ const props = defineProps({
   province: {
     type: String,
     required: true,
-    default: 'Benguet'
   }
 })
 
