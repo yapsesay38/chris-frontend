@@ -5,7 +5,11 @@ export const prerender = false;
 export const GET: APIRoute = async ({ params, url }) => {
     const { tableId } = params;
     const province = url.searchParams.get('province');
-    const PB_URL = import.meta.env.PB_URL || 'http://localhost:8090';
+
+    const PB_URL = process.env.PB_URL || 'http://localhost:8090';
+
+    console.log(`API called: tableId=${tableId}, province=${province}`);
+    console.log(`PB_URL: ${PB_URL}`);
     
     const validTables = ['plantvigorandleaf', 'culm', 'panicle', 'grain', 'growth'];
     
