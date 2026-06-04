@@ -54,6 +54,12 @@ const props = defineProps({
   }
 })
 
+console.log('RevoGrid mounted with province:', props.province);
+
+watch(() => props.province, (newVal) => {
+  console.log('Province changed to:', newVal);
+}, { immediate: true });
+
 const tables = [
   { id: 'plantvigorandleaf', name: 'Plant Vigor & Leaf', emoji: '🍃' },
   { id: 'culm', name: 'Culm Characters', emoji: '🌿' },
