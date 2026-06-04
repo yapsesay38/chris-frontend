@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import NavLink from '../../../components/NavLink.astro'
+import PageNav from '../../../components/PageNav.astro'
+import RevoGrid from '../../../components/RevoGrid.vue'
+
+import { locations } from '../../../data/navigation.js'
+
+export function getStaticPaths() {
+    return locations.map(loc => ({
+        params: { location: loc.location },
+        props: { locationName: loc.name }
+    }));
+}
+
+const { location } = Astro.params;
+const { locationName } = Astro.props;
+---
+<BaseLayout>
+  <nav slot="hnav">
+    <PageNav currentLocation={location} />
+  </nav>
+  <div slot="content">
+    <h1>Heirloom Rice Data - { locationName }</h1>
+    <RevoGrid client:load province={locationName} />
+  </div>
+</BaseLayout>
+
+<style>
+  nav {
+    background-color: #ffffff;
+    padding: 0px;
+    border-radius: 0.5rem;
+  }
+
+  .active {
+    background-color: #165871;
+  }
+</style>

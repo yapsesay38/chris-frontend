@@ -1,5 +1,4 @@
 export const locations = [
-  { location: 'province', name: 'CAR' },
   { location: 'apayao', name: 'Apayao' },
   { location: 'abra', name: 'Abra' },
   { location: 'kalinga', name: 'Kalinga' },

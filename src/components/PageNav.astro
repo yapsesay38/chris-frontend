@@ -1,11 +1,11 @@
 ---
 import NavLink from '../components/NavLink.astro'
 
-import { pages, tables } from '../data/navigation.js';
+import { pages } from '../data/navigation.js';
 const { currentLocation } = Astro.props;
 ---
 
-<NavLink href={`/${currentLocation}/hrProfile/${tables[0].table}`} type="table">HR Tables</NavLink>
+<NavLink href={`/${currentLocation}/hrProfile`} type="table">HR Tables</NavLink>
 {pages.map(p => (
   <NavLink href={`/${currentLocation}/${p.page}`} type="page">{p.name}</NavLink>
 ))}

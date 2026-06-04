@@ -29,7 +29,7 @@ function riceDataApp() {
         isOnline: navigator.onLine,
         availableTables: window.availableTables,
         currentTableId: 'plantvigorandleaf',
-        currentTableName: '🌾 Plant Vigor and Leaf Characters',
+        currentTableName: '🍃 Plant Vigor and Leaf Characters',
         currentParameters: [],
         trialCount: DEFAULT_TRIAL_COUNT,
         trials: [],
