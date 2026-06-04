@@ -13,13 +13,13 @@ importers:
         version: 0.20.1
       '@astrojs/vue':
         specifier: ^6.0.1
-        version: 6.0.1(@types/node@25.9.1)(astro@6.4.2(@types/node@25.9.1)(rollup@4.61.0))(vue@3.5.35)
+        version: 6.0.1(@types/node@25.9.1)(astro@6.4.3(@types/node@25.9.1)(rollup@4.61.0))(vue@3.5.35)
       '@revolist/vue3-datagrid':
-        specifier: ^4.23.6
-        version: 4.23.6
+        specifier: ^4.23.7
+        version: 4.23.7
       astro:
-        specifier: ^6.4.2
-        version: 6.4.2(@types/node@25.9.1)(rollup@4.61.0)
+        specifier: ^6.4.3
+        version: 6.4.3(@types/node@25.9.1)(rollup@4.61.0)
       sharp:
         specifier: ^0.34.5
         version: 0.34.5
@@ -602,11 +602,11 @@ packages:
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
 
-  '@revolist/revogrid@4.23.6':
-    resolution: {integrity: sha512-UkUorq/86RljekbBx2Jlo8IYbTvQUMEEjVkK5TFVYYDhOALLbyF72ToLawj567K+xGHLQVBBchy0M9L5ooP8aA==}
+  '@revolist/revogrid@4.23.7':
+    resolution: {integrity: sha512-5L6PhA9CyBiQIrQx1D1kGNX+wHJADlFQCLpbpbVeNTlFZRIl4esf4Ruc4j9H7WXdLi/jfAJuFs3WVH70h7pRcQ==}
 
-  '@revolist/vue3-datagrid@4.23.6':
-    resolution: {integrity: sha512-5Oin76Se7yqyWHilzQ8AozEqOKo4qYiSLRN0l0eJAOB5gN329kVPkleEwJSIx0VC6XbKHZ85V638rp6FAlcb0g==}
+  '@revolist/vue3-datagrid@4.23.7':
+    resolution: {integrity: sha512-rOcITjevSuemnxhoMcV+BLxNIU04kT0UNmqUYxRypJc7y4U3MTRyHE1yiTft03VaHSOmirY4bU68EJQL7+cXsA==}
 
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
@@ -923,8 +923,8 @@ packages:
   array-iterate@2.0.1:
     resolution: {integrity: sha512-I1jXZMjAgCMmxT4qxXfPXa6SthSoE8h6gkSI9BGGNv8mP8G/v0blc+qFnZu6K42vTOiuME596QaLO0TP3Lk0xg==}
 
-  astro@6.4.2:
-    resolution: {integrity: sha512-8H89CH2dKL5SCU99OCqdU9BGjmPkSJqaPurywj5XMo7eMFGUFD3vsNhdEKnEh4mK4LgGje3/QDTTSIIGst0G0Q==}
+  astro@6.4.3:
+    resolution: {integrity: sha512-heArIk8zLcxuoj1WgBH2zGdAD8zKSU1mEcBvS6hYMEHRPlbtvB+4Y8ri9Z27hzeryvGaFgrH32zjghEfV2y07g==}
     engines: {node: '>=22.12.0', npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
 
@@ -1189,8 +1189,8 @@ packages:
     resolution: {integrity: sha512-2QF/g9/zTaPDc3BjNcVTGoBbXBgYfMTTceLaYcFJ/W9kggFUkhxD/hMEeuLKbugyef9SqAx8cpgwlIP/jinUTA==}
     engines: {node: '>=4'}
 
-  electron-to-chromium@1.5.364:
-    resolution: {integrity: sha512-G/dYE3+AYhyHwzTwg8UbnXf7zqMERYh7l2jJ3QujhFsH8agSYwtnGAR2aZ7f0AakIKJXd5En/Hre4igIUrdlYw==}
+  electron-to-chromium@1.5.366:
+    resolution: {integrity: sha512-OlRuhb688YTCzzU3gXPLn6nGyd+F+53INE1qaKKlu6kETErE8FYsyDh0XqXEU+uBRn0MpCzz2vfNwORhkap8qg==}
 
   entities@4.5.0:
     resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
@@ -1564,8 +1564,8 @@ packages:
   node-mock-http@1.0.4:
     resolution: {integrity: sha512-8DY+kFsDkNXy1sJglUfuODx1/opAGJGyrTuFqEoN90oRc2Vk0ZbD4K2qmKXBBEhZQzdKHIVfEJpDU8Ak2NJEvQ==}
 
-  node-releases@2.0.46:
-    resolution: {integrity: sha512-GYVXHE2KnrzAfsAjl4uP++evGFCrAU1jta4ubEjIG7YWt/64Gqv66a30yKwWczVjA6j3bM4nBwH7Pk1JmDHaxQ==}
+  node-releases@2.0.47:
+    resolution: {integrity: sha512-Uzmd6LXpouKo8EUK68IjH4+E01w/hXyV3R3g/geCJo+rXLNfh1xucB+LOzYEOQPSiUK3h/xZf0cQGcSsmyL2Og==}
     engines: {node: '>=18'}
 
   normalize-path@3.0.0:
@@ -2142,12 +2142,12 @@ snapshots:
       is-wsl: 3.1.1
       which-pm-runs: 1.1.0
 
-  '@astrojs/vue@6.0.1(@types/node@25.9.1)(astro@6.4.2(@types/node@25.9.1)(rollup@4.61.0))(vue@3.5.35)':
+  '@astrojs/vue@6.0.1(@types/node@25.9.1)(astro@6.4.3(@types/node@25.9.1)(rollup@4.61.0))(vue@3.5.35)':
     dependencies:
       '@vitejs/plugin-vue': 6.0.7(vite@7.3.5(@types/node@25.9.1))(vue@3.5.35)
       '@vitejs/plugin-vue-jsx': 5.1.5(vite@7.3.5(@types/node@25.9.1))(vue@3.5.35)
       '@vue/compiler-sfc': 3.5.35
-      astro: 6.4.2(@types/node@25.9.1)(rollup@4.61.0)
+      astro: 6.4.3(@types/node@25.9.1)(rollup@4.61.0)
       vite: 7.3.5(@types/node@25.9.1)
       vite-plugin-vue-devtools: 8.1.2(vite@7.3.5(@types/node@25.9.1))(vue@3.5.35)
       vue: 3.5.35
@@ -2635,11 +2635,11 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
-  '@revolist/revogrid@4.23.6': {}
+  '@revolist/revogrid@4.23.7': {}
 
-  '@revolist/vue3-datagrid@4.23.6':
+  '@revolist/vue3-datagrid@4.23.7':
     dependencies:
-      '@revolist/revogrid': 4.23.6
+      '@revolist/revogrid': 4.23.7
 
   '@rolldown/pluginutils@1.0.1': {}
 
@@ -2956,7 +2956,7 @@ snapshots:
 
   array-iterate@2.0.1: {}
 
-  astro@6.4.2(@types/node@25.9.1)(rollup@4.61.0):
+  astro@6.4.3(@types/node@25.9.1)(rollup@4.61.0):
     dependencies:
       '@astrojs/compiler': 4.0.0
       '@astrojs/internal-helpers': 0.10.0
@@ -3065,8 +3065,8 @@ snapshots:
     dependencies:
       baseline-browser-mapping: 2.10.33
       caniuse-lite: 1.0.30001793
-      electron-to-chromium: 1.5.364
-      node-releases: 2.0.46
+      electron-to-chromium: 1.5.366
+      node-releases: 2.0.47
       update-browserslist-db: 1.2.3(browserslist@4.28.2)
 
   bundle-name@4.1.0:
@@ -3192,7 +3192,7 @@ snapshots:
 
   dset@3.1.4: {}
 
-  electron-to-chromium@1.5.364: {}
+  electron-to-chromium@1.5.366: {}
 
   entities@4.5.0: {}
 
@@ -3789,7 +3789,7 @@ snapshots:
 
   node-mock-http@1.0.4: {}
 
-  node-releases@2.0.46: {}
+  node-releases@2.0.47: {}
 
   normalize-path@3.0.0: {}
 

@@ -1,10 +1,27 @@
 ---
 const { href, class: className, type, ...rest } = Astro.props;
-const currentPath = Astro.url.pathname;
+let currentPath = Astro.url.pathname;
 const isLocActive = type === 'location';
-const isActive = isLocActive
-? currentPath.startsWith(`/${href.split('/')[1]}/`)
-: currentPath === href;
+
+// Normalize both paths
+const normalizePath = (path) => path
+    .replace(/\.html$/, '')  // Remove .html
+    .replace(/\/$/, '')       // Remove trailing slash
+    .replace(/^\/index$/, '/'); // Normalize index
+
+const normalizedCurrent = normalizePath(currentPath);
+const normalizedHref = normalizePath(href);
+
+let isActive = false;
+
+if (isLocActive) {
+    // Check if current path starts with the link path
+    isActive = normalizedCurrent === normalizedHref ||
+               normalizedCurrent.startsWith(normalizedHref + '/') ||
+               (normalizedHref !== '/' && normalizedCurrent.split('/')[1] === normalizedHref.split('/')[1]);
+} else {
+    isActive = normalizedCurrent === normalizedHref;
+}
 ---
 
 <a href={href} class:list={[{ 'active': isActive }, className]} {...rest}>
