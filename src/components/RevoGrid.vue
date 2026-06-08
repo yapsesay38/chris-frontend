@@ -45,20 +45,38 @@
 
 <script setup>
 import VGrid from '@revolist/vue3-datagrid'
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue' // watch
 
 const props = defineProps({
-  province: {
+  locationParam: {
     type: String,
     required: true,
+    default: ''
   }
 })
 
-console.log('RevoGrid mounted with province:', props.province);
+const locationToProvince = {
+  'abra': 'Abra',
+  'apayao': 'Apayao',
+  'benguet': 'Benguet',
+  'ifugao': 'Ifugao',
+  'kalinga': 'Kalinga',
+  'mountain-province': 'Mountain Province',
+}
 
-watch(() => props.province, (newVal) => {
+const getProvinceFromLocation = () => {
+  const location = props.locationParam
+  console.log('Location param received:', location)
+  const province = locationToProvince[location] || ''
+  console.log('Mapped to province:', province)
+  return province
+}
+
+// console.log('RevoGrid mounted with province:', props.province);
+
+/* watch(() => props.province, (newVal) => {
   console.log('Province changed to:', newVal);
-}, { immediate: true });
+}, { immediate: true }); */
 
 const tables = [
   { id: 'plantvigorandleaf', name: 'Plant Vigor & Leaf', emoji: '🍃' },
@@ -68,7 +86,7 @@ const tables = [
   { id: 'growth', name: 'Growth Cycle', emoji: '🌱' }
 ]
 
-// Column definitions (abbreviated - use your full definitions)
+// Column definitions
 const columnDefinitions = {
   plantvigorandleaf: [
     { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200 },
@@ -150,14 +168,22 @@ const columns = ref([])
 const source = ref([])
 const loading = ref(false)
 const error = ref(null)
+const activeProvince = ref('')
 
 const fetchData = async () => {
   loading.value = true
   error.value = null
+
+  if (!activeProvince.value) {
+      activeProvince.value = getProvinceFromLocation()
+  }
+
+  console.log('Fetching for province:', activeProvince.value)
+  console.log('Fetching for table:', selectedTable.value)
   
   try {
     const response = await fetch(
-      `/api/rice-data/${selectedTable.value}.json?province=${encodeURIComponent(props.province)}`
+      `/api/rice-data/${selectedTable.value}.json?province=${encodeURIComponent(activeProvince.value)}`
     )
     
     if (!response.ok) {
@@ -173,7 +199,7 @@ const fetchData = async () => {
     source.value = result.data
     columns.value = [...columnDefinitions[selectedTable.value]]
     
-    console.log(`Loaded ${result.data.length} records for ${props.province} - ${selectedTable.value}`)
+    console.log(`Loaded ${result.data.length} records for ${activeProvince.value} - ${selectedTable.value}`)
     
   } catch (err) {
     console.error('Error:', err)
@@ -193,11 +219,12 @@ const refreshData = () => {
   fetchData()
 }
 
-watch(() => props.province, () => {
+/* watch(() => props.province, () => {
   fetchData()
-})
+}) */
 
 onMounted(() => {
+  activeProvince.value = getProvinceFromLocation()
   fetchData()
 })
 </script>

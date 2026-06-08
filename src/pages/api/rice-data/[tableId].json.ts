@@ -6,6 +6,8 @@ export const GET: APIRoute = async ({ params, url }) => {
     const { tableId } = params;
     const province = url.searchParams.get('province');
 
+    console.log('API - Received province:', province)
+
     console.log('=== REQUEST DEBUG ===');
     console.log('tableId:', tableId);
     console.log('province from URL:', province);
@@ -28,9 +30,11 @@ export const GET: APIRoute = async ({ params, url }) => {
     try {
         // Build filter - by table_id AND province
         let filter = `(table_id='${tableId}')`;
-        if (province && province !== 'null' && province !== 'undefined') {
+        if (province && province !== 'null' && province !== 'undefined' && province !== '') {
             filter += ` && (province='${province}')`;
         }
+
+        console.log('API - Final filter:', filter)
 
         const url = `${PB_URL}/api/collections/rice_data/records?filter=${encodeURIComponent(filter)}&perPage=500`;
         console.log('Fetching URL:', url);
