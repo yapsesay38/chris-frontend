@@ -15,16 +15,14 @@ export function getStaticPaths() {
 
 const { location } = Astro.params;
 const { locationName } = Astro.props;
-
-console.log('index.astro - location param:', location)
-console.log('index.astro - locationName prop:', locationName)
+const currentLocation = locations.find(loc => loc.location === location);
 ---
 <BaseLayout>
   <nav slot="hnav">
     <PageNav currentLocation={location} />
   </nav>
   <div slot="content">
-    <h1>Heirloom Rice Data - { location }</h1>
+    <h1>Heirloom Rice Data - { currentLocation?.name }</h1>
     <RevoGrid client:load locationParam={location} />
   </div>
 </BaseLayout>
