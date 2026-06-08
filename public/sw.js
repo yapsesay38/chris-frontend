@@ -1,34 +1,52 @@
-const CACHE_NAME = 'car-rice-v9';
-const ASSETS_TO_CACHE = [
-  '/',
+const CACHE_NAME = 'input-app-v1';
+const INPUT_APP_ASSETS = [
   '/inputApp/index.html',
   '/inputApp/form.html',
   '/inputApp/style.css',
   '/inputApp/icon.png',
+  '/inputApp/manifest.json',
+  '/inputApp/js/provinces.js',
+  '/inputApp/js/tables.js',
+  '/inputApp/js/app.js',
+  '/inputApp/js/offline.js',
+  '/inputApp/js/sw-register.js',
   'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap'
 ];
 
 self.addEventListener('install', (event) => {
+  console.log('Service Worker: Installing - caching input app');
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('Service Worker: Pre-caching assets');
-      return cache.addAll(ASSETS_TO_CACHE);
-    }).then(() => self.skipWaiting())
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
+      for (const asset of INPUT_APP_ASSETS) {
+        try {
+          await cache.add(asset);
+          console.log(`✅ Cached: ${asset}`);
+        } catch (error) {
+          console.error(`❌ Failed to cache: ${asset}`, error);
+        }
+      }
+      console.log('Installation complete');
+      await self.skipWaiting();
+    })()
   );
 });
 
 self.addEventListener('activate', (event) => {
+  console.log('Service Worker: Activating');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
+    (async () => {
+      const cacheNames = await caches.keys();
+      await Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
+          if (cacheName !== CACHE_NAME && cacheName !== 'google-fonts') {
             console.log('Service Worker: Clearing old cache', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
-    }).then(() => self.clients.claim())
+      await self.clients.claim();
+    })()
   );
 });
 
@@ -52,22 +70,30 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
+  if (url.pathname.startsWith('/inputApp/')) {
+    event.respondWith(
+      caches.match(url.pathname).then((cachedResponse) => {
+        if (cachedResponse) {
+          console.log('Serving from cache:', url.pathname);
+          return cachedResponse;
         }
-        return networkResponse;
-      }).catch(() => {
-          // If fetch fails and no cache, add fallback, for now fail silently
-      });
+        
+        return fetch(event.request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(url.pathname, responseToCache);
+            });
+          }
+          return networkResponse;
+        }).catch((error) => {
+          console.error('Network request failed:', url.pathname, error);
+          return caches.match('/inputApp/index.html');
+        });
+      })
+    );
+    return;
+  }
 
-      // For HTML pages or main assets, return cache if available immediately
-      return cachedResponse || fetchPromise;
-    })
-  );
+  event.respondWith(fetch(event.request));
 });
