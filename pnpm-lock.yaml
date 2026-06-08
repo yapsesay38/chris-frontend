@@ -15,8 +15,8 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1(astro@6.4.4(rollup@4.61.1))(vue@3.5.35)
       '@revolist/vue3-datagrid':
-        specifier: ^4.23.7
-        version: 4.23.7
+        specifier: ^4.23.13
+        version: 4.23.13
       astro:
         specifier: ^6.4.4
         version: 6.4.4(rollup@4.61.1)
@@ -544,11 +544,11 @@ packages:
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
 
-  '@revolist/revogrid@4.23.7':
-    resolution: {integrity: sha512-5L6PhA9CyBiQIrQx1D1kGNX+wHJADlFQCLpbpbVeNTlFZRIl4esf4Ruc4j9H7WXdLi/jfAJuFs3WVH70h7pRcQ==}
+  '@revolist/revogrid@4.23.13':
+    resolution: {integrity: sha512-WIcuy+WmtFbU5AM5UB4XnSlHKchCvDGD42dgycjc/EqAx9y6k1bdN9UxYfo3k4ZRV3gNNgT08H6/TeIAB+dfTA==}
 
-  '@revolist/vue3-datagrid@4.23.7':
-    resolution: {integrity: sha512-rOcITjevSuemnxhoMcV+BLxNIU04kT0UNmqUYxRypJc7y4U3MTRyHE1yiTft03VaHSOmirY4bU68EJQL7+cXsA==}
+  '@revolist/vue3-datagrid@4.23.13':
+    resolution: {integrity: sha512-SAJ+HdgINcr+KCCN3IJBM4+/Frd++2WYqHisouPluSfG70rrGTcYAQaRbHmzZfX/g+dHEDKCOA4cV9yn/DP8Ow==}
 
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
@@ -871,8 +871,8 @@ packages:
   bail@2.0.2:
     resolution: {integrity: sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==}
 
-  baseline-browser-mapping@2.10.33:
-    resolution: {integrity: sha512-bA6+tcSLpz2tIEdDXZPpPTIuxBcC4+w6SieaYyfigIa4h8GlFxbA17v22Vx3JUtuZQj9SgOsnbK+aTBzyDyEuw==}
+  baseline-browser-mapping@2.10.34:
+    resolution: {integrity: sha512-IMDedajPifLnHNY0X9n8hKxRTQ6/eTHwr5bDo04WnuqxyKw6LYtQywCuuqPZwhl3aBXMvQpJov42GLCwRRdQzw==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -894,8 +894,8 @@ packages:
     resolution: {integrity: sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q==}
     engines: {node: '>=18'}
 
-  caniuse-lite@1.0.30001793:
-    resolution: {integrity: sha512-iwSsYWaCOoh26cV8NwNRViHlrfUvYsHDfRVcbtmw0Kg6PJIZZXwMkj1442FYLBGkeUf1juAsU3DTfxW579mrPA==}
+  caniuse-lite@1.0.30001797:
+    resolution: {integrity: sha512-l8xKG+gwAIExZGl9FrF7KUwuOmk6wbEPC9Xoy/RtnWv1XG0Q4LFlagaLpUv3Kiza3W/wm27zy0yWJEieYKAP6w==}
 
   ccount@2.0.1:
     resolution: {integrity: sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==}
@@ -1039,8 +1039,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  electron-to-chromium@1.5.367:
-    resolution: {integrity: sha512-4Mk/mrynCNQ+atY40D3UpmhLWB6AHMbYMlIrPhHcMF6x0L7O0b052FCAsxw1LlaR++UFuNg3D/A6XCuGDa0guQ==}
+  electron-to-chromium@1.5.368:
+    resolution: {integrity: sha512-7RckJJK4uESJF9PxvfMWd3TGqIiieUTG4HxnKaKuIpGbcr+r2ZEB3g2gAhCP3Fqm42vJSzLfgab9eva/C4/XVw==}
 
   encodeurl@2.0.0:
     resolution: {integrity: sha512-Q0n9HRi4m6JuGIV1eFlmvJB7ZEVxu93IrMyiMsGC0lrMJMWzRgx6WGquyfQgZVb31vhGgXnfmPNNXmxnOkRBrg==}
@@ -1439,8 +1439,9 @@ packages:
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
 
-  obug@2.1.1:
-    resolution: {integrity: sha512-uTqF9MuPraAQ+IsnPf366RG4cP9RtUi7MLO1N3KEc+wb0a6yKpeL0lmk2IB1jY5KHPAlTc6T/JRdC/YqxHNwkQ==}
+  obug@2.1.2:
+    resolution: {integrity: sha512-AWGB9WFcRXOQs48Z/udjI5ZcZMHXwX8XPByNpOydgcGsDLIzjGizhoMWJyKAWze7AVW/2W1i+/gPX4YtKe5cyg==}
+    engines: {node: '>=12.20.0'}
 
   ofetch@1.5.1:
     resolution: {integrity: sha512-2W4oUZlVaqAPAil6FUg/difl6YhqhUR7x2eZY4bQCko22UXg3hptq9KLQdqFClV+Wu85UX7hNtdGTngi/1BxcA==}
@@ -1598,8 +1599,8 @@ packages:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
 
-  semver@7.8.1:
-    resolution: {integrity: sha512-rkVq3IXh+4FDGch+KwzX3aV9W3kO54GyEgpvBzSyctDA6Xtd7RJQV1xmXbeQp5v7+VzLOfVqiutSE6GICgPFvg==}
+  semver@7.8.2:
+    resolution: {integrity: sha512-c8jsqUZm3omBOI66G90z1Dyw5z622G8oLG+omfsHBJf3CWQTlOcwOjvOG6wtiNfW6anKm/eA39LMwMtMez2TiQ==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -2415,11 +2416,11 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
-  '@revolist/revogrid@4.23.7': {}
+  '@revolist/revogrid@4.23.13': {}
 
-  '@revolist/vue3-datagrid@4.23.7':
+  '@revolist/vue3-datagrid@4.23.13':
     dependencies:
-      '@revolist/revogrid': 4.23.7
+      '@revolist/revogrid': 4.23.13
 
   '@rolldown/pluginutils@1.0.1': {}
 
@@ -2761,14 +2762,14 @@ snapshots:
       magicast: 0.5.3
       mrmime: 2.0.1
       neotraverse: 0.6.18
-      obug: 2.1.1
+      obug: 2.1.2
       p-limit: 7.3.0
       p-queue: 9.3.0
       package-manager-detector: 1.6.0
       piccolore: 0.1.3
       picomatch: 4.0.4
       rehype: 13.0.2
-      semver: 7.8.1
+      semver: 7.8.2
       shiki: 4.2.0
       smol-toml: 1.6.1
       svgo: 4.0.1
@@ -2825,7 +2826,7 @@ snapshots:
 
   bail@2.0.2: {}
 
-  baseline-browser-mapping@2.10.33: {}
+  baseline-browser-mapping@2.10.34: {}
 
   birpc@2.9.0: {}
 
@@ -2835,9 +2836,9 @@ snapshots:
 
   browserslist@4.28.2:
     dependencies:
-      baseline-browser-mapping: 2.10.33
-      caniuse-lite: 1.0.30001793
-      electron-to-chromium: 1.5.367
+      baseline-browser-mapping: 2.10.34
+      caniuse-lite: 1.0.30001797
+      electron-to-chromium: 1.5.368
       node-releases: 2.0.47
       update-browserslist-db: 1.2.3(browserslist@4.28.2)
 
@@ -2845,7 +2846,7 @@ snapshots:
     dependencies:
       run-applescript: 7.1.0
 
-  caniuse-lite@1.0.30001793: {}
+  caniuse-lite@1.0.30001797: {}
 
   ccount@2.0.1: {}
 
@@ -2962,7 +2963,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  electron-to-chromium@1.5.367: {}
+  electron-to-chromium@1.5.368: {}
 
   encodeurl@2.0.0: {}
 
@@ -3570,7 +3571,7 @@ snapshots:
     dependencies:
       boolbase: 1.0.0
 
-  obug@2.1.1: {}
+  obug@2.1.2: {}
 
   ofetch@1.5.1:
     dependencies:
@@ -3797,7 +3798,7 @@ snapshots:
 
   semver@6.3.1: {}
 
-  semver@7.8.1: {}
+  semver@7.8.2: {}
 
   send@1.2.1:
     dependencies:
@@ -3823,7 +3824,7 @@ snapshots:
     dependencies:
       '@img/colour': 1.1.0
       detect-libc: 2.1.2
-      semver: 7.8.1
+      semver: 7.8.2
     optionalDependencies:
       '@img/sharp-darwin-arm64': 0.34.5
       '@img/sharp-darwin-x64': 0.34.5
@@ -4029,7 +4030,7 @@ snapshots:
     dependencies:
       ansis: 4.3.1
       error-stack-parser-es: 1.0.5
-      obug: 2.1.1
+      obug: 2.1.2
       ohash: 2.0.11
       open: 11.0.0
       perfect-debounce: 2.1.0
