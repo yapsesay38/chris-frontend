@@ -1,4 +1,3 @@
-// js/tables.js - All table/parameter definitions
 const availableTables = [
     {
         id: 'plantvigorandleaf',
@@ -97,5 +96,4 @@ const availableTables = [
     }
 ];
 
-// Make available globally
 window.availableTables = availableTables;

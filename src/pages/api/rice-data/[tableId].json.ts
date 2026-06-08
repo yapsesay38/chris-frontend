@@ -28,7 +28,6 @@ export const GET: APIRoute = async ({ params, url }) => {
     }
     
     try {
-        // Build filter - by table_id AND province
         let filter = `(table_id='${tableId}')`;
         if (province && province !== 'null' && province !== 'undefined' && province !== '') {
             filter += ` && (province='${province}')`;

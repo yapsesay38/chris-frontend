@@ -22,7 +22,6 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body>
-    <!-- Offline banner - standalone component -->
     <div x-data="offlineBanner()" 
          x-show="isOffline"
          x-init="init()"
@@ -46,7 +45,6 @@
             </div>
         </header>
 
-        <!-- Table Selector & Trial Configuration -->
         <div class="config-bar" style="background: var(--bg-input); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
             <div style="display: flex; align-items: center; gap: 8px;">
                 <label style="font-weight: 600;">Data Table:</label>
@@ -93,17 +91,14 @@
                     <span x-text="`${currentTableName} (${trialCount} Trials per Sample)`"></span>
                 </div>
 
-          <!-- Dynamic Parameters with per-trial conditional visibility -->
           <template x-for="param in parameters" :key="param.id">
               <div class="form-group">
                   <label x-text="param.label"></label>
                   <div class="trial-row" :style="`grid-template-columns: repeat(${trialCount}, 1fr);`">
             
-                      <!-- SELECT parameters - with per-trial visibility -->
                       <template x-if="param.type === 'select'">
                           <template x-for="(trial, idx) in trials" :key="idx">
                               <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
-                                  <!-- Show dropdown only if condition is met for this trial -->
                                   <select x-show="isParamVisibleForTrial(param, idx)"
                                           x-model="trials[idx][param.id]"
                                           @change="onControlChange(param.id, idx)">
@@ -112,7 +107,6 @@
                                           <option :value="value" x-text="`${value}-${label}`"></option>
                                       </template>
                                   </select>
-                                  <!-- Show disabled placeholder when condition not met -->
                                   <div x-show="!isParamVisibleForTrial(param, idx)"
                                        style="color: var(--text-muted); text-align: center; padding: 8px; background: var(--bg-input); border-radius: 6px; font-size: 12px;">
                                       ⚡ Not applicable
@@ -121,7 +115,6 @@
                           </template>
                       </template>
             
-                      <!-- NUMBER parameters - with per-trial visibility -->
                       <template x-if="param.type === 'number'">
                           <template x-for="(trial, idx) in trials" :key="idx">
                               <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
@@ -140,7 +133,6 @@
                           </template>
                       </template>
             
-                      <!-- TEXT parameters - with per-trial visibility -->
                       <template x-if="param.type === 'text'">
                           <template x-for="(trial, idx) in trials" :key="idx">
                               <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">

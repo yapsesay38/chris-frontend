@@ -1,12 +1,9 @@
-// js/offline.js - Reusable offline banner component
 function offlineBanner() {
     return {
         isOffline: !navigator.onLine,
         init() {
-            // Store reference to component
             const self = this;
             
-            // Update when online/offline events fire
             window.addEventListener('online', () => {
                 self.isOffline = false;
                 console.log('Online - banner hidden');
@@ -16,7 +13,6 @@ function offlineBanner() {
                 console.log('Offline - banner shown');
             });
             
-            // Poll for DevTools offline toggle
             setInterval(() => {
                 const currentStatus = !navigator.onLine;
                 if (self.isOffline !== currentStatus) {

@@ -8,7 +8,6 @@ const ASSETS_TO_CACHE = [
   'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap'
 ];
 
-// Install Event - Pre-cache essential assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -18,7 +17,6 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate Event - Clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -34,14 +32,11 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Skip non-GET requests
   if (event.request.method !== 'GET') return;
 
-  // 1. Google Fonts - Stale-While-Revalidate
   if (url.origin === 'https://fonts.googleapis.com' || url.origin === 'https://fonts.gstatic.com') {
     event.respondWith(
       caches.open('google-fonts').then((cache) => {
@@ -57,7 +52,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Navigation & Static Assets - Cache-First with Network Fallback & Background Update
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
@@ -69,7 +63,7 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       }).catch(() => {
-          // If fetch fails and no cache, we might want a fallback, but for now just fail silently
+          // If fetch fails and no cache, add fallback, for now fail silently
       });
 
       // For HTML pages or main assets, return cache if available immediately

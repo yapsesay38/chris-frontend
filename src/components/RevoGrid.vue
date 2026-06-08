@@ -45,7 +45,7 @@
 
 <script setup>
 import VGrid from '@revolist/vue3-datagrid'
-import { ref, onMounted } from 'vue' // watch
+import { ref, onMounted } from 'vue'
 
 const props = defineProps({
   locationParam: {
@@ -72,12 +72,6 @@ const getProvinceFromLocation = () => {
   return province
 }
 
-// console.log('RevoGrid mounted with province:', props.province);
-
-/* watch(() => props.province, (newVal) => {
-  console.log('Province changed to:', newVal);
-}, { immediate: true }); */
-
 const tables = [
   { id: 'plantvigorandleaf', name: 'Plant Vigor & Leaf', emoji: '🍃' },
   { id: 'culm', name: 'Culm Characters', emoji: '🌿' },
@@ -86,7 +80,6 @@ const tables = [
   { id: 'growth', name: 'Growth Cycle', emoji: '🌱' }
 ]
 
-// Column definitions
 const columnDefinitions = {
   plantvigorandleaf: [
     { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200 },
@@ -219,10 +212,6 @@ const refreshData = () => {
   fetchData()
 }
 
-/* watch(() => props.province, () => {
-  fetchData()
-}) */
-
 onMounted(() => {
   activeProvince.value = getProvinceFromLocation()
   fetchData()
@@ -332,7 +321,6 @@ onMounted(() => {
   overflow: auto;
 }
 
-/* Revogrid custom styling */
 :deep(.rg-header) {
   background-color: #161b22;
   color: #e6edf3;

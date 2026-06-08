@@ -1,4 +1,3 @@
-// js/provinces.js - Home page provinces component
 function provincesApp() {
     return {
         provinces: [
