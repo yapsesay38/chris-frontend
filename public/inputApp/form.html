@@ -57,8 +57,16 @@
             
             <div style="display: flex; align-items: center; gap: 8px;">
                 <label style="font-weight: 600;">Number of Trials:</label>
-                <input type="number" x-model.number="trialCount" @change="updateTrialCount()" 
-                       min="1" max="20" style="width: 80px; padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;">
+                <button type="button" @click="decrementTrials()" 
+                        style="width: 32px; height: 32px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center;">
+                    −
+                </button>
+                <span x-text="trialCount" style="min-width: 40px; text-align: center; font-size: 16px; font-weight: 600;"></span>
+                <button type="button" @click="incrementTrials()" 
+                        style="width: 32px; height: 32px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center;">
+                    +
+                </button>
+                <span style="color: var(--text-muted); font-size: 12px;">(1-20 trials)</span>
             </div>
             
             <div style="color: var(--accent-success); font-size: 14px;">

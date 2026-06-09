@@ -90,6 +90,7 @@ function riceDataApp() {
             if (newCount < MIN_TRIALS) newCount = MIN_TRIALS;
             if (newCount > MAX_TRIALS) newCount = MAX_TRIALS;
             if (newCount === this.trials.length) return;
+
             const oldTrials = this.trials;
             const newTrials = [];
             for (let i = 0; i < newCount; i++) {
@@ -98,6 +99,22 @@ function riceDataApp() {
             this.trials = newTrials;
             this.trialCount = newCount;
             this.saveDraft();
+        },
+
+        incrementTrials() {
+            let newCount = this.trialCount + 1;
+            if (newCount <= MAX_TRIALS) {
+                this.trialCount = newCount;
+                this.updateTrialCount();
+            }
+        },
+
+        decrementTrials() {
+            let newCount = this.trialCount - 1;
+            if (newCount >= MIN_TRIALS) {
+                this.trialCount = newCount;
+                this.updateTrialCount();
+            }
         },
         
         saveDraft() {
