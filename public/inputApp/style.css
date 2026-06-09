@@ -184,6 +184,11 @@ footer {
     text-decoration: none;
 }
 
+.btn-back:hover {
+    border-color: var(--accent-primary) !important;
+    color: #fff !important;
+}
+
 .header-titles h1 {
     font-size: 1.4rem;
     margin: 0;
@@ -373,6 +378,11 @@ footer {
     background: var(--bg-input);
     border: 1px solid var(--border-color);
     color: var(--text-main);
+}
+
+.btn-secondary:hover {
+    border-color: var(--accent-primary) !important;
+    color: #fff !important;
 }
 
 .btn-success {
