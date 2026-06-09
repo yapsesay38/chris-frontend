@@ -268,6 +268,11 @@ footer {
     color: var(--text-muted);
 }
 
+.border-hover:hover {
+  border-color: var(--accent-primary) !important;
+  color: #fff !important;
+}
+
 /* ── Parameter Card ── */
 .form-group {
     background: var(--bg-input);
@@ -370,8 +375,14 @@ footer {
 }
 
 .btn-primary {
-    background: var(--accent-primary);
+    background: var(--accent-success);
+    border: 1px solid var(--border-color);
     color: #fff;
+}
+
+.btn-primary:hover {
+    border-color: var(--accent-primary) !important;
+    color: #fff !important;
 }
 
 .btn-secondary {
@@ -489,7 +500,7 @@ tr:hover td {
     border-radius: var(--radius-md);
     font-weight: 700;
     font-size: 0.85rem;
-    border: none;
+    border: 1px solid var(--border-color);
     cursor: pointer;
     display: flex;
     align-items: center;
