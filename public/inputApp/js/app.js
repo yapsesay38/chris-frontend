@@ -180,7 +180,10 @@ function riceDataApp() {
         
         editForm(index) {
             const record = this.filteredRecords[index];
-            if (!record) return;
+            if (!record) {
+               alert('Record not found');
+               return;
+            }
 
             const actualIndex = this.records.findIndex(r => r.timestamp === record.timestamp);
 
