@@ -2,6 +2,7 @@ const CACHE_NAME = 'input-app-v1';
 const INPUT_APP_ASSETS = [
   '/inputApp/index.html',
   '/inputApp/form.html',
+  '/inputApp/records.html',
   '/inputApp/style.css',
   '/inputApp/icon.png',
   '/inputApp/manifest.json',
