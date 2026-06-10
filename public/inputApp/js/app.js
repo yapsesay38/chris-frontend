@@ -566,7 +566,7 @@ function allRecordsApp() {
                 for (const table of this.availableTables) {
                     const expectedParams = table.parameters.map(p => p.id.replace(/([A-Z])/g, '_$1').toLowerCase());
                     const matchCount = expectedParams.filter(p => headers.includes(p)).length;
-                    if (matchCount > 5) {
+                    if (matchCount >= 5) {
                         tableId = table.id;
                         tableConfig = table;
                         break;
@@ -584,6 +584,11 @@ function allRecordsApp() {
             const landraceIdx = headers.indexOf('landrace_id');
             const trialNumIdx = headers.indexOf('trial_number');
             const recordDateIdx = headers.indexOf('record_date');
+
+    console.log('province index:', headers.indexOf('province'));
+    console.log('block_treatment_no index:', headers.indexOf('block_treatment_no'));
+    console.log('landrace_id index:', headers.indexOf('landrace_id'));
+    console.log('trial_number index:', headers.indexOf('trial_number'));
             
             if (provinceIdx === -1 || treatmentIdx === -1 || landraceIdx === -1 || trialNumIdx === -1) {
                 alert('CSV is missing required columns.');
