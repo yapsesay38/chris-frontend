@@ -493,6 +493,11 @@ tr:hover td {
     border-color: var(--accent-danger);
 }
 
+.btn-icon.export-single:hover {
+    color: var(--accent-success);
+    border-color: var(--accent-success);
+}
+
 .export-btn {
     background: var(--accent-success);
     color: #fff;

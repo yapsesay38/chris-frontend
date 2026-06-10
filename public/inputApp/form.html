@@ -222,8 +222,8 @@
                         <tr>
                             <th>Province</th>
                             <th>Table</th>
-                            <th>Block/Treatment</th>
-                            <th>Sample ID</th>
+                            <th>Block No. / Treatment No.</th>
+                            <th>Landrace Name / Sample ID</th>
                             <th>Trials</th>
                             <th>Actions</th>
                         </tr>
@@ -237,6 +237,13 @@
                                 <td><strong x-text="record.landrace"></strong></td>
                                 <td x-text="record.trialCount || 5"></td>
                                 <td class="action-btns">
+                                    <button class="btn-icon export-single" @click="exportSingleRecord(idx)" title="Export to CSV">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                            <polyline points="7 10 12 15 17 10"/>
+                                            <line x1="12" y1="15" x2="12" y2="3"/>
+                                        </svg>
+                                    </button>
                                     <button class="btn-icon edit" @click="editRecord(idx)" title="Edit Record">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -251,11 +258,11 @@
                                             <line x1="14" y1="11" x2="14" y2="17"></line>
                                         </svg>
                                     </button>
-                                </div>
-                            </div>
+                                </td>
+                            </tr>
                         </template>
                     </tbody>
-                </div>
+                </table>
                 <div class="empty-state" x-show="filteredRecords.length === 0" style="text-align: center; padding: 40px; color: #8b949e;">
                     No records found yet. Start by entering data above!
                 </div>

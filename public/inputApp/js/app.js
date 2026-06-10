@@ -201,7 +201,64 @@ function riceDataApp() {
                 this.records = loadRecords();
             }
         },
-        
+
+        exportSingleRecord(index) {
+            const record = this.records[index];
+            if (!record) {
+               alert('Record not found.');
+               return;
+            }
+    
+            const tableConfig = this.availableTables.find(t => t.id === record.tableId);
+            if (!tableConfig) {
+                alert('Table configuration not found.');
+                return;
+            }
+            
+            const tableName = tableConfig.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            const today = new Date().toISOString().slice(0, 10);
+            const fileName = `${tableName}_${record.landrace.replace(/\s+/g, '_')}_${today}.csv`;
+            
+            const tableParams = tableConfig.parameters;
+            const paramIds = tableParams.map(p => p.id);
+            
+            // Headers
+            const headers = ['province', 'table_id', 'block_treatment_no', 'landrace_id', 'trial_number', 'record_date'];
+            paramIds.forEach(paramId => {
+                headers.push(paramId.replace(/([A-Z])/g, '_$1').toLowerCase());
+            });
+            
+            const csvRows = [headers.join(',')];
+            const trialCount = record.trialCount || 5;
+            const recordDate = new Date(record.timestamp).toISOString().slice(0, 10);
+            
+            for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
+                const row = [record.province, record.tableId, record.treatmentNo, record.landrace, trialIdx + 1, recordDate];
+                
+                paramIds.forEach(paramId => {
+                    let value = record.trials[trialIdx]?.[paramId] || '';
+                    const paramConfig = tableParams.find(p => p.id === paramId);
+                    if (paramConfig?.type === 'select' && value && paramConfig.options[value]) {
+                        value = `${value}-${paramConfig.options[value]}`;
+                    }
+                    row.push(value);
+                });
+                
+                csvRows.push(row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','));
+            }
+            
+            const csvContent = "\uFEFF" + csvRows.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            alert(`✅ Exported "${record.landrace}" to ${fileName}`);
+        },
+
         cancelEdit() {
             this.editMode = false;
             this.editIndex = -1;
