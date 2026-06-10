@@ -396,6 +396,17 @@ footer {
     color: #fff !important;
 }
 
+.btn-tertiary {
+    background: var(--accent-danger);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+
+.btn-tertiary:hover {
+    border-color: var(--accent-primary) !important;
+    color: #fff !important;
+}
+
 .btn-success {
     background: var(--accent-success);
     color: #fff;

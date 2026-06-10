@@ -179,18 +179,26 @@ function riceDataApp() {
         },
         
         editForm(index) {
-            const record = this.records[index];
-            if (record.tableId !== this.currentTableId) {
-                this.currentTableId = record.tableId;
-                this.changeTable();
+            const record = this.filteredRecords[index];
+            if (!record) return;
+
+            const actualIndex = this.records.findIndex(r => r.timestamp === record.timestamp);
+
+            if (actualIndex !== -1) {
+                this.editMode = true;
+                this.editIndex = actualIndex;
+                this.currentProvince = record.province;
+                this.treatmentNo = record.treatmentNo;
+                this.landrace = record.landrace;
+                this.trialCount = record.trialCount || DEFAULT_TRIAL_COUNT;
+                this.trials = JSON.parse(JSON.stringify(record.trials));
+
+                if (record.tableId !== this.currentTableId) {
+                    this.currentTableId = record.tableId;
+                    this.changeTable();
+                }
             }
-            this.editMode = true;
-            this.editIndex = index;
-            this.currentProvince = record.province;
-            this.treatmentNo = record.treatmentNo;
-            this.landrace = record.landrace;
-            this.trialCount = record.trialCount || DEFAULT_TRIAL_COUNT;
-            this.trials = JSON.parse(JSON.stringify(record.trials));
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         
@@ -386,21 +394,6 @@ function allRecordsApp() {
             URL.revokeObjectURL(url);
             
             alert(`✅ Exported "${record.landrace}" to ${fileName}`);
-        },
-        
-        editRecord(index) {
-            const record = this.filteredRecordsList[index];
-            const actualIndex = this.allRecords.findIndex(r => 
-                r.province === record.province && 
-                r.treatmentNo === record.treatmentNo && 
-                r.landrace === record.landrace &&
-                r.timestamp === record.timestamp
-            );
-            
-            if (actualIndex !== -1) {
-                sessionStorage.setItem('editRecordIndex', actualIndex);
-                window.location.href = `form.html?province=${encodeURIComponent(record.province)}&edit=true`;
-            }
         },
         
         deleteRecord(index) {
