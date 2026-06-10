@@ -149,7 +149,7 @@ function riceDataApp() {
             localStorage.removeItem(`rice_draft_${this.currentProvince || 'unknown'}_${this.currentTableId}`);
         },
         
-        saveRecord() {
+        saveForm() {
             if (!this.treatmentNo || !this.landrace) {
                 alert('Please fill in Block/Treatment No. and Landrace Name');
                 return;
@@ -178,7 +178,7 @@ function riceDataApp() {
             this.records = loadRecords();
         },
         
-        editRecord(index) {
+        editForm(index) {
             const record = this.records[index];
             if (record.tableId !== this.currentTableId) {
                 this.currentTableId = record.tableId;
@@ -194,71 +194,6 @@ function riceDataApp() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         
-        deleteRecord(index) {
-            if (confirm('Are you sure you want to delete this record?')) {
-                this.records.splice(index, 1);
-                saveRecords(this.records);
-                this.records = loadRecords();
-            }
-        },
-
-        exportSingleRecord(index) {
-            const record = this.records[index];
-            if (!record) {
-               alert('Record not found.');
-               return;
-            }
-    
-            const tableConfig = this.availableTables.find(t => t.id === record.tableId);
-            if (!tableConfig) {
-                alert('Table configuration not found.');
-                return;
-            }
-            
-            const tableName = tableConfig.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-            const today = new Date().toISOString().slice(0, 10);
-            const fileName = `${tableName}_${record.landrace.replace(/\s+/g, '_')}_${today}.csv`;
-            
-            const tableParams = tableConfig.parameters;
-            const paramIds = tableParams.map(p => p.id);
-            
-            // Headers
-            const headers = ['province', 'table_id', 'block_treatment_no', 'landrace_id', 'trial_number', 'record_date'];
-            paramIds.forEach(paramId => {
-                headers.push(paramId.replace(/([A-Z])/g, '_$1').toLowerCase());
-            });
-            
-            const csvRows = [headers.join(',')];
-            const trialCount = record.trialCount || 5;
-            const recordDate = new Date(record.timestamp).toISOString().slice(0, 10);
-            
-            for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
-                const row = [record.province, record.tableId, record.treatmentNo, record.landrace, trialIdx + 1, recordDate];
-                
-                paramIds.forEach(paramId => {
-                    let value = record.trials[trialIdx]?.[paramId] || '';
-                    const paramConfig = tableParams.find(p => p.id === paramId);
-                    if (paramConfig?.type === 'select' && value && paramConfig.options[value]) {
-                        value = `${value}-${paramConfig.options[value]}`;
-                    }
-                    row.push(value);
-                });
-                
-                csvRows.push(row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','));
-            }
-            
-            const csvContent = "\uFEFF" + csvRows.join('\n');
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = fileName;
-            link.click();
-            URL.revokeObjectURL(url);
-            
-            alert(`✅ Exported "${record.landrace}" to ${fileName}`);
-        },
-
         cancelEdit() {
             this.editMode = false;
             this.editIndex = -1;
@@ -271,340 +206,6 @@ function riceDataApp() {
             this.trialCount = DEFAULT_TRIAL_COUNT;
             this.trials = buildTrials(DEFAULT_TRIAL_COUNT, this.currentParameters);
             if (this.currentProvince) this.loadDraft();
-        },
-        
-        exportToCSV() {
-            if (this.records.length === 0) {
-                alert('No records to export.');
-                return;
-            }
-            
-            const recordsByTable = {};
-            this.records.forEach(record => {
-                const tableId = record.tableId || 'unknown';
-                if (!recordsByTable[tableId]) recordsByTable[tableId] = [];
-                recordsByTable[tableId].push(record);
-            });
-            
-            const today = new Date().toISOString().slice(0, 10);
-            let filesCreated = 0;
-            let fileList = [];
-            
-            for (const [tableId, tableRecords] of Object.entries(recordsByTable)) {
-                const tableConfig = this.availableTables.find(t => t.id === tableId);
-                const tableName = tableConfig?.name?.replace(/[^a-z0-9]/gi, '_').toLowerCase() || tableId;
-                const fileName = `${tableName}_${today}.csv`;
-                const tableParams = tableConfig?.parameters || [];
-                const paramIds = tableParams.map(p => p.id);
-                
-                const headers = ['province', 'table_id', 'block_treatment_no', 'landrace_id', 'trial_number', 'record_date'];
-                paramIds.forEach(paramId => {
-                    headers.push(paramId.replace(/([A-Z])/g, '_$1').toLowerCase());
-                });
-                
-                const csvRows = [headers.join(',')];
-                
-                tableRecords.forEach(record => {
-                    const trialCount = record.trialCount || 5;
-                    const recordDate = new Date(record.timestamp).toISOString().slice(0, 10);
-                    
-                    for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
-                        const row = [record.province, record.tableId, record.treatmentNo, record.landrace, trialIdx + 1, recordDate];
-                        
-                        paramIds.forEach(paramId => {
-                            let value = record.trials[trialIdx]?.[paramId] || '';
-                            const paramConfig = tableParams.find(p => p.id === paramId);
-                            if (paramConfig?.type === 'select' && value && paramConfig.options[value]) {
-                                value = `${value}-${paramConfig.options[value]}`;
-                            }
-                            row.push(value);
-                        });
-                        
-                        csvRows.push(row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','));
-                    }
-                });
-                
-                const csvContent = "\uFEFF" + csvRows.join('\n');
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = fileName;
-                link.click();
-                URL.revokeObjectURL(url);
-                
-                filesCreated++;
-                fileList.push(fileName);
-            }
-            alert(`✅ Exported ${filesCreated} CSV file(s):\n\n${fileList.join('\n')}`);
-        },
-        
-        async uploadToServer(event) {
-            console.log('Upload started');
-            console.log('PB_URL:', window.location.origin);
-            if (this.records.length === 0) {
-                alert('No records to upload.');
-                return;
-            }
-            if (!navigator.onLine) {
-                alert('You are offline. Please connect to the internet and try again.');
-                return;
-            }
-            const confirmed = confirm(`Upload ${this.records.length} record(s) to server?`);
-            if (!confirmed) return;
-
-            const PB_URL = window.location.origin;
-            const pb = new PocketBase(PB_URL);
-            console.log('PocketBase client created');
-
-            const uploadData = [];
-            for (const record of this.records) {
-                const trialCount = record.trialCount || 5;
-                const tableConfig = this.availableTables.find(t => t.id === record.tableId);
-                for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
-                    const agroParams = {};
-                    if (tableConfig) {
-                        for (const param of tableConfig.parameters) {
-                            agroParams[param.id] = record.trials[trialIdx]?.[param.id] || '';
-                        }
-                    }
-                    uploadData.push({
-                        province: record.province,
-                        table_id: record.tableId,
-                        block_treatment_no: record.treatmentNo,
-                        landrace_id: record.landrace,
-                        trial_number: trialIdx + 1,
-                        record_date: new Date(record.timestamp).toISOString(),
-                        agro_params: agroParams
-                    });
-                }
-            }
-
-            const uploadBtn = event?.target?.closest?.('.export-btn');
-            const originalText = uploadBtn ? uploadBtn.innerHTML : 'Upload';
-            if (uploadBtn) {
-                uploadBtn.innerHTML = '⏳ Uploading...';
-                uploadBtn.disabled = true;
-            }
-
-            let successCount = 0;
-            let failCount = 0;
-            try {
-                for (const record of uploadData) {
-                    try {
-                        await pb.collection('rice_data').create(record);
-                        successCount++;
-                    } catch (err) {
-                        console.error('Failed to upload record:', record, err);
-                        failCount++;
-                    }
-                }
-                alert(`✅ Upload complete!\nSuccess: ${successCount}\nFailed: ${failCount}`);
-            } catch (error) {
-                console.error('Upload error:', error);
-                alert('Upload failed. Please check your server address and try again.');
-            } finally {
-                if (uploadBtn) {
-                    uploadBtn.innerHTML = originalText;
-                    uploadBtn.disabled = false;
-                }
-            }
-        },
-        
-        triggerImport() {
-            document.getElementById('csvImportInput').click();
-        },
-
-        async importCSV(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-    
-            if (!file.name.endsWith('.csv')) {
-               alert('Please select a CSV file.');
-                event.target.value = '';
-                return;
-            }
-    
-            const confirmed = confirm(`Import data from "${file.name}"? This will ADD records to your existing data (no duplicates will be removed).`);
-            if (!confirmed) {
-                event.target.value = '';
-                return;
-            }
-    
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const csvText = e.target.result;
-                const importedRecords = await this.parseCSVToRecords(csvText, file.name);
-        
-                if (importedRecords.length === 0) {
-                    alert('No valid records found in the CSV file.');
-                    event.target.value = '';
-                    return;
-                }
-        
-                const existingRecords = this.records;
-                const mergedRecords = [...existingRecords, ...importedRecords];
-        
-                const STORAGE_KEY = 'heirloom_rice_records';
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(mergedRecords));
-                this.records = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        
-                alert(`✅ Successfully imported ${importedRecords.length} record(s) from "${file.name}".\nTotal records now: ${this.records.length}`);
-        
-                event.target.value = '';
-        
-                this.$forceUpdate();
-            };
-            reader.onerror = () => {
-                alert('Error reading file.');
-                event.target.value = '';
-            };
-            reader.readAsText(file);
-        },
-
-        async parseCSVToRecords(csvText, fileName) {
-            const lines = csvText.split('\n');
-            if (lines.length < 2) {
-                alert('CSV file is empty or invalid.');
-                return [];
-            }
-    
-            const headers = this.parseCSVRow(lines[0]);
-    
-            let tableId = null;
-            let tableConfig = null;
-    
-            const fileNameMatch = fileName.match(/^(.+?)_\d{4}-\d{2}-\d{2}\.csv$/);
-            if (fileNameMatch) {
-                const tableNameFromFile = fileNameMatch[1];
-                tableConfig = this.availableTables.find(t => 
-                    t.name.toLowerCase().replace(/[^a-z0-9]/g, '_') === tableNameFromFile
-                );
-                if (tableConfig) {
-                    tableId = tableConfig.id;
-                }
-            }
-    
-            if (!tableId) {
-                for (const table of this.availableTables) {
-                    const expectedParams = table.parameters.map(p => p.id.replace(/([A-Z])/g, '_$1').toLowerCase());
-                    const matchCount = expectedParams.filter(p => headers.includes(p)).length;
-                    if (matchCount > 5) { // If many parameters match, assume it's this table
-                        tableId = table.id;
-                        tableConfig = table;
-                        break;
-                    }
-                }
-            }
-    
-            if (!tableId || !tableConfig) {
-                alert(`Could not identify the table type for file: ${fileName}. Please ensure this CSV was exported from this app.`);
-                return [];
-            }
-    
-            const provinceIdx = headers.indexOf('province');
-            const treatmentIdx = headers.indexOf('block_treatment_no');
-            const landraceIdx = headers.indexOf('landrace_id');
-            const trialNumIdx = headers.indexOf('trial_number');
-            const recordDateIdx = headers.indexOf('record_date');
-    
-            if (provinceIdx === -1 || treatmentIdx === -1 || landraceIdx === -1 || trialNumIdx === -1) {
-                alert('CSV is missing required columns (province, block_treatment_no, landrace_id, trial_number).');
-                return [];
-            }
-    
-            const sampleMap = new Map();
-    
-            for (let i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
-        
-                const values = this.parseCSVRow(lines[i]);
-                if (values.length < headers.length) continue;
-        
-                const province = values[provinceIdx];
-                const treatmentNo = values[treatmentIdx];
-                const landrace = values[landraceIdx];
-                const trialNumber = parseInt(values[trialNumIdx]);
-                const recordDate = recordDateIdx !== -1 ? values[recordDateIdx] : new Date().toISOString().slice(0, 10);
-        
-                const sampleKey = `${province}|${treatmentNo}|${landrace}`;
-        
-                if (!sampleMap.has(sampleKey)) {
-                    sampleMap.set(sampleKey, {
-                        province: province,
-                        treatmentNo: treatmentNo,
-                        landrace: landrace,
-                        tableId: tableId,
-                        tableName: tableConfig.name,
-                        trials: {},
-                        trialCount: 0,
-                        timestamp: new Date(recordDate).getTime() || Date.now()
-                    });
-                }
-        
-                const sample = sampleMap.get(sampleKey);
-        
-                const trialData = {};
-                for (const param of tableConfig.parameters) {
-                    const paramHeader = param.id.replace(/([A-Z])/g, '_$1').toLowerCase();
-                    const paramIdx = headers.indexOf(paramHeader);
-                    if (paramIdx !== -1 && values[paramIdx]) {
-                        let value = values[paramIdx];
-                        const match = value.match(/^(\d+)-/);
-                        if (match) {
-                            value = match[1];
-                        }
-                        trialData[param.id] = value;
-                    } else {
-                        trialData[param.id] = '';
-                    }
-                }
-        
-                sample.trials[trialNumber] = trialData;
-                if (trialNumber > sample.trialCount) sample.trialCount = trialNumber;
-            }
-    
-            const importedRecords = [];
-            for (const sample of sampleMap.values()) {
-                const trialsArray = [];
-                for (let i = 1; i <= sample.trialCount; i++) {
-                    trialsArray.push(sample.trials[i] || this.buildEmptyTrial(tableConfig.parameters));
-                }
-        
-                importedRecords.push({
-                    province: sample.province,
-                    tableId: sample.tableId,
-                    tableName: sample.tableName,
-                    treatmentNo: sample.treatmentNo,
-                    landrace: sample.landrace,
-                    trialCount: sample.trialCount,
-                    trials: trialsArray,
-                    timestamp: sample.timestamp
-                });
-            }
-    
-            return importedRecords;
-        },
-
-        parseCSVRow(line) {
-            const result = [];
-            let inQuotes = false;
-            let currentValue = '';
-    
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    result.push(currentValue.trim());
-                    currentValue = '';
-                } else {
-                    currentValue += char;
-                }
-            }
-            result.push(currentValue.trim());
-    
-            return result.map(v => v.replace(/^"|"$/g, ''));
         },
 
         buildEmptyTrial(params) {
@@ -664,7 +265,7 @@ function allRecordsApp() {
             this.filterRecords();
         },
         
-        exportToCSV() {
+        exportFilteredData() {
             if (this.filteredRecordsList.length === 0) {
                 alert('No records to export.');
                 return;
@@ -818,6 +419,275 @@ function allRecordsApp() {
                 this.refreshRecords();
                 alert('Record deleted successfully!');
             }
+        },
+
+        async uploadFilteredData(event) {
+            if (this.filteredRecords.length === 0) {
+                alert('No records to upload.');
+                return;
+            }
+            if (!navigator.onLine) {
+                alert('You are offline. Please connect to the internet and try again.');
+                return;
+            }
+            
+            const confirmed = confirm(`Upload ${this.filteredRecords.length} filtered record(s) to server?`);
+            if (!confirmed) return;
+        
+            const PB_URL = window.location.origin;
+            const pb = new PocketBase(PB_URL);
+        
+            const uploadData = [];
+            for (const record of this.filteredRecords) {
+                const trialCount = record.trialCount || 5;
+                const tableConfig = this.availableTables.find(t => t.id === record.tableId);
+                for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
+                    const agroParams = {};
+                    if (tableConfig) {
+                        for (const param of tableConfig.parameters) {
+                            agroParams[param.id] = record.trials[trialIdx]?.[param.id] || '';
+                        }
+                    }
+                    uploadData.push({
+                        province: record.province,
+                        table_id: record.tableId,
+                        block_treatment_no: record.treatmentNo,
+                        landrace_id: record.landrace,
+                        trial_number: trialIdx + 1,
+                        record_date: new Date(record.timestamp).toISOString(),
+                        agro_params: agroParams
+                    });
+                }
+            }
+        
+            const uploadBtn = event?.target?.closest?.('.export-btn');
+            const originalText = uploadBtn ? uploadBtn.innerHTML : 'Upload';
+            if (uploadBtn) {
+                uploadBtn.innerHTML = '⏳ Uploading...';
+                uploadBtn.disabled = true;
+            }
+        
+            let successCount = 0;
+            let failCount = 0;
+            try {
+                for (const record of uploadData) {
+                    try {
+                        await pb.collection('rice_data').create(record);
+                        successCount++;
+                    } catch (err) {
+                        console.error('Failed to upload record:', record, err);
+                        failCount++;
+                    }
+                }
+                alert(`✅ Upload complete!\nSuccess: ${successCount}\nFailed: ${failCount}`);
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Upload failed. Please check your server address and try again.');
+            } finally {
+                if (uploadBtn) {
+                    uploadBtn.innerHTML = originalText;
+                    uploadBtn.disabled = false;
+                }
+            }
+        },
+        
+        triggerImport() {
+            document.getElementById('csvImportInput').click();
+        },
+        
+        async importCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+        
+            if (!file.name.endsWith('.csv')) {
+                alert('Please select a CSV file.');
+                event.target.value = '';
+                return;
+            }
+        
+            const confirmed = confirm(`Import data from "${file.name}"? This will ADD records to your existing data.`);
+            if (!confirmed) {
+                event.target.value = '';
+                return;
+            }
+        
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const csvText = e.target.result;
+                
+                const importedRecords = await this.parseCSVToRecords(csvText, file.name);
+                
+                if (importedRecords.length === 0) {
+                    alert('No valid records found in the CSV file.');
+                    event.target.value = '';
+                    return;
+                }
+        
+                const existingRecords = this.allRecords;
+                const mergedRecords = [...existingRecords, ...importedRecords];
+                
+                localStorage.setItem('heirloom_rice_records', JSON.stringify(mergedRecords));
+                this.refreshRecords();
+                
+                alert(`✅ Successfully imported ${importedRecords.length} record(s) from "${file.name}".\nTotal records now: ${this.allRecords.length}`);
+                
+                event.target.value = '';
+            };
+            reader.onerror = () => {
+                alert('Error reading file.');
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        },
+        
+        async parseCSVToRecords(csvText, fileName) {
+            const lines = csvText.split('\n');
+            if (lines.length < 2) {
+                return [];
+            }
+            
+            const headers = this.parseCSVRow(lines[0]);
+            
+            let tableId = null;
+            let tableConfig = null;
+            
+            const fileNameMatch = fileName.match(/^(.+?)_\d{4}-\d{2}-\d{2}\.csv$/);
+            if (fileNameMatch) {
+                const tableNameFromFile = fileNameMatch[1];
+                tableConfig = this.availableTables.find(t => 
+                    t.name.toLowerCase().replace(/[^a-z0-9]/g, '_') === tableNameFromFile
+                );
+                if (tableConfig) {
+                    tableId = tableConfig.id;
+                }
+            }
+            
+            if (!tableId) {
+                for (const table of this.availableTables) {
+                    const expectedParams = table.parameters.map(p => p.id.replace(/([A-Z])/g, '_$1').toLowerCase());
+                    const matchCount = expectedParams.filter(p => headers.includes(p)).length;
+                    if (matchCount > 5) {
+                        tableId = table.id;
+                        tableConfig = table;
+                        break;
+                    }
+                }
+            }
+            
+            if (!tableId || !tableConfig) {
+                alert(`Could not identify the table type for file: ${fileName}`);
+                return [];
+            }
+            
+            const provinceIdx = headers.indexOf('province');
+            const treatmentIdx = headers.indexOf('block_treatment_no');
+            const landraceIdx = headers.indexOf('landrace_id');
+            const trialNumIdx = headers.indexOf('trial_number');
+            const recordDateIdx = headers.indexOf('record_date');
+            
+            if (provinceIdx === -1 || treatmentIdx === -1 || landraceIdx === -1 || trialNumIdx === -1) {
+                alert('CSV is missing required columns.');
+                return [];
+            }
+            
+            const sampleMap = new Map();
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                
+                const values = this.parseCSVRow(lines[i]);
+                if (values.length < headers.length) continue;
+                
+                const province = values[provinceIdx];
+                const treatmentNo = values[treatmentIdx];
+                const landrace = values[landraceIdx];
+                const trialNumber = parseInt(values[trialNumIdx]);
+                const recordDate = recordDateIdx !== -1 ? values[recordDateIdx] : new Date().toISOString().slice(0, 10);
+                
+                const sampleKey = `${province}|${treatmentNo}|${landrace}`;
+                
+                if (!sampleMap.has(sampleKey)) {
+                    sampleMap.set(sampleKey, {
+                        province: province,
+                        treatmentNo: treatmentNo,
+                        landrace: landrace,
+                        tableId: tableId,
+                        tableName: tableConfig.name,
+                        trials: {},
+                        trialCount: 0,
+                        timestamp: new Date(recordDate).getTime() || Date.now()
+                    });
+                }
+                
+                const sample = sampleMap.get(sampleKey);
+                
+                const trialData = {};
+                for (const param of tableConfig.parameters) {
+                    const paramHeader = param.id.replace(/([A-Z])/g, '_$1').toLowerCase();
+                    const paramIdx = headers.indexOf(paramHeader);
+                    if (paramIdx !== -1 && values[paramIdx]) {
+                        let value = values[paramIdx];
+                        const match = value.match(/^(\d+)-/);
+                        if (match) {
+                            value = match[1];
+                        }
+                        trialData[param.id] = value;
+                    } else {
+                        trialData[param.id] = '';
+                    }
+                }
+                
+                sample.trials[trialNumber] = trialData;
+                if (trialNumber > sample.trialCount) sample.trialCount = trialNumber;
+            }
+            
+            const importedRecords = [];
+            for (const sample of sampleMap.values()) {
+                const trialsArray = [];
+                for (let i = 1; i <= sample.trialCount; i++) {
+                    trialsArray.push(sample.trials[i] || this.buildEmptyTrial(tableConfig.parameters));
+                }
+                
+                importedRecords.push({
+                    province: sample.province,
+                    tableId: sample.tableId,
+                    tableName: sample.tableName,
+                    treatmentNo: sample.treatmentNo,
+                    landrace: sample.landrace,
+                    trialCount: sample.trialCount,
+                    trials: trialsArray,
+                    timestamp: sample.timestamp
+                });
+            }
+            
+            return importedRecords;
+        },
+        
+        parseCSVRow(line) {
+            const result = [];
+            let inQuotes = false;
+            let currentValue = '';
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(currentValue.trim());
+                    currentValue = '';
+                } else {
+                    currentValue += char;
+                }
+            }
+            result.push(currentValue.trim());
+            
+            return result.map(v => v.replace(/^"|"$/g, ''));
+        },
+        
+        buildEmptyTrial(params) {
+            const trial = {};
+            params.forEach(param => { trial[param.id] = ''; });
+            return trial;
         },
         
         init() {

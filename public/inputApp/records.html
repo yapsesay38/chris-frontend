@@ -29,7 +29,7 @@
          @click="hideBanner()">
          📡 You are offline. Data will be saved locally.
     </div>
-    <div class="container" x-data="allRecordsApp()">
+    <div class="container" x-data="allRecordsApp()" x-init="init()">
         <header class="app-header">
             <div class="header-content">
                 <a class='btn-back' href='index.html'>
@@ -71,9 +71,9 @@
             </div>
             <div style="display: flex; align-items: center; gap: 16px;">
                 <div style="color: var(--accent-success); font-size: 14px;">
-                    📊 Total Records: <span x-text="filteredRecords.length"></span>
+                    📊 Showing: <span x-text="filteredRecords.length"></span> of <span x-text="allRecords.length"></span> records
                 </div>
-                <button class="export-btn border-hover" @click="exportToCSV()">
+                <button class="export-btn border-hover" @click="exportFilteredData()">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path>
                         <polyline points="7 10 12 15 17 10"></polyline>
@@ -81,6 +81,23 @@
                     </svg>
                     Export Filtered Data
                 </button>
+                <button class="export-btn border-hover" @click="uploadFilteredData($event)" style="background: #58a6ff;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Upload to Server
+                </button>
+                <button class="export-btn border-hover" @click="triggerImport()" style="background: #3fb950;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Import CSV
+                </button>
+                <input type="file" id="csvImportInput" accept=".csv" style="display: none;" @change="importCSV($event)">
             </div>
         </div>
 
