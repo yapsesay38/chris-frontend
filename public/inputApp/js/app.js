@@ -253,6 +253,10 @@ function allRecordsApp() {
         filteredRecordsList: [],
         provinceFilter: '',
         tableFilter: '',
+
+        showLoginModal: false,
+        pendingUploadData: null,
+        pendingUploadBtn: null,
         
         get filteredRecords() {
             return this.filteredRecordsList;
@@ -402,52 +406,50 @@ function allRecordsApp() {
             
             alert(`✅ Exported "${record.landrace}" to ${fileName}`);
         },
+
+        isAuthenticated: false,
+        authToken: null,
         
-        deleteRecord(index) {
-            const record = this.filteredRecordsList[index];
-            const actualIndex = this.allRecords.findIndex(r => 
-                r.province === record.province && 
-                r.treatmentNo === record.treatmentNo && 
-                r.landrace === record.landrace &&
-                r.timestamp === record.timestamp
-            );
+        async loginToPocketBase(email, password) {
+            const PB_URL = window.location.origin;
+            const pb = new PocketBase(PB_URL);
             
-            if (actualIndex !== -1 && confirm('Are you sure you want to delete this record?')) {
-                const records = loadRecords();
-                records.splice(actualIndex, 1);
-                saveRecords(records);
-                this.refreshRecords();
-                alert('Record deleted successfully!');
+            try {
+                const authData = await pb.collection('users').authWithPassword(email, password);
+                this.isAuthenticated = true;
+                this.authToken = authData.token;
+                return true;
+            } catch (error) {
+                console.error('Login failed:', error);
+                return false;
             }
         },
-
-        deleteFilteredData() {
-            if (this.filteredRecordsList.length === 0) {
-                alert('No records to delete.');
+        
+        async submitLogin(event) {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                alert('Please enter both email and password.');
                 return;
             }
             
-            const confirmed = confirm(`⚠️ WARNING: You are about to delete ${this.filteredRecordsList.length} record(s).\n\nThis action cannot be undone!`);
+            const success = await this.loginToPocketBase(email, password);
             
-            if (!confirmed) return;
-            
-            const userInput = prompt(`Type "DELETE" to confirm:`);
-            if (userInput !== 'DELETE') {
-                alert('Deletion cancelled.');
-                return;
+            if (success) {
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+                this.showLoginModal = false;
+                if (this.pendingUploadData) {
+                    await this.performUpload(this.pendingUploadData, this.pendingUploadBtn);
+                    this.pendingUploadData = null;
+                    this.pendingUploadBtn = null;
+                }
+            } else {
+                alert('Login failed. Please check your credentials.');
             }
-            
-            const timestampsToDelete = new Set(this.filteredRecordsList.map(r => r.timestamp));
-            
-            const remainingRecords = this.allRecords.filter(r => !timestampsToDelete.has(r.timestamp));
-            
-            localStorage.setItem('heirloom_rice_records', JSON.stringify(remainingRecords));
-            
-            this.refreshRecords();
-            
-            alert(`✅ Successfully deleted ${this.filteredRecordsList.length} record(s).`);
         },
-
+        
         async uploadFilteredData(event) {
             if (this.filteredRecords.length === 0) {
                 alert('No records to upload.');
@@ -458,14 +460,26 @@ function allRecordsApp() {
                 return;
             }
             
-            const confirmed = confirm(`Upload ${this.filteredRecords.length} filtered record(s) to server?`);
-            if (!confirmed) return;
+            if (!this.isAuthenticated) {
+                this.pendingUploadData = this.filteredRecords;
+                this.pendingUploadBtn = event?.target?.closest?.('.export-btn');
+                this.showLoginModal = true;
+                return;
+            }
+            
+            this.performUpload(this.filteredRecords, event?.target?.closest?.('.export-btn'));
+        },
         
+        async performUpload(records, uploadBtn) {
             const PB_URL = window.location.origin;
             const pb = new PocketBase(PB_URL);
-        
+            
+            if (this.authToken) {
+                pb.authStore.save(this.authToken);
+            }
+            
             const uploadData = [];
-            for (const record of this.filteredRecords) {
+            for (const record of records) {
                 const trialCount = record.trialCount || 5;
                 const tableConfig = this.availableTables.find(t => t.id === record.tableId);
                 for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
@@ -486,14 +500,13 @@ function allRecordsApp() {
                     });
                 }
             }
-        
-            const uploadBtn = event?.target?.closest?.('.export-btn');
+            
             const originalText = uploadBtn ? uploadBtn.innerHTML : 'Upload';
             if (uploadBtn) {
                 uploadBtn.innerHTML = '⏳ Uploading...';
                 uploadBtn.disabled = true;
             }
-        
+            
             let successCount = 0;
             let failCount = 0;
             try {
@@ -516,8 +529,8 @@ function allRecordsApp() {
                     uploadBtn.disabled = false;
                 }
             }
-        },
-        
+        }, 
+
         async uploadSingleRecord(index) {
             const record = this.filteredRecordsList[index];
             if (!record) {
@@ -530,11 +543,23 @@ function allRecordsApp() {
                 return;
             }
             
-            const confirmed = confirm(`Upload "${record.landrace}" (${record.province}) to server?`);
-            if (!confirmed) return;
+            if (!this.isAuthenticated) {
+                this.pendingUploadData = [record];
+                this.pendingUploadBtn = null;
+                this.showLoginModal = true;
+                return;
+            }
             
+            await this.performSingleUpload(record);
+        },
+        
+        async performSingleUpload(record) {
             const PB_URL = window.location.origin;
             const pb = new PocketBase(PB_URL);
+            
+            if (this.authToken) {
+                pb.authStore.save(this.authToken);
+            }
             
             const trialCount = record.trialCount || 5;
             const tableConfig = this.availableTables.find(t => t.id === record.tableId);
@@ -775,6 +800,52 @@ function allRecordsApp() {
             return trial;
         },
         
+        
+        deleteRecord(index) {
+            const record = this.filteredRecordsList[index];
+            const actualIndex = this.allRecords.findIndex(r => 
+                r.province === record.province && 
+                r.treatmentNo === record.treatmentNo && 
+                r.landrace === record.landrace &&
+                r.timestamp === record.timestamp
+            );
+            
+            if (actualIndex !== -1 && confirm('Are you sure you want to delete this record?')) {
+                const records = loadRecords();
+                records.splice(actualIndex, 1);
+                saveRecords(records);
+                this.refreshRecords();
+                alert('Record deleted successfully!');
+            }
+        },
+
+        deleteFilteredData() {
+            if (this.filteredRecordsList.length === 0) {
+                alert('No records to delete.');
+                return;
+            }
+            
+            const confirmed = confirm(`⚠️ WARNING: You are about to delete ${this.filteredRecordsList.length} record(s).\n\nThis action cannot be undone!`);
+            
+            if (!confirmed) return;
+            
+            const userInput = prompt(`Type "DELETE" to confirm:`);
+            if (userInput !== 'DELETE') {
+                alert('Deletion cancelled.');
+                return;
+            }
+            
+            const timestampsToDelete = new Set(this.filteredRecordsList.map(r => r.timestamp));
+            
+            const remainingRecords = this.allRecords.filter(r => !timestampsToDelete.has(r.timestamp));
+            
+            localStorage.setItem('heirloom_rice_records', JSON.stringify(remainingRecords));
+            
+            this.refreshRecords();
+            
+            alert(`✅ Successfully deleted ${this.filteredRecordsList.length} record(s).`);
+        },
+
         init() {
             this.refreshRecords();
             

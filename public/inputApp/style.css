@@ -546,6 +546,8 @@ tr:hover td {
     gap: 0.5rem;
 }
 
+[x-cloak] { display: none !important; }
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
     .container {
