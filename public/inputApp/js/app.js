@@ -253,7 +253,6 @@ function allRecordsApp() {
         filteredRecordsList: [],
         provinceFilter: '',
         tableFilter: '',
-
         showLoginModal: false,
         pendingUploadData: null,
         pendingUploadBtn: null,

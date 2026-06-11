@@ -20,6 +20,8 @@
     --card-border: rgba(255, 255, 255, 0.1);
 }
 
+[x-cloak] { display: none !important; }
+
 * {
     margin: 0;
     padding: 0;
@@ -545,8 +547,6 @@ tr:hover td {
     align-items: center;
     gap: 0.5rem;
 }
-
-[x-cloak] { display: none !important; }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
