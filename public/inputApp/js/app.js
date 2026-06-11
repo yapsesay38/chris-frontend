@@ -188,18 +188,22 @@ function riceDataApp() {
             const actualIndex = this.records.findIndex(r => r.timestamp === record.timestamp);
 
             if (actualIndex !== -1) {
+                const fullRecord = this.records[actualIndex];
+
+                if (fullRecord.tableId !== this.currentTableId) {
+                    this.currentTableId = fullRecord.tableId
+                    this.changeTable()
+                }
+
                 this.editMode = true;
                 this.editIndex = actualIndex;
-                this.currentProvince = record.province;
-                this.treatmentNo = record.treatmentNo;
-                this.landrace = record.landrace;
-                this.trialCount = record.trialCount || DEFAULT_TRIAL_COUNT;
+                this.currentProvince = fullRecord.province;
+                this.treatmentNo = fullRecord.treatmentNo;
+                this.landrace = fullRecord.landrace;
+                this.trialCount = fullRecord.trialCount || DEFAULT_TRIAL_COUNT;
                 this.trials = JSON.parse(JSON.stringify(record.trials));
 
-                if (record.tableId !== this.currentTableId) {
-                    this.currentTableId = record.tableId;
-                    this.changeTable();
-                }
+                this.$forceUpdate();
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -581,11 +585,6 @@ function allRecordsApp() {
             const trialNumIdx = headers.indexOf('trial_number');
             const recordDateIdx = headers.indexOf('record_date');
 
-    console.log('province index:', headers.indexOf('province'));
-    console.log('block_treatment_no index:', headers.indexOf('block_treatment_no'));
-    console.log('landrace_id index:', headers.indexOf('landrace_id'));
-    console.log('trial_number index:', headers.indexOf('trial_number'));
-            
             if (provinceIdx === -1 || treatmentIdx === -1 || landraceIdx === -1 || trialNumIdx === -1) {
                 alert('CSV is missing required columns.');
                 return [];
@@ -660,7 +659,7 @@ function allRecordsApp() {
                     timestamp: sample.timestamp
                 });
             }
-            
+
             return importedRecords;
         },
         

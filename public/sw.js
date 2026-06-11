@@ -15,33 +15,27 @@ const INPUT_APP_ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing - caching input app');
   event.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE_NAME);
       for (const asset of INPUT_APP_ASSETS) {
         try {
           await cache.add(asset);
-          console.log(`✅ Cached: ${asset}`);
         } catch (error) {
-          console.error(`❌ Failed to cache: ${asset}`, error);
         }
       }
-      console.log('Installation complete');
       await self.skipWaiting();
     })()
   );
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activating');
   event.waitUntil(
     (async () => {
       const cacheNames = await caches.keys();
       await Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME && cacheName !== 'google-fonts') {
-            console.log('Service Worker: Clearing old cache', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -75,7 +69,6 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       caches.match(url.pathname).then((cachedResponse) => {
         if (cachedResponse) {
-          console.log('Serving from cache:', url.pathname);
           return cachedResponse;
         }
         
@@ -88,7 +81,6 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         }).catch((error) => {
-          console.error('Network request failed:', url.pathname, error);
           return caches.match('/inputApp/index.html');
         });
       })
