@@ -824,7 +824,9 @@ function allRecordsApp() {
                 return;
             }
             
-            const confirmed = confirm(`⚠️ WARNING: You are about to delete ${this.filteredRecordsList.length} record(s).\n\nThis action cannot be undone!`);
+            const countToDelete = this.filteredRecordsList.length;  // ← STORE COUNT HERE
+            
+            const confirmed = confirm(`⚠️ WARNING: You are about to delete ${countToDelete} record(s).\n\nThis action cannot be undone!`);
             
             if (!confirmed) return;
             
@@ -835,14 +837,13 @@ function allRecordsApp() {
             }
             
             const timestampsToDelete = new Set(this.filteredRecordsList.map(r => r.timestamp));
-            
             const remainingRecords = this.allRecords.filter(r => !timestampsToDelete.has(r.timestamp));
             
             localStorage.setItem('heirloom_rice_records', JSON.stringify(remainingRecords));
             
             this.refreshRecords();
             
-            alert(`✅ Successfully deleted ${this.filteredRecordsList.length} record(s).`);
+            alert(`✅ Successfully deleted ${countToDelete} record(s).`);  // ← USE STORED COUNT
         },
 
         init() {
