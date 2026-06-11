@@ -30,23 +30,23 @@
          📡 You are offline. Data will be saved locally.
     </div>
 
-    <div x-data="{ showLoginModal: false }" 
-         x-show="showLoginModal" 
-         x-cloak
-         style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 20000; align-items: center; justify-content: center;">
-        <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; width: 350px; max-width: 90%;">
-            <h2 style="margin-bottom: 1rem; color: var(--accent-primary);">Login Required</h2>
-            <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Please enter your PocketBase credentials to upload data.</p>
-            <input type="text" id="loginEmail" placeholder="Email" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: white;">
-            <input type="password" id="loginPassword" placeholder="Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1.5rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: white;">
-            <div style="display: flex; gap: 1rem;">
-                <button @click="showLoginModal = false" style="flex: 1; padding: 0.75rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: white; cursor: pointer;">Cancel</button>
-                <button @click="submitLogin($event)" style="flex: 1; padding: 0.75rem; background: var(--accent-primary); border: none; border-radius: var(--radius-md); color: white; cursor: pointer;">Login</button>
+    <div class="container" x-data="allRecordsApp()" x-init="init()">
+
+        <div x-show="showLoginModal" 
+             x-cloak
+             style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 20000; align-items: center; justify-content: center;">
+            <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; width: 350px; max-width: 90%;">
+                <h2 style="margin-bottom: 1rem; color: var(--accent-primary);">Login Required</h2>
+                <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Please enter your PocketBase credentials to upload data.</p>
+                <input type="text" id="loginEmail" placeholder="Email" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: white;">
+                <input type="password" id="loginPassword" placeholder="Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1.5rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: white;">
+                <div style="display: flex; gap: 1rem;">
+                    <button @click="showLoginModal = false" style="flex: 1; padding: 0.75rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: white; cursor: pointer;">Cancel</button>
+                    <button @click="submitLogin($event)" style="flex: 1; padding: 0.75rem; background: var(--accent-primary); border: none; border-radius: var(--radius-md); color: white; cursor: pointer;">Login</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="container" x-data="allRecordsApp()" x-init="init()">
         <header class="app-header">
             <div class="header-content">
                 <a class='btn-back' href='index.html'>
