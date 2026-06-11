@@ -421,6 +421,33 @@ function allRecordsApp() {
             }
         },
 
+        deleteFilteredData() {
+            if (this.filteredRecordsList.length === 0) {
+                alert('No records to delete.');
+                return;
+            }
+            
+            const confirmed = confirm(`⚠️ WARNING: You are about to delete ${this.filteredRecordsList.length} record(s).\n\nThis action cannot be undone!`);
+            
+            if (!confirmed) return;
+            
+            const doubleConfirm = confirm(`Type "DELETE" to confirm:`, 'DELETE');
+            if (doubleConfirm !== 'DELETE') {
+                alert('Deletion cancelled.');
+                return;
+            }
+            
+            const timestampsToDelete = new Set(this.filteredRecordsList.map(r => r.timestamp));
+            
+            const remainingRecords = this.allRecords.filter(r => !timestampsToDelete.has(r.timestamp));
+            
+            localStorage.setItem('heirloom_rice_records', JSON.stringify(remainingRecords));
+            
+            this.refreshRecords();
+            
+            alert(`✅ Successfully deleted ${this.filteredRecordsList.length} record(s).`);
+        },
+
         async uploadFilteredData(event) {
             if (this.filteredRecords.length === 0) {
                 alert('No records to upload.');
