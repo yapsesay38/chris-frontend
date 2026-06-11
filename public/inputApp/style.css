@@ -509,6 +509,11 @@ tr:hover td {
     border-color: var(--accent-success);
 }
 
+.btn-icon.upload-single:hover {
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
 .export-btn {
     background: var(--accent-success);
     color: #fff;

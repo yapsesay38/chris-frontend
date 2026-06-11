@@ -518,6 +518,66 @@ function allRecordsApp() {
             }
         },
         
+        async uploadSingleRecord(index) {
+            const record = this.filteredRecordsList[index];
+            if (!record) {
+                alert('Record not found.');
+                return;
+            }
+            
+            if (!navigator.onLine) {
+                alert('You are offline. Please connect to the internet and try again.');
+                return;
+            }
+            
+            const confirmed = confirm(`Upload "${record.landrace}" (${record.province}) to server?`);
+            if (!confirmed) return;
+            
+            const PB_URL = window.location.origin;
+            const pb = new PocketBase(PB_URL);
+            
+            const trialCount = record.trialCount || 5;
+            const tableConfig = this.availableTables.find(t => t.id === record.tableId);
+            
+            const uploadData = [];
+            for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
+                const agroParams = {};
+                if (tableConfig) {
+                    for (const param of tableConfig.parameters) {
+                        agroParams[param.id] = record.trials[trialIdx]?.[param.id] || '';
+                    }
+                }
+                uploadData.push({
+                    province: record.province,
+                    table_id: record.tableId,
+                    block_treatment_no: record.treatmentNo,
+                    landrace_id: record.landrace,
+                    trial_number: trialIdx + 1,
+                    record_date: new Date(record.timestamp).toISOString(),
+                    agro_params: agroParams
+                });
+            }
+            
+            let successCount = 0;
+            let failCount = 0;
+            
+            for (const data of uploadData) {
+                try {
+                    await pb.collection('rice_data').create(data);
+                    successCount++;
+                } catch (err) {
+                    console.error('Failed to upload trial:', err);
+                    failCount++;
+                }
+            }
+            
+            if (failCount === 0) {
+                alert(`✅ Successfully uploaded "${record.landrace}" (${successCount} trials)`);
+            } else {
+                alert(`⚠️ Uploaded ${successCount} of ${uploadData.length} trials. ${failCount} failed.`);
+            }
+        },
+        
         triggerImport() {
             document.getElementById('csvImportInput').click();
         },
@@ -566,7 +626,7 @@ function allRecordsApp() {
             };
             reader.readAsText(file);
         },
-        
+
         async parseCSVToRecords(csvText, fileName) {
             const lines = csvText.split('\n');
             if (lines.length < 2) {
