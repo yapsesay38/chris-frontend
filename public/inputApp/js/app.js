@@ -431,8 +431,8 @@ function allRecordsApp() {
             
             if (!confirmed) return;
             
-            const doubleConfirm = confirm(`Type "DELETE" to confirm:`, 'DELETE');
-            if (doubleConfirm !== 'DELETE') {
+            const userInput = prompt(`Type "DELETE" to confirm:`);
+            if (userInput !== 'DELETE') {
                 alert('Deletion cancelled.');
                 return;
             }
@@ -583,48 +583,46 @@ function allRecordsApp() {
         },
         
         async importCSV(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-        
-            if (!file.name.endsWith('.csv')) {
-                alert('Please select a CSV file.');
-                event.target.value = '';
-                return;
-            }
-        
-            const confirmed = confirm(`Import data from "${file.name}"? This will ADD records to your existing data.`);
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+            
+            const confirmed = confirm(`Import ${files.length} CSV file(s)? This will ADD records to your existing data.`);
             if (!confirmed) {
                 event.target.value = '';
                 return;
             }
-        
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const csvText = e.target.result;
+            
+            let totalImported = 0;
+            let totalFailed = 0;
+            
+            for (const file of Array.from(files)) {
+                if (!file.name.endsWith('.csv')) {
+                    console.warn(`Skipping "${file.name}": Not a CSV file.`);
+                    totalFailed++;
+                    continue;
+                }
                 
-                const importedRecords = await this.parseCSVToRecords(csvText, file.name);
+                const text = await file.text();
+                const importedRecords = await this.parseCSVToRecords(text, file.name);
                 
                 if (importedRecords.length === 0) {
-                    alert('No valid records found in the CSV file.');
-                    event.target.value = '';
-                    return;
+                    console.warn(`No valid records found in "${file.name}".`);
+                    totalFailed++;
+                    continue;
                 }
-        
+                
                 const existingRecords = this.allRecords;
                 const mergedRecords = [...existingRecords, ...importedRecords];
-                
                 localStorage.setItem('heirloom_rice_records', JSON.stringify(mergedRecords));
                 this.refreshRecords();
                 
-                alert(`✅ Successfully imported ${importedRecords.length} record(s) from "${file.name}".\nTotal records now: ${this.allRecords.length}`);
-                
-                event.target.value = '';
-            };
-            reader.onerror = () => {
-                alert('Error reading file.');
-                event.target.value = '';
-            };
-            reader.readAsText(file);
+                totalImported += importedRecords.length;
+                console.log(`✅ Imported ${importedRecords.length} record(s) from "${file.name}".`);
+            }
+            
+            alert(`📊 Import complete!\nSuccess: ${totalImported} records from ${files.length - totalFailed} file(s)\nFailed: ${totalFailed} file(s)`);
+            
+            event.target.value = '';
         },
 
         async parseCSVToRecords(csvText, fileName) {
