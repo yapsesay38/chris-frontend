@@ -51,7 +51,7 @@
           ❌ {{ error }}
         </span>
         <span v-else class="status success">
-          ✅ {{ source.length }} records for {{ province }}
+          ✅ {{ filteredData.length }} records for {{ province }}
         </span>
         <button @click="refreshData" :disabled="loading" class="refresh-btn">
           ⟳ Refresh
@@ -77,7 +77,7 @@
 
 <script setup>
 import VGrid from '@revolist/vue3-datagrid'
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps({
   locationParam: {
@@ -227,6 +227,7 @@ const columns = ref([])
 const loading = ref(false)
 const error = ref(null)
 const activeProvince = ref('')
+const province = computed(() => activeProvince.value)
 
 const fetchData = async () => {
   loading.value = true
