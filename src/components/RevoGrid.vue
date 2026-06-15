@@ -1,5 +1,35 @@
 <template>
   <div class="grid-container">
+
+    <div class="search-filter-bar">
+      <div class="search-wrapper">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input 
+          type="text" 
+          v-model="searchQuery" 
+          @input="onSearch" 
+          placeholder="Search all columns..."
+          class="search-input"
+        >
+        <button v-if="searchQuery" @click="clearSearch" class="clear-search">×</button>
+      </div>
+      
+      <div class="filter-controls">
+        <button @click="toggleFilterRow" class="filter-btn" :class="{ active: showFilterRow }">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="22 3 2 3 10 13 10 21 14 18 14 13 22 3"></polygon>
+          </svg>
+          {{ showFilterRow ? 'Hide Filters' : 'Show Filters' }}
+        </button>
+        <button @click="clearAllFilters" class="clear-filters-btn">
+          Clear Filters
+        </button>
+      </div>
+    </div>
+
     <div class="controls">
       <div class="table-selector">
         <button
@@ -30,11 +60,12 @@
     </div>
     
     <VGrid 
+      ref="gridRef"
       :columns="columns" 
-      :source="source"
+      :source="filteredSource"
       :resizable="true"
       :sorting="true"
-      :filtering="true"
+      :filtering="showFilterRow"
       :pagination="true"
       :page-size="50"
       :page-sizes="[25, 50, 100, 250]"
@@ -45,7 +76,7 @@
 
 <script setup>
 import VGrid from '@revolist/vue3-datagrid'
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps({
   locationParam: {
@@ -54,6 +85,11 @@ const props = defineProps({
     default: ''
   }
 })
+
+const searchQuery = ref('')
+const showFilterRow = ref(true)
+const gridRef = ref(null)
+let originalData = []
 
 const locationToProvince = {
   'abra': 'Abra',
@@ -70,6 +106,36 @@ const getProvinceFromLocation = () => {
   const province = locationToProvince[location] || ''
   console.log('Mapped to province:', province)
   return province
+}
+
+const filteredSource = computed(() => {
+  if (!searchQuery.value || !originalData.length) {
+    return originalData
+  }
+
+  const query = searchQuery.value.toLowerCase().trim()
+  return originalData.filter(row => {
+    return Object.values(row).some(value => {
+      if (value === null || value === undefined) return false
+      return String(value).toLowerCase().includes(query)
+    })
+  })
+})
+
+const onSearch = () => {}
+
+const clearSearch = () => {
+  searchQuery.value = ''
+}
+
+const toggleFilterRow = () => {
+  showFilterRow.value = !showFilterRow.value
+}
+
+const clearAllFilters = () => {
+  if (gridRef.value) {
+    gridRef.value.clearFilter()
+  }
 }
 
 const tables = [
@@ -189,7 +255,7 @@ const fetchData = async () => {
       throw new Error(result.error)
     }
     
-    source.value = result.data
+    originalData = result.data
     columns.value = [...columnDefinitions[selectedTable.value]]
     
     console.log(`Loaded ${result.data.length} records for ${activeProvince.value} - ${selectedTable.value}`)
@@ -197,7 +263,7 @@ const fetchData = async () => {
   } catch (err) {
     console.error('Error:', err)
     error.value = err.message
-    source.value = []
+    originalData = []
   } finally {
     loading.value = false
   }
@@ -205,10 +271,12 @@ const fetchData = async () => {
 
 const selectTable = (tableId) => {
   selectedTable.value = tableId
+  searchQuery.value = ''
   fetchData()
 }
 
 const refreshData = () => {
+  searchQuery.value = ''
   fetchData()
 }
 
@@ -313,12 +381,108 @@ onMounted(() => {
   background: #2d333b;
 }
 
+.search-filter-bar {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.search-wrapper {
+  position: relative;
+  flex: 0.5;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8b949e;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  background: #010409;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  color: #c9d1d9;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #58a6ff;
+}
+
+.clear-search {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #8b949e;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.clear-search:hover {
+  color: #f85149;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-btn, .clear-filters-btn {
+  padding: 6px 10px;
+  background: #1f242f;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #c9d1d9;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover, .clear-filters-btn:hover {
+  background: #2d333b;
+  border-color: #58a6ff;
+}
+
+.filter-btn.active {
+  background: #58a6ff;
+  border-color: #58a6ff;
+  color: white;
+}
+
 .revo-grid {
   height: 600px;
   width: 100%;
   border: 1px solid #30363d;
   border-radius: 12px;
   overflow: auto;
+}
+
+:deep(.rg-cell-editor) {
+  display: none !important;
 }
 
 :deep(.rg-header) {
@@ -332,6 +496,7 @@ onMounted(() => {
   padding: 8px 12px;
   border-bottom: 1px solid #21262d;
   color: #c9d1d9;
+  cursor: default;
 }
 
 :deep(.rg-even-row) {
@@ -346,4 +511,39 @@ onMounted(() => {
   background-color: #21262d;
   cursor: pointer;
 }
+
+:deep(.rg-filter-row) {
+  background-color: #161b22;
+}
+
+:deep(.rg-filter-cell input) {
+  background-color: #010409;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+:deep(.rg-filter-cell input:focus) {
+  outline: none;
+  border-color: #58a6ff;
+}
+
+@media (max-width: 600px) {
+  .search-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-wrapper {
+    max-width: 100%;
+  }
+
+  .filter-controls {
+    justify-content: flex-end;
+  }
+}
+
 </style>
