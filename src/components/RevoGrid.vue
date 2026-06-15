@@ -62,13 +62,14 @@
     <VGrid 
       ref="gridRef"
       :columns="columns" 
-      :source="filteredSource"
+      :source="filteredData"
       :resizable="true"
       :sorting="true"
       :filtering="showFilterRow"
       :pagination="true"
       :page-size="50"
       :page-sizes="[25, 50, 100, 250]"
+      :readonly="true"
       class="revo-grid"
     />
   </div>
@@ -76,7 +77,7 @@
 
 <script setup>
 import VGrid from '@revolist/vue3-datagrid'
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const props = defineProps({
   locationParam: {
@@ -89,7 +90,8 @@ const props = defineProps({
 const searchQuery = ref('')
 const showFilterRow = ref(true)
 const gridRef = ref(null)
-let originalData = []
+const filteredData = ref([])
+let allData = []
 
 const locationToProvince = {
   'abra': 'Abra',
@@ -102,30 +104,28 @@ const locationToProvince = {
 
 const getProvinceFromLocation = () => {
   const location = props.locationParam
-  console.log('Location param received:', location)
   const province = locationToProvince[location] || ''
-  console.log('Mapped to province:', province)
   return province
 }
 
-const filteredSource = computed(() => {
-  if (!searchQuery.value || !originalData.length) {
-    return originalData
+const onSearch = () => {
+  if (!searchQuery.value || !allData.length) {
+    filteredData.value = [...allData]
+    return
   }
-
+  
   const query = searchQuery.value.toLowerCase().trim()
-  return originalData.filter(row => {
+  filteredData.value = allData.filter(row => {
     return Object.values(row).some(value => {
       if (value === null || value === undefined) return false
       return String(value).toLowerCase().includes(query)
     })
   })
-})
-
-const onSearch = () => {}
+}
 
 const clearSearch = () => {
   searchQuery.value = ''
+  filteredData.value = [...allData]
 }
 
 const toggleFilterRow = () => {
@@ -224,7 +224,6 @@ const columnDefinitions = {
 
 const selectedTable = ref('plantvigorandleaf')
 const columns = ref([])
-const source = ref([])
 const loading = ref(false)
 const error = ref(null)
 const activeProvince = ref('')
@@ -255,15 +254,14 @@ const fetchData = async () => {
       throw new Error(result.error)
     }
     
-    originalData = result.data
+    allData = result.data
+    filteredData.value = [...allData]
     columns.value = [...columnDefinitions[selectedTable.value]]
-    
-    console.log(`Loaded ${result.data.length} records for ${activeProvince.value} - ${selectedTable.value}`)
     
   } catch (err) {
     console.error('Error:', err)
     error.value = err.message
-    originalData = []
+    allData = []
   } finally {
     loading.value = false
   }
@@ -398,7 +396,7 @@ onMounted(() => {
   position: relative;
   flex: 0.5;
   min-width: 200px;
-  max-width: 300px;
+  max-width: 250px;
 }
 
 .search-icon {
