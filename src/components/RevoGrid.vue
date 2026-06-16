@@ -31,20 +31,19 @@
     </div>
     
     <VGrid 
+      class="revo-grid"
       ref="gridRef"
       :columns="columnsWithFilters" 
       :source="filteredData"
-      :auto-size-column="{
-        mode: 'autoSizeAll',
-        allColumns: true
-      }"
       :filter="true"
       :sorting="true"
+      :range="true"
+      :row-headers="true"
       :pagination="true"
       :page-size="50"
       :page-sizes="[25, 50, 100, 250]"
+      :can-move-columns="true"
       :readonly="true"
-      class="revo-grid"
     />
   </div>
 </template>
@@ -89,7 +88,7 @@ const tables = [
 
 const columnDefinitions = {
   plantvigorandleaf: [
-    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200 },
+    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200, sortable: true, pin: 'colPinStart', size: 'auto' },
     { prop: 'treatmentNo', name: 'Treatment No.', size: 120 },
     { prop: 'trialNumber', name: 'Trial', size: 80 },
     { prop: 'plantVigor', name: 'Plant Vigor', size: 120 },
@@ -109,7 +108,7 @@ const columnDefinitions = {
     { prop: 'flagLeafWidth', name: 'Flag Leaf Width (cm)', size: 150 }
   ],
   culm: [
-    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200 },
+    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200, sortable: true, pin: 'colPinStart' },
     { prop: 'treatmentNo', name: 'Treatment No.', size: 120 },
     { prop: 'trialNumber', name: 'Trial', size: 80 },
     { prop: 'culmHabitAngle', name: 'Culm Habit Angle', size: 150 },
@@ -123,7 +122,7 @@ const columnDefinitions = {
     { prop: 'culmnum', name: 'Culms per Hill', size: 140 }
   ],
   panicle: [
-    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200 },
+    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200, sortable: true, pin: 'colPinStart' },
     { prop: 'treatmentNo', name: 'Treatment No.', size: 120 },
     { prop: 'trialNumber', name: 'Trial', size: 80 },
     { prop: 'panicleExsertion', name: 'Panicle Exsertion', size: 150 },
@@ -135,7 +134,7 @@ const columnDefinitions = {
     { prop: 'paniclenum', name: 'Grains per Panicle', size: 160 }
   ],
   grain: [
-    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200 },
+    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200, sortable: true, pin: 'colPinStart' },
     { prop: 'treatmentNo', name: 'Treatment No.', size: 120 },
     { prop: 'trialNumber', name: 'Trial', size: 80 },
     { prop: 'awnColor', name: 'Awn Color', size: 130 },
@@ -152,7 +151,7 @@ const columnDefinitions = {
     { prop: 'yield', name: 'Yield (kg/5m²)', size: 140 }
   ],
   growth: [
-    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200 },
+    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200, sortable: true, pin: 'colPinStart' },
     { prop: 'treatmentNo', name: 'Treatment No.', size: 120 },
     { prop: 'trialNumber', name: 'Trial', size: 80 },
     { prop: 'tillering', name: 'Days to Tillering', size: 160 },
@@ -328,6 +327,16 @@ onMounted(() => {
   border: 1px solid #30363d;
   border-radius: 12px;
   overflow: auto;
+
+  --revogrid-cell-horizontal-align: center;
+  --revogrid-cell-vertical-align: middle;
+  --revogrid-header-horizontal-align: center;
+  --revogrid-header-vertical-align: middle;
+}
+
+:deep(.revo-grid) {
+  width: 100%;
+  table-layout: auto;
 }
 
 :deep(.rg-cell-editor) {
@@ -339,7 +348,6 @@ onMounted(() => {
   color: #e6edf3;
   font-weight: 600;
   border-bottom: 2px solid #30363d;
-  text-align: center !important;
 }
 
 :deep(.rg-cell) {
@@ -347,7 +355,11 @@ onMounted(() => {
   border-bottom: 1px solid #21262d;
   color: #c9d1d9;
   cursor: default;
-  text-align: center !important;
+}
+
+:deep(.rg-cell .rg-cell-value) {
+  display: flex;
+  width: 100%;
 }
 
 :deep(.rg-even-row) {
