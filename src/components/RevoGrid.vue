@@ -42,7 +42,7 @@
       :pagination="true"
       :page-size="50"
       :page-sizes="[25, 50, 100, 250]"
-      :can-move-columns="true"
+      :resize="true"
       :readonly="true"
     />
   </div>
@@ -88,7 +88,7 @@ const tables = [
 
 const columnDefinitions = {
   plantvigorandleaf: [
-    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200, sortable: true, pin: 'colPinStart', size: 'auto' },
+    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200, sortable: true, pin: 'colPinStart' },
     { prop: 'treatmentNo', name: 'Treatment No.', size: 120 },
     { prop: 'trialNumber', name: 'Trial', size: 80 },
     { prop: 'plantVigor', name: 'Plant Vigor', size: 120 },
