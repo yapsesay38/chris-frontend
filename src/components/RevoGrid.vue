@@ -1,35 +1,6 @@
 <template>
   <div class="grid-container">
 
-    <div class="search-filter-bar">
-      <div class="search-wrapper">
-        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input 
-          type="text" 
-          v-model="searchQuery" 
-          @input="onSearch" 
-          placeholder="Search all columns..."
-          class="search-input"
-        >
-        <button v-if="searchQuery" @click="clearSearch" class="clear-search">×</button>
-      </div>
-      
-      <div class="filter-controls">
-        <button @click="toggleFilterRow" class="filter-btn" :class="{ active: showFilterRow }">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="22 3 2 3 10 13 10 21 14 18 14 13 22 3"></polygon>
-          </svg>
-          {{ showFilterRow ? 'Hide Filters' : 'Show Filters' }}
-        </button>
-        <button @click="clearAllFilters" class="clear-filters-btn">
-          Clear Filters
-        </button>
-      </div>
-    </div>
-
     <div class="controls">
       <div class="table-selector">
         <button
@@ -61,11 +32,11 @@
     
     <VGrid 
       ref="gridRef"
-      :columns="columns" 
+      :columns="columnsWithFilters" 
       :source="filteredData"
+      :filter="true"
       :resizable="true"
       :sorting="true"
-      :filtering="showFilterRow"
       :pagination="true"
       :page-size="50"
       :page-sizes="[25, 50, 100, 250]"
@@ -87,9 +58,6 @@ const props = defineProps({
   }
 })
 
-const searchQuery = ref('')
-const showFilterRow = ref(true)
-const gridRef = ref(null)
 const filteredData = ref([])
 let allData = []
 
@@ -106,36 +74,6 @@ const getProvinceFromLocation = () => {
   const location = props.locationParam
   const province = locationToProvince[location] || ''
   return province
-}
-
-const onSearch = () => {
-  if (!searchQuery.value || !allData.length) {
-    filteredData.value = [...allData]
-    return
-  }
-  
-  const query = searchQuery.value.toLowerCase().trim()
-  filteredData.value = allData.filter(row => {
-    return Object.values(row).some(value => {
-      if (value === null || value === undefined) return false
-      return String(value).toLowerCase().includes(query)
-    })
-  })
-}
-
-const clearSearch = () => {
-  searchQuery.value = ''
-  filteredData.value = [...allData]
-}
-
-const toggleFilterRow = () => {
-  showFilterRow.value = !showFilterRow.value
-}
-
-const clearAllFilters = () => {
-  if (gridRef.value) {
-    gridRef.value.clearFilter()
-  }
 }
 
 const tables = [
@@ -224,6 +162,12 @@ const columnDefinitions = {
 
 const selectedTable = ref('plantvigorandleaf')
 const columns = ref([])
+const columnsWithFilters = computed(() => {
+  if (!columns.value.length) return []
+  return columns.value.map(col => ({
+    ...col
+  }))
+})
 const loading = ref(false)
 const error = ref(null)
 const activeProvince = ref('')
@@ -237,9 +181,6 @@ const fetchData = async () => {
       activeProvince.value = getProvinceFromLocation()
   }
 
-  console.log('Fetching for province:', activeProvince.value)
-  console.log('Fetching for table:', selectedTable.value)
-  
   try {
     const response = await fetch(
       `/api/rice-data/${selectedTable.value}.json?province=${encodeURIComponent(activeProvince.value)}`
@@ -270,12 +211,10 @@ const fetchData = async () => {
 
 const selectTable = (tableId) => {
   selectedTable.value = tableId
-  searchQuery.value = ''
   fetchData()
 }
 
 const refreshData = () => {
-  searchQuery.value = ''
   fetchData()
 }
 
@@ -380,98 +319,6 @@ onMounted(() => {
   background: #2d333b;
 }
 
-.search-filter-bar {
-  background: #0d1117;
-  border: 1px solid #30363d;
-  border-radius: 12px;
-  padding: 12px 16px;
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.search-wrapper {
-  position: relative;
-  flex: 0.5;
-  min-width: 200px;
-  max-width: 250px;
-}
-
-.search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #8b949e;
-}
-
-.search-input {
-  width: 100%;
-  padding: 8px 12px 8px 36px;
-  background: #010409;
-  border: 1px solid #30363d;
-  border-radius: 8px;
-  color: #c9d1d9;
-  font-size: 13px;
-  font-family: inherit;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #58a6ff;
-}
-
-.clear-search {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: #8b949e;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 0 4px;
-}
-
-.clear-search:hover {
-  color: #f85149;
-}
-
-.filter-controls {
-  display: flex;
-  gap: 8px;
-}
-
-.filter-btn, .clear-filters-btn {
-  padding: 6px 10px;
-  background: #1f242f;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  color: #c9d1d9;
-  cursor: pointer;
-  font-size: 12px;
-  font-family: inherit;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  transition: all 0.2s;
-}
-
-.filter-btn:hover, .clear-filters-btn:hover {
-  background: #2d333b;
-  border-color: #58a6ff;
-}
-
-.filter-btn.active {
-  background: #58a6ff;
-  border-color: #58a6ff;
-  color: white;
-}
-
 .revo-grid {
   height: 600px;
   width: 100%;
@@ -528,21 +375,6 @@ onMounted(() => {
 :deep(.rg-filter-cell input:focus) {
   outline: none;
   border-color: #58a6ff;
-}
-
-@media (max-width: 600px) {
-  .search-filter-bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-wrapper {
-    max-width: 100%;
-  }
-
-  .filter-controls {
-    justify-content: flex-end;
-  }
 }
 
 </style>
