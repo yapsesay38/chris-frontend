@@ -34,6 +34,10 @@
       ref="gridRef"
       :columns="columnsWithFilters" 
       :source="filteredData"
+      :auto-size-column="{
+        mode: 'autoSizeAll',
+        allColumns: true
+      }"
       :filter="true"
       :sorting="true"
       :pagination="true"
@@ -85,77 +89,77 @@ const tables = [
 
 const columnDefinitions = {
   plantvigorandleaf: [
-    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 'auto' },
-    { prop: 'treatmentNo', name: 'Treatment No.', size: 'auto' },
-    { prop: 'trialNumber', name: 'Trial', size: 'auto' },
-    { prop: 'plantVigor', name: 'Plant Vigor', size: 'auto' },
-    { prop: 'basalLeafSheathColor', name: 'Basal Leaf Sheath Color', size: 'auto' },
-    { prop: 'leafSheathAnthocyaninColoration', name: 'Leaf Sheath Anthocyanin', size: 'auto' },
-    { prop: 'bladeAnthocyaninColoration', name: 'Blade Anthocyanin', size: 'auto' },
-    { prop: 'bladeDistAnthocyaninColoration', name: 'Blade Distribution', size: 'auto' },
-    { prop: 'bladeIntensityGreen', name: 'Blade Green Intensity', size: 'auto' },
-    { prop: 'bladePubescence', name: 'Blade Pubescence', size: 'auto' },
-    { prop: 'auricleColor', name: 'Auricle Color', size:'auto' },
-    { prop: 'collarColor', name: 'Collar Color', size: 'auto' },
-    { prop: 'liguleShape', name: 'Ligule Shape', size: 'auto' },
-    { prop: 'liguleColor', name: 'Ligule Color', size: 'auto' },
-    { prop: 'liguleLength', name: 'Ligule Length (mm)', size: 'auto' },
-    { prop: 'flagLeafAttitude', name: 'Flag Leaf Attitude', size: 'auto' },
-    { prop: 'flagLeafLength', name: 'Flag Leaf Length (cm)', size: 'auto' },
-    { prop: 'flagLeafWidth', name: 'Flag Leaf Width (cm)', size: 'auto' }
+    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200 },
+    { prop: 'treatmentNo', name: 'Treatment No.', size: 120 },
+    { prop: 'trialNumber', name: 'Trial', size: 80 },
+    { prop: 'plantVigor', name: 'Plant Vigor', size: 120 },
+    { prop: 'basalLeafSheathColor', name: 'Basal Leaf Sheath Color', size: 180 },
+    { prop: 'leafSheathAnthocyaninColoration', name: 'Leaf Sheath Anthocyanin', size: 180 },
+    { prop: 'bladeAnthocyaninColoration', name: 'Blade Anthocyanin', size: 150 },
+    { prop: 'bladeDistAnthocyaninColoration', name: 'Blade Distribution', size: 180 },
+    { prop: 'bladeIntensityGreen', name: 'Blade Green Intensity', size: 160 },
+    { prop: 'bladePubescence', name: 'Blade Pubescence', size: 150 },
+    { prop: 'auricleColor', name: 'Auricle Color', size: 140 },
+    { prop: 'collarColor', name: 'Collar Color', size: 130 },
+    { prop: 'liguleShape', name: 'Ligule Shape', size: 140 },
+    { prop: 'liguleColor', name: 'Ligule Color', size: 130 },
+    { prop: 'liguleLength', name: 'Ligule Length (mm)', size: 150 },
+    { prop: 'flagLeafAttitude', name: 'Flag Leaf Attitude', size: 150 },
+    { prop: 'flagLeafLength', name: 'Flag Leaf Length (cm)', size: 160 },
+    { prop: 'flagLeafWidth', name: 'Flag Leaf Width (cm)', size: 150 }
   ],
   culm: [
-    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 'auto' },
-    { prop: 'treatmentNo', name: 'Treatment No.', size: 'auto' },
-    { prop: 'trialNumber', name: 'Trial', size: 'auto' },
-    { prop: 'culmHabitAngle', name: 'Culm Habit Angle', size: 'auto' },
-    { prop: 'nodeAnthocyaninColoration', name: 'Node Anthocyanin', size: 'auto' },
-    { prop: 'underlyingNodeColor', name: 'Underlying Node Color', size: 'auto' },
-    { prop: 'internodeAnthocyaninColaration', name: 'Internode Anthocyanin', size: 'auto' },
-    { prop: 'underlyingInternodeColor', name: 'Underlying Internode Color', size: 'auto' },
-    { prop: 'culmLodgingResistance', name: 'Lodging Resistance', size: 'auto' },
-    { prop: 'culmLength', name: 'Culm Length (cm)', size: 'auto' },
-    { prop: 'culmDiameter', name: 'Culm Diameter (cm)', size: 'auto' },
-    { prop: 'culmnum', name: 'Culms per Hill', size: 'auto' }
+    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200 },
+    { prop: 'treatmentNo', name: 'Treatment No.', size: 120 },
+    { prop: 'trialNumber', name: 'Trial', size: 80 },
+    { prop: 'culmHabitAngle', name: 'Culm Habit Angle', size: 150 },
+    { prop: 'nodeAnthocyaninColoration', name: 'Node Anthocyanin', size: 150 },
+    { prop: 'underlyingNodeColor', name: 'Underlying Node Color', size: 170 },
+    { prop: 'internodeAnthocyaninColaration', name: 'Internode Anthocyanin', size: 170 },
+    { prop: 'underlyingInternodeColor', name: 'Underlying Internode Color', size: 180 },
+    { prop: 'culmLodgingResistance', name: 'Lodging Resistance', size: 160 },
+    { prop: 'culmLength', name: 'Culm Length (cm)', size: 140 },
+    { prop: 'culmDiameter', name: 'Culm Diameter (cm)', size: 150 },
+    { prop: 'culmnum', name: 'Culms per Hill', size: 140 }
   ],
   panicle: [
-    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 'auto' },
-    { prop: 'treatmentNo', name: 'Treatment No.', size: 'auto' },
-    { prop: 'trialNumber', name: 'Trial', size: 'auto' },
-    { prop: 'panicleExsertion', name: 'Panicle Exsertion', size: 'auto' },
-    { prop: 'panicleAttAxis', name: 'Main Axis Attitude', size: 'auto' },
-    { prop: 'panicleAttBran', name: 'Branch Attitude', size: 'auto' },
-    { prop: 'panicleSecBran', name: 'Secondary Branching', size: 'auto' },
-    { prop: 'panicleShatter', name: 'Shattering', size: 'auto' },
-    { prop: 'panicleLength', name: 'Panicle Length (cm)', size: 'auto' },
-    { prop: 'paniclenum', name: 'Grains per Panicle', size: 'auto' }
+    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200 },
+    { prop: 'treatmentNo', name: 'Treatment No.', size: 120 },
+    { prop: 'trialNumber', name: 'Trial', size: 80 },
+    { prop: 'panicleExsertion', name: 'Panicle Exsertion', size: 150 },
+    { prop: 'panicleAttAxis', name: 'Main Axis Attitude', size: 160 },
+    { prop: 'panicleAttBran', name: 'Branch Attitude', size: 150 },
+    { prop: 'panicleSecBran', name: 'Secondary Branching', size: 160 },
+    { prop: 'panicleShatter', name: 'Shattering', size: 130 },
+    { prop: 'panicleLength', name: 'Panicle Length (cm)', size: 150 },
+    { prop: 'paniclenum', name: 'Grains per Panicle', size: 160 }
   ],
   grain: [
-    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 'auto' },
-    { prop: 'treatmentNo', name: 'Treatment No.', size: 'auto' },
-    { prop: 'trialNumber', name: 'Trial', size: 'auto' },
-    { prop: 'awnColor', name: 'Awn Color', size: 'auto' },
-    { prop: 'awnDist', name: 'Awn Distribution', size: 'auto' },
-    { prop: 'apiculusColor', name: 'Apiculus Color', size: 'auto' },
-    { prop: 'anthocyaninColBelApiculus', name: 'Anthocyanin Below Apiculus', size: 'auto' },
-    { prop: 'lemmaAndPaleaColor', name: 'Lemma & Palea Color', size: 'auto' },
-    { prop: 'stigmaColor', name: 'Stigma Color', size: 'auto' },
-    { prop: 'awnLength', name: 'Awn Length (mm)', size: 'auto' },
-    { prop: 'grainLength', name: 'Grain Length (mm)', size: 'auto' },
-    { prop: 'grainWidth', name: 'Grain Width (mm)', size: 'auto' },
-    { prop: 'grainWeight', name: '1000 Grain Weight (g)', size: 'auto' },
-    { prop: 'lemmaAndPaleaPubescence', name: 'Lemma & Palea Pubescence', size: 'auto' },
-    { prop: 'yield', name: 'Yield (kg/5m²)', size: 'auto' }
+    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200 },
+    { prop: 'treatmentNo', name: 'Treatment No.', size: 120 },
+    { prop: 'trialNumber', name: 'Trial', size: 80 },
+    { prop: 'awnColor', name: 'Awn Color', size: 130 },
+    { prop: 'awnDist', name: 'Awn Distribution', size: 150 },
+    { prop: 'apiculusColor', name: 'Apiculus Color', size: 140 },
+    { prop: 'anthocyaninColBelApiculus', name: 'Anthocyanin Below Apiculus', size: 190 },
+    { prop: 'lemmaAndPaleaColor', name: 'Lemma & Palea Color', size: 160 },
+    { prop: 'stigmaColor', name: 'Stigma Color', size: 140 },
+    { prop: 'awnLength', name: 'Awn Length (mm)', size: 140 },
+    { prop: 'grainLength', name: 'Grain Length (mm)', size: 150 },
+    { prop: 'grainWidth', name: 'Grain Width (mm)', size: 150 },
+    { prop: 'grainWeight', name: '1000 Grain Weight (g)', size: 170 },
+    { prop: 'lemmaAndPaleaPubescence', name: 'Lemma & Palea Pubescence', size: 190 },
+    { prop: 'yield', name: 'Yield (kg/5m²)', size: 140 }
   ],
   growth: [
-    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 'auto' },
-    { prop: 'treatmentNo', name: 'Treatment No.', size: 'auto' },
-    { prop: 'trialNumber', name: 'Trial', size: 'auto' },
-    { prop: 'tillering', name: 'Days to Tillering', size: 'auto' },
-    { prop: 'booting', name: 'Days to Booting', size: 'auto' },
-    { prop: 'heading', name: 'Days to Heading', size: 'auto' },
-    { prop: 'maturity', name: 'Days to Maturity', size: 'auto' },
-    { prop: 'height', name: 'Height (cm)', size: 'auto' }
+    { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200 },
+    { prop: 'treatmentNo', name: 'Treatment No.', size: 120 },
+    { prop: 'trialNumber', name: 'Trial', size: 80 },
+    { prop: 'tillering', name: 'Days to Tillering', size: 160 },
+    { prop: 'booting', name: 'Days to Booting', size: 150 },
+    { prop: 'heading', name: 'Days to Heading', size: 150 },
+    { prop: 'maturity', name: 'Days to Maturity', size: 150 },
+    { prop: 'height', name: 'Height (cm)', size: 130 }
   ]
 }
 
@@ -326,11 +330,6 @@ onMounted(() => {
   overflow: auto;
 }
 
-:deep(.revo-grid) {
-  width: 100%;
-  table-layout: auto;
-}
-
 :deep(.rg-cell-editor) {
   display: none !important;
 }
@@ -349,7 +348,6 @@ onMounted(() => {
   color: #c9d1d9;
   cursor: default;
   text-align: center !important;
-  vertical-align: middle !important;
 }
 
 :deep(.rg-even-row) {
