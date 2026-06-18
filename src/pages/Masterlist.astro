@@ -1,10 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
+import RevoGrid from '../components/RevoGrid.vue'
 ---
 
 <BaseLayout>
   <div slot="content">
-    <h1>Masterlist</h1>
+    <h1>Heirloom Rice Masterlist</h1>
+    <RevoGrid client:load />
   </div>
 </BaseLayout>
 
