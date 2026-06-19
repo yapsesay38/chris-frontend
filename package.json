@@ -15,7 +15,7 @@
     "@astrojs/node": "^10.1.4",
     "@astrojs/vue": "^6.0.1",
     "@revolist/vue3-datagrid": "^4.23.16",
-    "astro": "^6.4.7",
+    "astro": "^6.4.8",
     "sharp": "^0.34.5",
     "vue": "^3.5.38"
   },
