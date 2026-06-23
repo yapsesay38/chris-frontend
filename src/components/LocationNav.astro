@@ -4,6 +4,63 @@ import NavLink from '../components/NavLink.astro';
 import { locations, pages } from '../data/navigation.js';
 ---
 
-{locations.map(loc => (
-<NavLink href={`/${loc.location}/${pages[0].page}`} type="location">{loc.name}</NavLink>
-))}
+<div class="dropdown">
+  <p class="dropbtn">CAR</p>
+  <div class="dropdown-content">
+    {locations.map(loc => (
+    <NavLink href={`/${loc.location}/${pages[0].page}`} type="location">{loc.name}</NavLink>
+    ))}
+  </div>
+</div>
+
+<style>
+p {
+  display: block;
+  color: #165871;
+  margin: 10px;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 0.5rem;
+}
+
+p:hover {
+  color: #ede78d;
+  background-color: #165871e6;
+}
+
+p.active {
+  color: #ede78d;
+  background-color: #165871;
+}
+
+.dropdown-content {
+  display: none;
+  min-width: 160px;
+  z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown.closed .dropdown-content {
+  display: none !important;
+}
+
+</style>
+
+<script>
+var dropdowns = document.getElementsByClassName("dropdown");
+var dropbtns = document.getElementsByClassName("dropbtn");
+var i;
+
+for (i = 0; i < dropbtns.length; i++) {
+  dropbtns[i].addEventListener("click", function() {
+    var parentContent = this.parentElement;
+    parentDropdown.classList.add("closed");
+  });
+  dropdowns.addEventListener('mouseleave', function() {
+    this.classList.remove("closed");
+  });
+}
+</script>
