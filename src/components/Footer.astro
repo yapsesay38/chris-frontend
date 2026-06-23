@@ -3,7 +3,8 @@ import { Image } from 'astro:assets';
 import daphlogo from '../assets/logos/daphlogo.png';
 import contacticon from '../assets/comIcons/contactIcon.png';
 import emailicon from '../assets/comIcons/emailIcon.png';
-import NavLink from '../components/NavLink.astro'
+import rice_favicon from '../assets/rice_favicon/favicon.ico';
+import NavLink from '../components/NavLink.astro';
 ---
 
 <footer>
@@ -36,6 +37,17 @@ import NavLink from '../components/NavLink.astro'
           height={32}
           />
       <span>resd@da.car.gov.ph</span>
+    </li>
+    <li>
+      <NavLink href="/inputApp/index.html">
+        <Image
+            src={rice_favicon}
+            alt="darfocar logo"
+            width={32}
+            height={32}
+            />
+        <span>CHRIS Input</span>
+      </NavLink>
     </li>
   </ul>
   <iframe 
