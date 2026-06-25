@@ -56,11 +56,16 @@ var i;
 
 for (i = 0; i < dropbtns.length; i++) {
   dropbtns[i].addEventListener("click", function() {
-    var parentContent = this.parentElement;
-    parentDropdown.classList.add("closed");
+    var parentDropdown = this.closest('.dropdown') || this.parentElement;
+    if (parentDropdown) {
+      parentDropdown.classList.add("closed");
+    }
   });
-  dropdowns.addEventListener('mouseleave', function() {
-    this.classList.remove("closed");
-  });
+
+  if (dropdowns[i]) {
+    dropdowns[i].addEventListener("mouseleave", function() {
+      this.classList.remove("closed");
+    });
+  }
 }
 </script>
