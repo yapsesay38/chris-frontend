@@ -39,33 +39,62 @@ p.active {
   z-index: 1;
 }
 
-.dropdown:hover .dropdown-content {
+@media (hover: hover) and (pointer: fine) {
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+
+  .dropdown.closed .dropdown-content {
+    display: none !important;
+  }
+}
+
+.dropdown.is-active .dropdown-content {
   display: block;
 }
 
-.dropdown.closed .dropdown-content {
-  display: none !important;
-}
 
 </style>
 
 <script>
-var dropdowns = document.getElementsByClassName("dropdown");
-var dropbtns = document.getElementsByClassName("dropbtn");
-var i;
+  const dropdowns = document.querySelectorAll('.dropdown');
+  const dropbtns = document.querySelectorAll('.dropbtn');
 
-for (i = 0; i < dropbtns.length; i++) {
-  dropbtns[i].addEventListener("click", function() {
-    var parentDropdown = this.closest('.dropdown') || this.parentElement;
-    if (parentDropdown) {
-      parentDropdown.classList.add("closed");
+  const isTouchDevice = () => window.matchMedia('(pointer: coarse)').matches;
+
+  dropbtns.forEach((btn, index) => {
+    const parentDropdown = btn.closest('.dropdown');
+    const currentDropdown = dropdowns[index];
+
+    btn.addEventListener('click', function(event) {
+      if (isTouchDevice()) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (parentDropdown) {
+          parentDropdown.classList.toggle('is-active');
+        }
+      } else {
+        if (parentDropdown) {
+          parentDropdown.classList.add('closed');
+        }
+      }
+    });
+
+    if (currentDropdown) {
+      currentDropdown.addEventListener('mouseleave', function() {
+        if (!isTouchDevice()) {
+          this.classList.remove('closed');
+        }
+      });
     }
   });
 
-  if (dropdowns[i]) {
-    dropdowns[i].addEventListener("mouseleave", function() {
-      this.classList.remove("closed");
-    });
-  }
-}
+  document.addEventListener('click', function() {
+    if (isTouchDevice()) {
+      document.querySelectorAll('.dropdown.is-active').forEach(dropdown => {
+        dropdown.classList.remove('is-active');
+      });
+    }
+  });
 </script>
