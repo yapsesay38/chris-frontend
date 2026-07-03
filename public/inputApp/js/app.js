@@ -325,7 +325,7 @@ function allRecordsApp() {
                             let value = record.trials[trialIdx]?.[paramId] || '';
                             const paramConfig = tableParams.find(p => p.id === paramId);
                             if (paramConfig?.type === 'select' && value && paramConfig.options[value]) {
-                                value = `${value}-${paramConfig.options[value]}`;
+                                value = paramConfig.options[value];
                             }
                             row.push(value);
                         });
@@ -386,7 +386,7 @@ function allRecordsApp() {
                     let value = record.trials[trialIdx]?.[paramId] || '';
                     const paramConfig = tableParams.find(p => p.id === paramId);
                     if (paramConfig?.type === 'select' && value && paramConfig.options[value]) {
-                        value = `${value}-${paramConfig.options[value]}`;
+                        value = paramConfig.options[value];
                     }
                     row.push(value);
                 });
@@ -485,7 +485,12 @@ function allRecordsApp() {
                     const agroParams = {};
                     if (tableConfig) {
                         for (const param of tableConfig.parameters) {
-                            agroParams[param.id] = record.trials[trialIdx]?.[param.id] || '';
+                            let rawValue = record.trials[trialIdx]?.[param.id] || '';
+                            if (param.type === 'select' && rawValue && param.options[rawValue]) {
+                                agroParams[param.id] = param.options[rawValue];
+                            } else {
+                                agraParams[param.id] = rawValue;
+                            }
                         }
                     }
                     uploadData.push({
@@ -568,7 +573,12 @@ function allRecordsApp() {
                 const agroParams = {};
                 if (tableConfig) {
                     for (const param of tableConfig.parameters) {
-                        agroParams[param.id] = record.trials[trialIdx]?.[param.id] || '';
+                            let rawValue = record.trials[trialIdx]?.[param.id] || '';
+                            if (param.type === 'select' && rawValue && param.options[rawValue]) {
+                                agroParams[param.id] = param.options[rawValue];
+                            } else {
+                                agraParams[param.id] = rawValue;
+                            }
                     }
                 }
                 uploadData.push({
