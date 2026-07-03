@@ -573,12 +573,12 @@ function allRecordsApp() {
                 const agroParams = {};
                 if (tableConfig) {
                     for (const param of tableConfig.parameters) {
-                            let rawValue = record.trials[trialIdx]?.[param.id] || '';
-                            if (param.type === 'select' && rawValue && param.options[rawValue]) {
-                                agroParams[param.id] = param.options[rawValue];
-                            } else {
-                                agraParams[param.id] = rawValue;
-                            }
+                        let rawValue = record.trials[trialIdx]?.[param.id] || '';
+                        if (param.type === 'select' && rawValue && param.options[rawValue]) {
+                            agroParams[param.id] = param.options[rawValue];
+                        } else {
+                            agraParams[param.id] = rawValue;
+                        }
                     }
                 }
                 uploadData.push({
