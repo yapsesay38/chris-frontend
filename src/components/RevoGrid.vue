@@ -268,8 +268,8 @@ onMounted(() => {
 }
 
 .table-btn.active {
-  background: #10b981;
-  border-color: #10b981;
+  background: #0B6623;
+  border-color: #2E8B57;
   color: white;
 }
 
