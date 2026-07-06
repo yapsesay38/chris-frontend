@@ -17,13 +17,13 @@ import NavLink from '../components/NavLink.astro';
             width={32}
             height={32}
             />
-        <span>DEPARTMENT OF AGRICULTURE - CAR</span>
+        <span>Department of Agriculture - CAR</span>
       </NavLink>
     </li>
     <li>
       <Image
           src={contacticon}
-          alt="darfocar logo"
+          alt="contact icon"
           width={32}
           height={32}
           />
@@ -32,7 +32,7 @@ import NavLink from '../components/NavLink.astro';
     <li>
       <Image
           src={emailicon}
-          alt="darfocar logo"
+          alt="email icon"
           width={32}
           height={32}
           />
@@ -42,11 +42,11 @@ import NavLink from '../components/NavLink.astro';
       <NavLink href="/inputApp/index.html">
         <Image
             src={rice_favicon}
-            alt="darfocar logo"
+            alt="rice app logo"
             width={32}
             height={32}
             />
-        <span>CHRIS Input</span>
+        <span>Input Rice Data</span>
       </NavLink>
     </li>
   </ul>
@@ -62,6 +62,12 @@ import NavLink from '../components/NavLink.astro';
 </footer>
 
 <style>
+  footer ul, footer li, footer a {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
   ul {
     display: flex;
     align-items: center;
@@ -72,10 +78,10 @@ import NavLink from '../components/NavLink.astro';
     list-style: none;
     font-size: 17px;
     padding: 0;
-    margin: 8px;
+    margin: 0;
   }
 
-  li, li a{
+  li, li a {
     display: flex;
     align-items: center;
     color: #ffffff;
@@ -85,7 +91,7 @@ import NavLink from '../components/NavLink.astro';
 
   li:not(:last-child)::after {
     content: "|";
-    margin: 0px;
+    margin: 0 0.5rem;
   }
 
   li a:hover {
