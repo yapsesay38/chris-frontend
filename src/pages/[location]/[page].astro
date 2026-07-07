@@ -25,7 +25,7 @@ const currentPage = pages.find(p => p.page === page);
     <PageNav currentLocation={Astro.params.location} />
   </nav>
   <div slot="content">
-    <h1>{ currentPage?.name } data for { currentLocation?.name }</h1>
+    <h1>{ currentPage?.name } for { currentLocation?.name }</h1>
   </div>
 </BaseLayout>
 

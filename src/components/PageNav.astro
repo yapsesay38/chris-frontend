@@ -1,14 +1,17 @@
 ---
 import NavLink from '../components/NavLink.astro'
 
-import { pages } from '../data/navigation.js';
-const { currentLocation } = Astro.props;
+import { locations, pages } from '../data/navigation.js';
+
+const { location } = Astro.params;
+const currentLocation = locations.find(loc => loc.location === location);
 ---
 
-<NavLink href={`/${currentLocation}/hrProfile`} type="table">HR Tables</NavLink>
+<NavLink href={`/${currentLocation?.location}/hrProfile`} type="table">HR Tables</NavLink>
 {pages.map(p => (
-  <NavLink href={`/${currentLocation}/${p.page}`} type="page">{p.name}</NavLink>
+  <NavLink href={`/${currentLocation?.location}/${p.page}`} type="page">{p.name}</NavLink>
 ))}
+<NavLink href={`/inputApp/form.html?province=${currentLocation?.name}`} type="form">Input</NavLink>
 
 <style>
   a {
