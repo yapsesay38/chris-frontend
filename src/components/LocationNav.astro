@@ -10,7 +10,7 @@ const isDropdownActive = locations.some(loc =>
 );
 ---
 
-<div class="dropdown" data-open={isDropdownActive ? 'true' : 'false'}>
+<div class="dropdown">
   <p class="dropbtn provinces-space">
   <span>CAR</span>
   <span class="arrow">
@@ -21,8 +21,7 @@ const isDropdownActive = locations.some(loc =>
   </p>
   <div class="dropdown-content">
     {locations.map(loc => (
-    <NavLink href={`/${loc.location}/${pages[0].page}`} type="location">{loc.name}
-    </NavLink>
+    <NavLink href={`/${loc.location}/${pages[0].page}`} type="location">{loc.name}</NavLink>
     ))}
   </div>
 </div>
@@ -63,20 +62,12 @@ p.active {
   transition: transform 0.3s ease;
 }
 
-.dropdown[data-open="true"] .dropdown-content {
+.dropdown.is-active .dropdown-content {
   display: block;
 }
 
-.dropdown[data-open="true"] .arrow {
+.dropdown.is-active .arrow {
     transform: rotate(90deg);
-}
-
-.dropdown.closed .dropdown-content {
-  display: none !important;
-}
-
-.dropdown.closed .arrow {
-  transform: rotate(0deg) !important;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -88,7 +79,7 @@ p.active {
     display: none !important;
   }
 
-  .dropdown:hover .arrow, .dropdown[data-open="true"] .arrow {
+  .dropdown:hover .arrow {
     transform: rotate(90deg);
   }
 }
@@ -102,6 +93,7 @@ p.active {
 
   dropbtns.forEach((btn, index) => {
     const parentDropdown = btn.closest('.dropdown');
+    const currentDropdown = dropdowns[index];
 
     btn.addEventListener('click', function(event) {
       if (isTouchDevice()) {
@@ -109,19 +101,17 @@ p.active {
         event.stopPropagation();
 
         if (parentDropdown) {
-          const isOpen = parentDropdown.dataset.open === 'true';
-          parentDropdown.dataset.open = isOpen ? 'false' : 'true';
+          parentDropdown.classList.toggle('is-active');
         }
       } else {
         if (parentDropdown) {
           parentDropdown.classList.add('closed');
-          parentDropdown.dataset.open = 'false';
         }
       }
     });
 
-    if (parentDropdown) {
-      parentDropdown.addEventListener('mouseleave', function() {
+    if (currentDropdown) {
+      currentDropdown.addEventListener('mouseleave', function() {
         if (!isTouchDevice()) {
           this.classList.remove('closed');
         }
@@ -131,9 +121,8 @@ p.active {
 
   document.addEventListener('click', function() {
     if (isTouchDevice()) {
-      dropdowns.forEach(dropdown => {
-        if (dropdown.dataset.open === 'true');
-        dropdown.dataset.open = 'false';
+      document.querySelectorAll('.dropdown.is-active').forEach(dropdown => {
+        dropdown.classList.remove('is-active');
       });
     }
   });
