@@ -2,10 +2,17 @@
 import NavLink from '../components/NavLink.astro';
 
 import { locations, pages } from '../data/navigation.js';
+
+const currentPath = Astro.url.pathname;
+
+const isDropdownActive = locations.some(loc =>
+  currentPath.startsWith(`/${loc.location}`)
+);
 ---
 
-<div class="dropdown">
-  <p class="dropbtn provinces-space"><span>CAR</span>
+<div class="dropdown" data-open={isDropdownActive ? 'true' : 'false'}>
+  <p class="dropbtn provinces-space">
+  <span>CAR</span>
   <span class="arrow">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="12 5 19 12 12 19"></polyline>
@@ -14,7 +21,8 @@ import { locations, pages } from '../data/navigation.js';
   </p>
   <div class="dropdown-content">
     {locations.map(loc => (
-    <NavLink href={`/${loc.location}/${pages[0].page}`} type="location">{loc.name}</NavLink>
+    <NavLink href={`/${loc.location}/${pages[0].page}`} type="location">{loc.name}
+    </NavLink>
     ))}
   </div>
 </div>
@@ -55,6 +63,22 @@ p.active {
   transition: transform 0.3s ease;
 }
 
+.dropdown[data-open="true"] .dropdown-content {
+  display: block;
+}
+
+.dropdown[data-open="true"] .arrow {
+    transform: rotate(90deg);
+}
+
+.dropdown.closed .dropdown-content {
+  display: none !important;
+}
+
+.dropdown.closed .arrow {
+  transform: rotate(0deg) !important;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .dropdown:hover .dropdown-content {
     display: block;
@@ -64,17 +88,9 @@ p.active {
     display: none !important;
   }
 
-  .dropdown:hover .arrow {
+  .dropdown:hover .arrow, .dropdown[data-open="true"] .arrow {
     transform: rotate(90deg);
   }
-}
-
-.dropdown.is-active .dropdown-content {
-  display: block;
-}
-
-.dropdown.is-active .arrow {
-    transform: rotate(90deg);
 }
 </style>
 
@@ -86,7 +102,6 @@ p.active {
 
   dropbtns.forEach((btn, index) => {
     const parentDropdown = btn.closest('.dropdown');
-    const currentDropdown = dropdowns[index];
 
     btn.addEventListener('click', function(event) {
       if (isTouchDevice()) {
@@ -94,17 +109,19 @@ p.active {
         event.stopPropagation();
 
         if (parentDropdown) {
-          parentDropdown.classList.toggle('is-active');
+          const isOpen = parentDropdown.dataset.open === 'true';
+          parentDropdown.dataset.open = isOpen ? 'false' : 'true';
         }
       } else {
         if (parentDropdown) {
           parentDropdown.classList.add('closed');
+          parentDropdown.dataset.open = 'false';
         }
       }
     });
 
-    if (currentDropdown) {
-      currentDropdown.addEventListener('mouseleave', function() {
+    if (parentDropdown) {
+      parentDropdown.addEventListener('mouseleave', function() {
         if (!isTouchDevice()) {
           this.classList.remove('closed');
         }
@@ -114,8 +131,9 @@ p.active {
 
   document.addEventListener('click', function() {
     if (isTouchDevice()) {
-      document.querySelectorAll('.dropdown.is-active').forEach(dropdown => {
-        dropdown.classList.remove('is-active');
+      dropdowns.forEach(dropdown => {
+        if (dropdown.dataset.open === 'true');
+        dropdown.dataset.open = 'false';
       });
     }
   });
