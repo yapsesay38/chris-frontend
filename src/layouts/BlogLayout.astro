@@ -17,7 +17,6 @@ import '../styles/global.css'
           isOpen: false,
           toggle() {
             this.isOpen = !this.isOpen;
-            console.log('isOpen:', this.isOpen)
           }
         }));
       });
@@ -65,3 +64,23 @@ import '../styles/global.css'
     <Footer />
 	</body>
 </html>
+
+<style>
+  .container {
+    margin: 0 auto;
+  }
+
+  main {
+    max-width: 800px;
+  }
+
+  @media (min-width: 1400px) {
+    .container {
+      min-width: 1400px;
+    }
+  
+    main {
+      min-width: 900px;
+    }
+  }
+</style>

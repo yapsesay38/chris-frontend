@@ -11,11 +11,43 @@ import '../styles/global.css'
     <link rel="icon" href="/dacarlogo_ico/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Cordillera Heirloom Rice Information System</title>
+    <script>
+      document.addEventListener('alpine:init', () => {
+        Alpine.data('hamburgerMenu', () => ({
+          isOpen: false,
+          toggle() {
+            this.isOpen = !this.isOpen;
+          }
+        }));
+      });
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 	</head>
 	<body>
-    <div class="container">
-      <div class="sidebar">
+    <div class="container"
+         x-data="hamburgerMenu()"
+         >
+      <div class="header">
         <Header />
+        <button class="hamburger"
+                @click="toggle()"
+                :class="{ 'is-active': isOpen }"
+                aria-label="Toggle navigation"
+                >
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+      </div>
+      <div class="backdrop"
+           x-show="isOpen"
+           @click="isOpen = false"
+           x-cloak
+           >
+      </div>
+      <div class="sidebar"
+           :class="{ 'nav-open': isOpen }"
+           >
         <Nav />
       </div>
       <div class="dash">
@@ -34,8 +66,12 @@ import '../styles/global.css'
 </html>
 
 <style>
-  .hnav {
-    max-width: 800px;
-    margin: 0 auto;
+  main {
+    max-width: 100vw;
+  }
+
+  .container {
+    margin: 0;
+    width: 100%;
   }
 </style>
