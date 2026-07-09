@@ -20,4 +20,4 @@ This is just to test and view the frontend, using the whole app as one full-stac
 
 ## Build and Deploy
 
-To build and deploy, use the Docker Compose script in the above repository.
+To build and deploy, use the Docker Compose file in the above repository.
