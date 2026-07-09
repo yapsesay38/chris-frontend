@@ -30,21 +30,27 @@
       </div>
     </div>
     
-    <VGrid 
-      class="revo-grid"
-      ref="gridRef"
-      :columns="columnsWithFilters" 
-      :source="filteredData"
-      :filter="true"
-      :sorting="true"
-      :range="true"
-      :row-headers="true"
-      :pagination="true"
-      :page-size="50"
-      :page-sizes="[25, 50, 100, 250]"
-      :resize="true"
-      :readonly="true"
-    />
+    <div class="grid-wrapper">
+      <VGrid 
+        class="revo-grid"
+        v-if="filteredData.length > 0"
+        ref="gridRef"
+        :columns="columnsWithFilters" 
+        :source="filteredData"
+        :filter="true"
+        :sorting="true"
+        :range="true"
+        :row-headers="true"
+        :pagination="true"
+        :page-size="50"
+        :page-sizes="[25, 50, 100, 250]"
+        :resize="true"
+        :no-data="'No records available for this selection.'"
+        :readonly="true"
+      />
+      <div v-else class="empty-state">
+      </div>
+    </div>
   </div>
 </template>
 
@@ -327,8 +333,8 @@ onMounted(() => {
 }
 
 .revo-grid {
-  height: 600px;
-  width: 100%;
+  min-height: 600px;
+  max-width: 100%;
   border: 1px solid #30363d;
   border-radius: 12px;
   overflow: auto;
@@ -397,6 +403,13 @@ onMounted(() => {
 :deep(.rg-filter-cell input:focus) {
   outline: none;
   border-color: #58a6ff;
+}
+
+:deep(.rg-no-data) {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1.1rem;
 }
 
 </style>
