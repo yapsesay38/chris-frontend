@@ -14,7 +14,7 @@ Rewritten XAMPP app into HTML, CSS, JS (AstroJS and some Vue components); Astro 
 
 ### Dev Test
 
-pnpm dev
+`pnpm dev`
 
 This is just to test and view the frontend, using the whole app as one full-stack app requires the backend deployed along with it.
 
