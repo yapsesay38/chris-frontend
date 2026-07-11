@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import PageNav from '../../../components/PageNav.astro'
+
+import { locations } from '../../../data/navigation.js'
+
+export function getStaticPaths() {
+    return locations.map(loc => ({
+        params: { location: loc.location },
+        props: { locationName: loc.name }
+    }));
+}
+
+const { location } = Astro.params;
+const { locationName } = Astro.props;
+const currentLocation = locations.find(loc => loc.location === location);
+---
+<BaseLayout>
+  <nav slot="hnav">
+    <PageNav currentLocation={location} />
+  </nav>
+  <div slot="content">
+    <h1>Heirloom Rice Dashboard - { currentLocation?.name }</h1>
+    <iframe src="http://localhost:8088/superset/dashboard/2/?standalone=1"
+            width="100%"
+            height="700"
+            frameborder="0"
+            style="border-radius: 8px; border: 1px solid #ddd;"
+            >
+    </iframe>
+  </div>
+</BaseLayout>
+
+<style>
+  nav {
+    background-color: #ffffff;
+    padding: 0px;
+    border-radius: 0.5rem;
+  }
+
+  .active {
+    background-color: #165871;
+  }
+</style>

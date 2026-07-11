@@ -8,6 +8,4 @@ export const locations = [
 ];
 export const pages = [
   { page: 'index', name: 'Profile' },
-  { page: 'prodArea', name: 'Production Area' },
-  { page: 'prodPractices', name: 'Production Practices' },
 ];
