@@ -489,7 +489,7 @@ function allRecordsApp() {
                             if (param.type === 'select' && rawValue && param.options[rawValue]) {
                                 agroParams[param.id] = param.options[rawValue];
                             } else {
-                                agraParams[param.id] = rawValue;
+                                agroParams[param.id] = rawValue;
                             }
                         }
                     }
@@ -577,7 +577,7 @@ function allRecordsApp() {
                         if (param.type === 'select' && rawValue && param.options[rawValue]) {
                             agroParams[param.id] = param.options[rawValue];
                         } else {
-                            agraParams[param.id] = rawValue;
+                            agroParams[param.id] = rawValue;
                         }
                     }
                 }
