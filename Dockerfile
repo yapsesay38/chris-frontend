@@ -6,6 +6,7 @@ RUN corepack enable && corepack prepare pnpm@latest-11 --activate
 RUN apt-get update && apt-get install -y python3 make g++
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+ENV COREPACK_NPM_TIMEOUT=60000
 RUN pnpm install --frozen-lockfile
 
 COPY . .
