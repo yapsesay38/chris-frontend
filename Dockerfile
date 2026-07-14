@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM node:22-slim AS builder
+FROM node:26-slim AS builder
 WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@latest-11 --activate
 
@@ -13,7 +13,7 @@ COPY . .
 RUN pnpm run build
 
 # Stage 2: Runtime
-FROM node:22-slim AS runtime
+FROM node:26-slim AS runtime
 WORKDIR /app
 
 COPY --from=builder /app/dist ./dist
