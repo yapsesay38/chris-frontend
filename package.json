@@ -14,10 +14,10 @@
   "dependencies": {
     "@astrojs/node": "^10.1.4",
     "@astrojs/vue": "^6.0.1",
-    "@revolist/vue3-datagrid": "^4.23.21",
+    "@revolist/vue3-datagrid": "^4.23.22",
     "astro": "^6.4.8",
     "sharp": "^0.34.5",
-    "vue": "^3.5.39"
+    "vue": "^3.5.40"
   },
-  "packageManager": "pnpm@11.10.0"
+  "packageManager": "pnpm@11.15.0"
 }
