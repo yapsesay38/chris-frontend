@@ -59,14 +59,30 @@ import VGrid from '@revolist/vue3-datagrid'
 import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps({
-  province: {
+  locationParam: {
     type: String,
+    required: true,
     default: ''
   }
 })
 
 const filteredData = ref([])
 let allData = []
+
+const locationToProvince = {
+  'abra': 'Abra',
+  'apayao': 'Apayao',
+  'benguet': 'Benguet',
+  'ifugao': 'Ifugao',
+  'kalinga': 'Kalinga',
+  'mountain-province': 'Mountain Province',
+}
+
+const getProvinceFromLocation = () => {
+  const location = props.locationParam
+  const province = locationToProvince[location] || ''
+  return province
+}
 
 const tables = [
   { id: 'plantvigorandleaf', name: 'Plant Vigor & Leaf', emoji: '🍃' },
@@ -174,20 +190,21 @@ const fetchData = async () => {
   loading.value = true
   error.value = null
 
+  if (!activeProvince.value) {
+      activeProvince.value = getProvinceFromLocation()
+  }
+
   try {
-    const url = `/api/rice-data/${selectedTable.value}.json`
-    const params = new URLSearchParams()
-    if (activeProvince.value) {
-      params.append('province', activeProvince.value)
-    }
-    const fullUrl = params.toString() ? `${url}?${params}` : url
+    const response = await fetch(
+      `/api/rice-data/${selectedTable.value}.json?province=${encodeURIComponent(activeProvince.value)}`
+    )
     
-    const response = await fetch(fullUrl)
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`)
     }
     
     const result = await response.json()
+    
     if (!result.success) {
       throw new Error(result.error)
     }
@@ -215,7 +232,7 @@ const refreshData = () => {
 }
 
 onMounted(() => {
-  activeProvince.value = props.province()
+  activeProvince.value = getProvinceFromLocation()
   fetchData()
 })
 </script>

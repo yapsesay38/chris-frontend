@@ -22,7 +22,7 @@ const currentLocation = locations.find(loc => loc.location === location);
   </nav>
   <div slot="content">
     <h1>Heirloom Rice Data - { currentLocation?.name }</h1>
-    <RevoGrid client:load province={location} />
+    <RevoGrid client:load locationParam={location} />
   </div>
 </BaseLayout>
 
