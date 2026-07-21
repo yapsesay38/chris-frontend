@@ -13,8 +13,21 @@ export const GET: APIRoute = async ({ params, url }) => {
           JSON.stringify(
             { success: false, error: 'Invalid table ID'}
             ),
-            { status: 400, headers: { 'Content-Type': 'application/json'} }
+            { status: 400, headers: { 'Content-Type': 'application/json' } }
         );
+    }
+
+    const supabaseUrl = import.meta.env.SUPABASE_URL;
+    const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.error('Missing Supabase credentials');
+      return new Response(
+        JSON.stringify(
+          { success: false, error: 'Supabase credentials missing' }
+        ),
+          { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -34,18 +47,20 @@ export const GET: APIRoute = async ({ params, url }) => {
         if (error) {
           console.error('Supabase query error:', error);
           return new Response(
-            JSON.stringify({ success: false, error: error.message }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify(
+              { success: false, error: error.message }
+            ),
+              { status: 500, headers: { 'Content-Type': 'application/json' } }
           );
         }
 
-        const items = (data.map((record: any) => ({
+        const items = data.map((record: any) => ({
             province: record.province,
             treatmentNo: record.block_treatment_no,
             landraceId: record.landrace_id,
             trialNumber: record.trial_number,
             recordedAt: record.record_date,
-            ...record.agro_params
+            ...record.agro_params,
         }));
         
         return new Response(
