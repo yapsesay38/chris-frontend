@@ -17,10 +17,12 @@ export const GET: APIRoute = async ({ params, url }) => {
         );
     }
 
-    const supabaseUrl = import.meta.env.SUPABASE_URL;
-    const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY;
+    const supabaseInternalUrl = process.env.SUPABASE_INTERNAL_URL;
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
-    if (!supabaseUrl || !supabaseAnonKey) {
+    console.log('URL:', supabaseInternalUrl, 'Key:' , supabaseAnonKey ? 'exists' : 'missing');
+
+    if (!supabaseInternalUrl || !supabaseAnonKey) {
       console.error('Missing Supabase credentials');
       return new Response(
         JSON.stringify(
@@ -30,7 +32,7 @@ export const GET: APIRoute = async ({ params, url }) => {
       );
     }
 
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const supabase = createClient(supabaseInternalUrl, supabaseAnonKey);
 
     let query = supabase
       .from('rice_data')
