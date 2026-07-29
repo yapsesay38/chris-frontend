@@ -23,7 +23,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="CAR Rice" />
     
-    <script defer src="https://unpkg.com/pocketbase@0.21.1/dist/pocketbase.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      window.SUPABASE_URL = '{{ .Env.SUPABASE_URL }}';
+      window.SUPABASE_ANON_KEY = '{{ .Env.SUPABASE_ANON_KEY }}';
+    </script>
+
     <script defer src="js/tables.js"></script>
     <script defer src="js/app.js"></script>
     <script defer src="js/offline.js"></script>

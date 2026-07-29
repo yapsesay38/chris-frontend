@@ -246,6 +246,10 @@ function allRecordsApp() {
     
     const loadRecords = () => JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     const saveRecords = (records) => localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+
+    const SUPABASE_URL = window.SUPABASE_URL || '';
+    const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
     return {
         availableTables: window.availableTables,
@@ -409,19 +413,15 @@ function allRecordsApp() {
         isAuthenticated: false,
         authToken: null,
         
-        async loginToPocketBase(email, password) {
-            const PB_URL = window.location.origin;
-            const pb = new PocketBase(PB_URL);
-            
-            try {
-                const authData = await pb.collection('users').authWithPassword(email, password);
-                this.isAuthenticated = true;
-                this.authToken = authData.token;
-                return true;
-            } catch (error) {
+        async loginToSupabase(email, password) {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
                 console.error('Login failed:', error);
                 return false;
             }
+            this.isAuthenticated = true;
+            this.authToken = data.session.access_token;
+            return true;
         },
         
         async submitLogin(event) {
@@ -433,7 +433,7 @@ function allRecordsApp() {
                 return;
             }
             
-            const success = await this.loginToPocketBase(email, password);
+            const success = await this.loginToSupabase(email, password);
             
             if (success) {
                 document.getElementById('loginEmail').value = '';
@@ -470,13 +470,6 @@ function allRecordsApp() {
         },
         
         async performUpload(records, uploadBtn) {
-            const PB_URL = window.location.origin;
-            const pb = new PocketBase(PB_URL);
-            
-            if (this.authToken) {
-                pb.authStore.save(this.authToken);
-            }
-            
             const uploadData = [];
             for (const record of records) {
                 const trialCount = record.trialCount || 5;
@@ -515,12 +508,12 @@ function allRecordsApp() {
             let failCount = 0;
             try {
                 for (const record of uploadData) {
-                    try {
-                        await pb.collection('rice_data').create(record);
-                        successCount++;
-                    } catch (err) {
-                        console.error('Failed to upload record:', record, err);
+                    const { error } = await supabase.from('rice_data').insert(record);
+                    if (error) {
+                        console.error('Insert failed:', error);
                         failCount++;
+                    } else {
+                        successCount++;
                     }
                 }
                 alert(`✅ Upload complete!\nSuccess: ${successCount}\nFailed: ${failCount}`);
@@ -558,13 +551,6 @@ function allRecordsApp() {
         },
         
         async performSingleUpload(record) {
-            const PB_URL = window.location.origin;
-            const pb = new PocketBase(PB_URL);
-            
-            if (this.authToken) {
-                pb.authStore.save(this.authToken);
-            }
-            
             const trialCount = record.trialCount || 5;
             const tableConfig = this.availableTables.find(t => t.id === record.tableId);
             
@@ -596,12 +582,12 @@ function allRecordsApp() {
             let failCount = 0;
             
             for (const data of uploadData) {
-                try {
-                    await pb.collection('rice_data').create(data);
-                    successCount++;
-                } catch (err) {
-                    console.error('Failed to upload trial:', err);
+                const { error } = await supabase.from('rice_data').insert(data);
+                if (error) {
+                    console.error('Failed to upload trial:', error);
                     failCount++;
+                } else {
+                    successCount++;
                 }
             }
             
@@ -858,7 +844,6 @@ function allRecordsApp() {
 
         init() {
             this.refreshRecords();
-            
             window.addEventListener('storage', () => {
                 this.refreshRecords();
             });
