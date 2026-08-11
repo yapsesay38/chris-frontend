@@ -167,14 +167,15 @@ function riceDataApp() {
             if (this.editMode && this.editIndex >= 0) {
                 this.records[this.editIndex] = record;
                 alert('Record updated successfully!');
+                this.clearDraft();
                 this.cancelEdit();
             } else {
                 this.records.push(record);
                 alert('Data saved successfully!');
+                this.clearDraft();
                 this.resetForm();
             }
             saveRecords(this.records);
-            this.clearDraft();
             this.records = loadRecords();
         },
         

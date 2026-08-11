@@ -1,25 +1,30 @@
+document.addEventListener('alpine:init', () => {
+    // Global offline store
+    Alpine.store('offline', {
+        isOffline: !navigator.onLine,
+    });
+});
+
+// Update store on network changes
+window.addEventListener('online', () => {
+    if (Alpine.store('offline')) {
+        Alpine.store('offline').isOffline = false;
+    }
+});
+window.addEventListener('offline', () => {
+    if (Alpine.store('offline')) {
+        Alpine.store('offline').isOffline = true;
+    }
+});
+
+// Offline banner component (wraps the store)
 function offlineBanner() {
     return {
-        isOffline: !navigator.onLine,
-        init() {
-            const self = this;
-            
-            window.addEventListener('online', () => {
-                self.isOffline = false;
-            });
-            window.addEventListener('offline', () => {
-                self.isOffline = true;
-            });
-            
-            setInterval(() => {
-                const currentStatus = !navigator.onLine;
-                if (self.isOffline !== currentStatus) {
-                    self.isOffline = currentStatus;
-                }
-            }, 2000);
+        get isOffline() {
+            return Alpine.store('offline').isOffline;
         },
         hideBanner() {
-            this.isOffline = false;
+            Alpine.store('offline').isOffline = false;
         }
     };
 }
