@@ -250,7 +250,14 @@ function allRecordsApp() {
 
     const SUPABASE_URL = window.SUPABASE_URL || '';
     const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let supabase;
+    try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } catch (e) {
+        console.warn('Supabase client could not be initialised. Offline features will still work.', e);
+        supabase = null;
+    }
     
     return {
         availableTables: window.availableTables,
@@ -415,6 +422,10 @@ function allRecordsApp() {
         authToken: null,
         
         async loginToSupabase(email, password) {
+            if (!supabase) {
+                console.warn('Supabase client not initialised, cannot login.');
+                return false;
+            }
             const { data, error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) {
                 console.error('Login failed:', error);
@@ -471,6 +482,10 @@ function allRecordsApp() {
         },
         
         async performUpload(records, uploadBtn) {
+            if (!supabase) {
+                alert('Upload unavailable: Supabase client not initialised. Please check your connection.');
+                return;
+            }
             const uploadData = [];
             for (const record of records) {
                 const trialCount = record.trialCount || 5;
@@ -552,6 +567,10 @@ function allRecordsApp() {
         },
         
         async performSingleUpload(record) {
+            if (!supabase) {
+                alert('Upload unavailable: Supabase client not initialised. Please check your connection.');
+                return;
+            }
             const trialCount = record.trialCount || 5;
             const tableConfig = this.availableTables.find(t => t.id === record.tableId);
             
