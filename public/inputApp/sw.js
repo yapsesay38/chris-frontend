@@ -1,17 +1,17 @@
 const CACHE_NAME = 'input-app-v1';
 const INPUT_APP_ASSETS = [
-  '/inputApp/index.html',
-  '/inputApp/form.html',
-  '/inputApp/records.html',
-  '/inputApp/style.css',
-  '/inputApp/rice_favicon/favicon-96x96.png',
-  '/inputApp/rice_favicon/apple-touch-icon.png',
-  '/inputApp/manifest.json',
-  '/inputApp/js/provinces.js',
-  '/inputApp/js/tables.js',
-  '/inputApp/js/app.js',
-  '/inputApp/js/offline.js',
-  '/inputApp/js/sw-register.js',
+  'index.html',
+  'form.html',
+  'records.html',
+  'style.css',
+  'rice_favicon/favicon-96x96.png',
+  'rice_favicon/apple-touch-icon.png',
+  'manifest.json',
+  'js/provinces.js',
+  'js/tables.js',
+  'js/app.js',
+  'js/offline.js',
+  'js/sw-register.js',
   'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap'
 ];
 
@@ -66,28 +66,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (url.pathname.startsWith('/inputApp/')) {
-    event.respondWith(
-      caches.match(url.pathname).then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
+  event.respondWith(
+    caches.match(url.pathname).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      
+      return fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(url.pathname, responseToCache);
+          });
         }
-        
-        return fetch(event.request).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(url.pathname, responseToCache);
-            });
-          }
-          return networkResponse;
-        }).catch((error) => {
-          return caches.match('/inputApp/index.html');
-        });
-      })
-    );
-    return;
-  }
-
-  event.respondWith(fetch(event.request));
+        return networkResponse;
+      }).catch((error) => {
+        return caches.match('index.html');
+      });
+    })
+  );
 });

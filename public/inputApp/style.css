@@ -72,9 +72,6 @@ header p {
     overflow-x: auto;
     gap: 1.5rem;
     padding: 1rem 0 3rem;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border-color) transparent;
 }
 
 .provinces-container::-webkit-scrollbar {
@@ -84,6 +81,10 @@ header p {
 .provinces-container::-webkit-scrollbar-thumb {
     background: var(--border-color);
     border-radius: 10px;
+}
+
+.provinces-container::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-success);
 }
 
 .province-link {
