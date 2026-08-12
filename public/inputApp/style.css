@@ -415,6 +415,12 @@ footer {
     color: #fff;
 }
 
+.btn-unclickable {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ── Record Table ── */
 .records-section {
     margin-top: 4rem;
