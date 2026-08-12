@@ -30,6 +30,7 @@
     </script>
 
     <script defer src="js/tables.js"></script>
+    <script defer src="js/locations.js"></script>
     <script defer src="js/app.js"></script>
     <script defer src="js/offline.js"></script>
     <script defer src="js/sw-register.js"></script>
@@ -57,6 +58,45 @@
                 </div>
             </div>
         </header>
+
+        <div class="location-section" style="background: var(--bg-secondary); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="input-group">
+                    <label for="municipality">City / Municipality</label>
+                    <select id="municipality" name="municipality" x-model="municipality" class="border-hover" style="width:100%; padding:0.9rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-md); color:var(--text-main);">
+                        <option value="">Select Municipality</option>
+                        <template x-for="mun in municipalities" :key="mun">
+                            <option :value="mun" x-text="mun"></option>
+                        </template>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="barangay">Barangay</label>
+                    <select id="barangay" name="barangay" x-model="barangay" class="border-hover" style="width:100%; padding:0.9rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-md); color:var(--text-main);">
+                        <option value="">Select Barangay</option>
+                        <template x-for="bgy in barangays" :key="bgy">
+                            <option :value="bgy" x-text="bgy"></option>
+                        </template>
+                    </select>
+                </div>
+                <div class="input-group" style="grid-column: span 2;">
+                    <label>GNSS Location</label>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button type="button" @click="geoLocation()" class="btn btn-secondary" style="flex: 0 1 auto; padding: 0.5rem 1rem;">
+                            📍 Get Current Location
+                        </button>
+                        <input type="text" id="latitude" placeholder="Latitude" x-model="latitude" style="flex: 1; min-width: 100px;">
+                        <input type="text" id="longitude" placeholder="Longitude" x-model="longitude" style="flex: 1; min-width: 100px;">
+                        <button type="button" @click="clearLocation()" class="btn btn-secondary" style="flex: 0 1 auto; padding: 0.5rem 1rem; background: #6b7280;">
+                            🗑️ Clear Locations
+                        </button>
+                    </div>
+                    <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.3rem;">
+                        Click the button to automatically fill your current coordinates (requires permission).
+                    </p>
+                </div>
+            </div>
+        </div>
 
         <div class="config-bar" style="background: var(--bg-input); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -209,6 +249,10 @@
                     <thead>
                         <tr>
                             <th>Province</th>
+                            <th>City / Municipality</th>
+                            <th>Barangay</th>
+                            <th>Latitude</th>
+                            <th>Longitude</th>
                             <th>Table</th>
                             <th>Block No. / Treatment No.</th>
                             <th>Landrace Name / Sample ID</th>
@@ -220,6 +264,10 @@
                         <template x-for="(record, idx) in filteredRecords" :key="idx">
                             <tr>
                                 <td x-text="record.province"></td>
+                                <td x-text="record.municipality"></td>
+                                <td x-text="record.barangay"></td>
+                                <td x-text="record.latitude"></td>
+                                <td x-text="record.longitude"></td>
                                 <td x-text="record.tableName || record.tableId"></td>
                                 <td x-text="record.treatmentNo"></td>
                                 <td><strong x-text="record.landrace"></strong></td>

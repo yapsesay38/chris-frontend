@@ -22,6 +22,10 @@ function riceDataApp() {
     
     return {
         currentProvince: provinceFromUrl,
+        municipality: '',
+        barangay: '',
+        latitude: '',
+        longitude: '',
         treatmentNo: '',
         landrace: '',
         editMode: false,
@@ -50,6 +54,43 @@ function riceDataApp() {
         get filteredRecords() {
             if (!this.currentProvince) return this.records;
             return this.records.filter(r => r.province === this.currentProvince);
+        },
+
+        get municipalities() {
+            if (!this.currentProvince || !window.locationData) return [];
+            const provinceData = window.locationData[this.currentProvince];
+            return provinceData ? Object.keys(provinceData) : [];
+        },
+
+        get barangays() {
+            if (!this.currentProvince || !this.municipality || !window.locationData) return [];
+            const provinceData = window.locationData[this.currentProvince];
+            if (!provinceData) return [];
+            return provinceData[this.municipality] || [];
+        },
+
+        geoLocation() {
+            if (!navigator.geolocation) {
+                alert('Geolocation is not supported by your browser.');
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    this.latitude = position.coords.latitude.toFixed(6);
+                    this.longitude = position.coords.longitude.toFixed(6);
+                },
+                (error) => {
+                    alert('Unable to retrieve location: ' + error.message);
+                },
+                { enableHighAccuracy: true }
+            );
+        },
+
+        clearLocation() {
+            this.municipality = '';
+            this.barangay = '';
+            this.latitude = '';
+            this.longitude = '';
         },
         
         changeTable() {
@@ -119,11 +160,16 @@ function riceDataApp() {
         
         saveDraft() {
             const draftKey = `rice_draft_${this.currentProvince || 'unknown'}_${this.currentTableId}`;
-            const hasData = this.trials.some(trial => Object.values(trial).some(v => v !== '' && v !== null)) || this.treatmentNo || this.landrace;
+            const hasData = this.trials.some(trial => Object.values(trial).some(v => v !== '' && v !== null))
+                  || this.treatmentNo || this.landrace || this.municipality || this.barangay || this.latitude || this.longitude;
             if (hasData) {
                 localStorage.setItem(draftKey, JSON.stringify({
                     treatmentNo: this.treatmentNo,
                     landrace: this.landrace,
+                    municipality: this.municipality,
+                    barangay: this.barangay,
+                    latitude: this.latitude,
+                    longitude: this.longitude,
                     trialCount: this.trialCount,
                     tableId: this.currentTableId,
                     trials: this.trials
@@ -138,6 +184,10 @@ function riceDataApp() {
             if (draft) {
                 this.treatmentNo = draft.treatmentNo || '';
                 this.landrace = draft.landrace || '';
+                this.municipality = draft.municipality || '';
+                this.barangay = draft.barangay || '';
+                this.latitude = draft.latitude || '';
+                this.longitude = draft.longitude || '';
                 if (draft.trialCount) {
                     this.trialCount = draft.trialCount;
                     this.trials = draft.trials || buildTrials(this.trialCount, this.currentParameters);
@@ -156,6 +206,10 @@ function riceDataApp() {
             }
             const record = {
                 province: this.currentProvince,
+                municipality: this.municipality,
+                barangay: this.barangay,
+                latitude: this.latitude,
+                longitude: this.longitude,
                 tableId: this.currentTableId,
                 tableName: this.currentTableName,
                 treatmentNo: this.treatmentNo,
@@ -264,6 +318,8 @@ function allRecordsApp() {
         allRecords: [],
         filteredRecordsList: [],
         provinceFilter: '',
+        municipalityFilter: '',
+        barangayFilter: '',
         tableFilter: '',
         showLoginModal: false,
         pendingUploadData: null,
@@ -272,12 +328,33 @@ function allRecordsApp() {
         get filteredRecords() {
             return this.filteredRecordsList;
         },
+
+        get filteredMunicipalities() {
+            if (!this.provinceFilter || !window.locationData) return [];
+            const provinceData = window.locationData[this.provinceFilter];
+            return provinceData ? Object.keys(provinceData) : [];
+        },
+        
+        get filteredBarangays() {
+            if (!this.provinceFilter || !this.municipalityFilter || !window.locationData) return [];
+            const provinceData = window.locationData[this.provinceFilter];
+            if (!provinceData) return [];
+            return provinceData[this.municipalityFilter] || [];
+        },
         
         filterRecords() {
             let filtered = [...this.allRecords];
             
             if (this.provinceFilter) {
                 filtered = filtered.filter(r => r.province === this.provinceFilter);
+            }
+
+            if (this.municipalityFilter) {
+                filtered = filtered.filter(r => r.municipality === this.municipalityFilter);
+            }
+
+            if (this.barangayFilter) {
+                filtered = filtered.filter(r => r.barangay === this.barangayFilter);
             }
             
             if (this.tableFilter) {
@@ -504,6 +581,10 @@ function allRecordsApp() {
                     }
                     uploadData.push({
                         province: record.province,
+                        municipality: record.municipality,
+                        barangay: record.barangay,
+                        latitude: record.latitude ? parseFloat(record.latitude) : null,
+                        longitude: record.longitude ? parseFloat(record.longitude) : null,
                         table_id: record.tableId,
                         block_treatment_no: record.treatmentNo,
                         landrace_id: record.landrace,
@@ -589,6 +670,10 @@ function allRecordsApp() {
                 }
                 uploadData.push({
                     province: record.province,
+                    municipality: record.municipality,
+                    barangay: record.barangay,
+                    latitude: record.latitude ? parseFloat(record.latitude) : null,
+                    longitude: record.longitude ? parseFloat(record.longitude) : null,
                     table_id: record.tableId,
                     block_treatment_no: record.treatmentNo,
                     landrace_id: record.landrace,
@@ -859,11 +944,31 @@ function allRecordsApp() {
             
             this.refreshRecords();
             
-            alert(`✅ Successfully deleted ${countToDelete} record(s).`);  // ← USE STORED COUNT
+            alert(`✅ Successfully deleted ${countToDelete} record(s).`);
+        },
+
+        clearAllFilters() {
+            this.provinceFilter = '';
+            this.municipalityFilter = '';
+            this.barangayFilter = '';
+            this.tableFilter = '';
+            this.filterRecords();
         },
 
         init() {
             this.refreshRecords();
+
+            this.$watch('provinceFilter', () => {
+                this.municipalityFilter = '';
+                this.barangayFilter = '';
+                this.filterRecords();
+            });
+
+            this.$watch('municipalityFilter', () => {
+                this.barangayFilter = '';
+                this.filterRecords();
+            });
+
             window.addEventListener('storage', () => {
                 this.refreshRecords();
             });
