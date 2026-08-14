@@ -6,7 +6,7 @@ function riceDataApp() {
     
     const loadRecords = () => JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     const saveRecords = (records) => localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-    
+
     const urlParams = new URLSearchParams(window.location.search);
     const provinceFromUrl = urlParams.get('province') || '';
     
@@ -20,6 +20,23 @@ function riceDataApp() {
         return Array(count).fill().map(() => buildEmptyTrial(params));
     };
     
+    const LOCATION_KEY = 'last_location';
+    
+    const saveLocation = (mun, brgy, lat, lng) => {
+        localStorage.setItem(LOCATION_KEY, JSON.stringify({ municipality: mun, barangay: brgy, latitude: lat, longitude: lng }));
+    };
+
+    const loadLocation = () => {
+        try {
+            const data = JSON.parse(localStorage.getItem(LOCATION_KEY));
+            return data || {};
+        } catch { return {}; }
+    };
+
+    const clearLocationStorage = () => {
+        localStorage.removeItem(LOCATION_KEY);
+    };
+
     return {
         currentProvince: provinceFromUrl,
         municipality: '',
@@ -91,6 +108,7 @@ function riceDataApp() {
             this.barangay = '';
             this.latitude = '';
             this.longitude = '';
+            clearLocationStorage();
         },
         
         changeTable() {
@@ -218,6 +236,9 @@ function riceDataApp() {
                 trials: JSON.parse(JSON.stringify(this.trials)),
                 timestamp: Date.now()
             };
+
+            saveLocation(this.municipality, this.barangay, this.latitude, this.longitude);
+
             if (this.editMode && this.editIndex >= 0) {
                 this.records[this.editIndex] = record;
                 alert('Record updated successfully!');
@@ -258,6 +279,13 @@ function riceDataApp() {
                 this.trialCount = fullRecord.trialCount || DEFAULT_TRIAL_COUNT;
                 this.trials = JSON.parse(JSON.stringify(record.trials));
 
+                this.municipality = fullRecord.municipality || '';
+                this.barangay = fullRecord.barangay || '';
+                this.latitude = fullRecord.latitude || '';
+                this.longitude = fullRecord.longitude || '';
+
+                saveLocation(this.municipality, this.barangay, this.latitude, this.longitude);
+
                 this.$forceUpdate();
             }
 
@@ -289,6 +317,15 @@ function riceDataApp() {
             window.addEventListener('offline', () => this.isOnline = false);
             this.changeTable();
             this.loadDraft();
+
+            if (!this.municipality && !this.barangay && !this.latitude && !this.longitude) {
+                const last = loadLocation();
+                this.municipality = last.municipality || '';
+                this.barangay = last.barangay || '';
+                this.latitude = last.latitude || '';
+                this.longitude = last.longitude || '';
+            }
+
             if (this.currentProvince) {
                 document.title = `${this.currentProvince} - CAR Rice Collection`;
             }
