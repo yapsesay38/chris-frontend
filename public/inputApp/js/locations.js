@@ -142,7 +142,7 @@ const locationData = {
       "Poblacion",
       "Presentar",
       "San Isidro",
-      "Tagodtod"
+      "Tagodtod",
       "Taping",
     ],
     "Lagayan": [
@@ -279,7 +279,7 @@ const locationData = {
       "Poblacion",
       "Sabtan-olo",
       "San Marcial",
-      "Tangbao
+      "Tangbao"
     ],
     "San Juan": [
       "Abualan",

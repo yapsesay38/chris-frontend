@@ -45,6 +45,10 @@ function riceDataApp() {
         longitude: '',
         treatmentNo: '',
         landrace: '',
+        munSearch: '',
+        barangaySearch: '',
+        showMunDropdown: false,
+        showBarangayDropdown: false,
         editMode: false,
         editIndex: -1,
         isOnline: navigator.onLine,
@@ -56,7 +60,7 @@ function riceDataApp() {
         trials: [],
         records: loadRecords(),
         
-        get parameters() { 
+        get parameters() {
             return this.currentParameters;
         },
         
@@ -67,7 +71,21 @@ function riceDataApp() {
             const controlValue = this.trials[trialIndex]?.[controlParam];
             return controlValue === requiredValue;
         },
-        
+
+        get filteredMunicipalities() {
+            if (!this.municipalities.length) return [];
+            if (!this.munSearch) return this.municipalities;
+            const term = this.munSearch.toLowerCase();
+            return this.municipalities.filter(mun => mun.toLowerCase().includes(term));
+        },
+
+        get filteredBarangays() {
+            if (!this.barangays.length) return [];
+            if (!this.barangaySearch) return this.barangays;
+            const term = this.barangaySearch.toLowerCase();
+            return this.barangays.filter(bgy => bgy.toLowerCase().includes(term));
+        },
+
         get filteredRecords() {
             if (!this.currentProvince) return this.records;
             return this.records.filter(r => r.province === this.currentProvince);
@@ -103,11 +121,27 @@ function riceDataApp() {
             );
         },
 
+        selectMunicipality(mun) {
+            this.municipality = mun;
+            this.munSearch = mun;
+            this.showMunDropdown = false;
+            this.barangay = '';
+            this.barangaySearch = '';
+        },
+
+        selectBarangay(bgy) {
+            this.barangay = bgy;
+            this.barangaySearch = bgy;
+            this.showBarangayDropdown = false;
+        },
+
         clearLocation() {
             this.municipality = '';
             this.barangay = '';
             this.latitude = '';
             this.longitude = '';
+            this.munSearch = '';
+            this.barangaySearch = '';
             clearLocationStorage();
         },
         
@@ -358,6 +392,12 @@ function allRecordsApp() {
         municipalityFilter: '',
         barangayFilter: '',
         tableFilter: '',
+        provinceSearch: '',
+        municipalitySearch: '',
+        barangaySearch: '',
+        showProvinceDropdown: false,
+        showMunicipalityDropdown: false,
+        showBarangayDropdown: false,
         showLoginModal: false,
         pendingUploadData: null,
         pendingUploadBtn: null,
@@ -366,19 +406,61 @@ function allRecordsApp() {
             return this.filteredRecordsList;
         },
 
+        get filteredProvinces() {
+            if (!window.locationData) return [];
+            const provinces = Object.keys(window.locationData);
+            if (!this.provinceSearch) return provinces;
+            const term = this.provinceSearch.toLowerCase();
+            return provinces.filter(p => p.toLowerCase().includes(term));
+        },
+
         get filteredMunicipalities() {
             if (!this.provinceFilter || !window.locationData) return [];
             const provinceData = window.locationData[this.provinceFilter];
-            return provinceData ? Object.keys(provinceData) : [];
+            if (!provinceData) return [];
+            const muns = Object.keys(provinceData);
+            if (!this.municipalitySearch) return muns;
+            const term = this.municipalitySearch.toLowerCase();
+            return muns.filter(m => m.toLowerCase().includes(term));
         },
         
         get filteredBarangays() {
             if (!this.provinceFilter || !this.municipalityFilter || !window.locationData) return [];
             const provinceData = window.locationData[this.provinceFilter];
             if (!provinceData) return [];
-            return provinceData[this.municipalityFilter] || [];
+            const barangays = provinceData[this.municipalityFilter] || [];
+            if (!this.barangaySearch) return barangays;
+            const term = this.barangaySearch.toLowerCase();
+            return barangays.filter(b => b.toLowerCase().includes(term));
         },
         
+        selectProvince(province) {
+            this.provinceFilter = province;
+            this.provinceSearch = province;
+            this.showProvinceDropdown = false;
+            this.municipalityFilter = '';
+            this.barangayFilter = '';
+            this.municipalitySearch = '';
+            this.barangaySearch = '';
+            this.filterRecords();
+        },
+
+        selectMunicipality(mun) {
+            this.municipalityFilter = mun;
+            this.municipalitySearch = mun;
+            this.showMunicipalityDropdown = false;
+            this.barangayFilter = '';
+            this.barangaySearch = '';
+            this.filterRecords();
+        },
+
+        selectBarangay(bgy) {
+            this.barangayFilter = bgy;
+            this.barangaySearch = bgy;
+            this.showBarangayDropdown = false;
+            this.filterRecords();
+        },
+
         filterRecords() {
             let filtered = [...this.allRecords];
             
@@ -989,6 +1071,9 @@ function allRecordsApp() {
             this.municipalityFilter = '';
             this.barangayFilter = '';
             this.tableFilter = '';
+            this.provinceSearch = '';
+            this.municipalitySearch = '';
+            this.barangaySearch = '';
             this.filterRecords();
         },
 

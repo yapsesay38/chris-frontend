@@ -78,37 +78,65 @@
 
         <div class="config-bar" style="background: var(--bg-input); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 16px;">
             <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
-                <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px; position: relative;">
                     <label style="font-weight: 600;">Province:</label>
-                    <select x-model="provinceFilter" @change="filterRecords()" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
-                        <option value="">All Provinces</option>
-                        <option value="Abra">Abra</option>
-                        <option value="Apayao">Apayao</option>
-                        <option value="Benguet">Benguet</option>
-                        <option value="Ifugao">Ifugao</option>
-                        <option value="Kalinga">Kalinga</option>
-                        <option value="Mountain Province">Mountain Province</option>
-                    </select>
+                    <input type="text"
+                           x-model="provinceSearch"
+                           @input="showProvinceDropdown = true"
+                           @focus="showProvinceDropdown = true"
+                           @blur="setTimeout(() => showProvinceDropdown = false, 200)"
+                           placeholder="Search Province..."
+                           style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px; width: 180px;">
+                    <div x-show="showProvinceDropdown && filteredProvinces.length > 0"
+                         style="position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; max-height: 200px; overflow-y: auto; z-index: 1000; margin-top: 4px; min-width: 180px;">
+                        <template x-for="prov in filteredProvinces" :key="prov">
+                            <div @mousedown.prevent="selectProvince(prov)"
+                                 style="padding: 6px 12px; cursor: pointer; color: var(--text-main);"
+                                 class="hover:bg-[var(--bg-input)]">
+                                <span x-text="prov"></span>
+                            </div>
+                        </template>
+                    </div>
                 </div>
-
-                <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px; position: relative;">
                     <label style="font-weight: 600;">City / Municipality:</label>
-                    <select x-model="municipalityFilter" @change="barangayFilter = ''; filterRecords()" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
-                        <option value="">All Cities / Municipalities</option>
+                    <input type="text"
+                           x-model="municipalitySearch"
+                           @input="showMunicipalityDropdown = true"
+                           @focus="showMunicipalityDropdown = true"
+                           @blur="setTimeout(() => showMunicipalityDropdown = false, 200)"
+                           placeholder="Search Municipality..."
+                           style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px; width: 180px;">
+                    <div x-show="showMunicipalityDropdown && filteredMunicipalities.length > 0"
+                         style="position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; max-height: 200px; overflow-y: auto; z-index: 1000; margin-top: 4px; min-width: 180px;">
                         <template x-for="mun in filteredMunicipalities" :key="mun">
-                            <option :value="mun" x-text="mun"></option>
+                            <div @mousedown.prevent="selectMunicipality(mun)"
+                                 style="padding: 6px 12px; cursor: pointer; color: var(--text-main);"
+                                 class="hover:bg-[var(--bg-input)]">
+                                <span x-text="mun"></span>
+                            </div>
                         </template>
-                    </select>
+                    </div>
                 </div>
-
-                <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px; position: relative;">
                     <label style="font-weight: 600;">Barangay:</label>
-                    <select x-model="barangayFilter" @change="filterRecords()" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
-                        <option value="">All Barangays</option>
+                    <input type="text"
+                           x-model="barangaySearch"
+                           @input="showBarangayDropdown = true"
+                           @focus="showBarangayDropdown = true"
+                           @blur="setTimeout(() => showBarangayDropdown = false, 200)"
+                           placeholder="Search Barangay..."
+                           style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px; width: 180px;">
+                    <div x-show="showBarangayDropdown && filteredBarangays.length > 0"
+                         style="position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; max-height: 200px; overflow-y: auto; z-index: 1000; margin-top: 4px; min-width: 180px;">
                         <template x-for="bgy in filteredBarangays" :key="bgy">
-                            <option :value="bgy" x-text="bgy"></option>
+                            <div @mousedown.prevent="selectBarangay(bgy)"
+                                 style="padding: 6px 12px; cursor: pointer; color: var(--text-main);"
+                                 class="hover:bg-[var(--bg-input)]">
+                                <span x-text="bgy"></span>
+                            </div>
                         </template>
-                    </select>
+                    </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <label style="font-weight: 600;">Table:</label>
