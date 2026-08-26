@@ -95,6 +95,8 @@ const tables = [
 const columnDefinitions = {
   plantvigorandleaf: [
     { prop: 'province', name: 'Province', size: 200, sortable: true, pin: 'colPinStart' },
+    { prop: 'municipality', name: 'City / Municipality', size: 200, sortable: true },
+    { prop: 'barangay', name: 'Barangay', size: 200, sortable: true },
     { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200, sortable: true, pin: 'colPinStart' },
     { prop: 'treatmentNo', name: 'Treatment No.', size: 120, sortable: true },
     { prop: 'trialNumber', name: 'Trial', size: 80, sortable: true },
@@ -116,6 +118,8 @@ const columnDefinitions = {
   ],
   culm: [
     { prop: 'province', name: 'Province', size: 200, sortable: true, pin: 'colPinStart' },
+    { prop: 'municipality', name: 'City / Municipality', size: 200, sortable: true },
+    { prop: 'barangay', name: 'Barangay', size: 200, sortable: true },
     { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200, sortable: true, pin: 'colPinStart' },
     { prop: 'treatmentNo', name: 'Treatment No.', size: 120, sortable: true },
     { prop: 'trialNumber', name: 'Trial', size: 80, sortable: true },
@@ -131,6 +135,8 @@ const columnDefinitions = {
   ],
   panicle: [
     { prop: 'province', name: 'Province', size: 200, sortable: true, pin: 'colPinStart' },
+    { prop: 'municipality', name: 'City / Municipality', size: 200, sortable: true },
+    { prop: 'barangay', name: 'Barangay', size: 200, sortable: true },
     { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200, sortable: true, pin: 'colPinStart' },
     { prop: 'treatmentNo', name: 'Treatment No.', size: 120, sortable: true },
     { prop: 'trialNumber', name: 'Trial', size: 80, sortable: true },
@@ -144,6 +150,8 @@ const columnDefinitions = {
   ],
   grain: [
     { prop: 'province', name: 'Province', size: 200, sortable: true, pin: 'colPinStart' },
+    { prop: 'municipality', name: 'City / Municipality', size: 200, sortable: true },
+    { prop: 'barangay', name: 'Barangay', size: 200, sortable: true },
     { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200, sortable: true, pin: 'colPinStart' },
     { prop: 'treatmentNo', name: 'Treatment No.', size: 120, sortable: true },
     { prop: 'trialNumber', name: 'Trial', size: 80, sortable: true },
@@ -162,6 +170,8 @@ const columnDefinitions = {
   ],
   growth: [
     { prop: 'province', name: 'Province', size: 200, sortable: true, pin: 'colPinStart' },
+    { prop: 'municipality', name: 'City / Municipality', size: 200, sortable: true },
+    { prop: 'barangay', name: 'Barangay', size: 200, sortable: true },
     { prop: 'landraceId', name: 'Heirloom Rice Landraces', size: 200, sortable: true, pin: 'colPinStart' },
     { prop: 'treatmentNo', name: 'Treatment No.', size: 120, sortable: true },
     { prop: 'trialNumber', name: 'Trial', size: 80, sortable: true },

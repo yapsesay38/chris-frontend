@@ -58,6 +58,8 @@ export const GET: APIRoute = async ({ params, url }) => {
 
         const items = data.map((record: any) => ({
             province: record.province,
+            municipality: record.municipality,
+            barangay: record.barangay,
             treatmentNo: record.block_treatment_no,
             landraceId: record.landrace_id,
             trialNumber: record.trial_number,
