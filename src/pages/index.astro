@@ -1,13 +1,77 @@
 ---
 import BlogLayout from '../layouts/BlogLayout.astro'
+import { Image } from 'astro:assets';
+import banner from '../assets/banner.jpg';
 ---
 
 <BlogLayout>
   <div slot="content">
     <h1>The Cordillera Heirloom Rice Information System</h1>
     <p>
-			Stores all pertinent data and information (both quantitative and qualitative) related to heirloom rice landraces that are vital bases for the development of policies and programs for research and development undertakings related to the protection and promotion of said commodity.
+    Stores all pertinent data and information (both quantitative and qualitative) 
+    related to heirloom rice landraces that are vital bases for the development of policies 
+    and programs for research and development undertakings related to the protection and promotion 
+    of said commodity.
 		</p>
+    <Image
+        src={banner}
+        alt="Rice banner"
+        height={240}
+        width={850}
+        />
+    <h2>Heirloom Rice in The Cordilleras</h2>
+    <p>
+    Through the four-cell analysis conducted by the Heirloom Rice Project Phase II in 2019, 
+    farmers initially identified 870 heirloom rice landraces where 622 are still existing 
+    while 248 are already extinct or not any longer cultivated in any of the project areas 
+    in Benguet, Kalinga, Ifugao and Mountain Province (DA-RFO-CAR HRP II Completion Report, 2020). 
+    Almost 90% of the 466 recorded varieties in the Central Cordillera provinces, Abra, Ifugao 
+    and Mountain Province were traditional types, with non-glutinous varieties accounting for 77%. 
+    (Sajise, et.al 2012). Traditionally, these varieties are grown for social, cultural, 
+    and spiritual purposes, and thus it is called heritage rice farming (Bairagi, et.al. 2020). 
+    Enhancing heirloom rice production is one of the means in uplifting the economic status of 
+    marginal farmers in the Ifugao rice terraces areas. Increasing yield and optimizing farm productivity 
+    coupled with provision of support interventions from production to marketing will allow farmers 
+    to increase their incomes. (HRP II PNOA Ifugao, 2019).
+    </p>
+    <h2>Significance and Uses of Heirloom Rice</h2>
+    <p>
+    Heirloom rice are important in developing new crops in new sustainable production systems 
+    and it is also important to farming communities not only for food production but also their role 
+    in people’s culture and traditions (Ganotice, et.al, 2016). Anon (1993) as stated by Ganotice, 
+    et.al (2016) that when plant genetic resource diversity is lost, it is not only genetic base of 
+    agriculture that is eroded, but also people’s identity and knowledge system. The heirloom rice is not 
+    just food for the Cordillerans but it was used as an exchange of goods, food and meat and as gift 
+    to newlyweds and newly named child (DA-RFO-CAR Heirloom Rice Project, 2018). Heirloom rice is also 
+    highly regarded in the socio-cultural traditions of people in the community. It is used as offering 
+    in bundled palay. Its processed products, like tupig, patopat and saliket are used as supon (gift) for 
+    sociocultural events like weddings, wakes and community festivals. Other processed products like 
+    fermented rice and rice wine (tapuey) are commonly used as offering as the rice wine is a symbolic 
+    or inspired drink (HRP, 2018). Sajise, et.al (2012) added that rice is the staple cereal food and thus 
+    a major household item among the people of the Cordillera.
+    </p>
+    <h2>Heirloom Rice Production Practices and Challenges</h2>
+    <p>
+    The biggest threat comes from climate change, which is gravely impacting their subsistence economies. 
+    So-called development projects such as dams, plantations, mines and other extractive activities are also 
+    taking their toll, as are government policies that minimize diversity and encourage homogeneity 
+    (UNESCO, 2019). During the Participatory Needs and Opportunities Assessment (PNOA) conducted during 
+    the HRP Phase I and II, one identified problem is that the younger generations lack the interest 
+    to engage in heirloom rice farming resulting to decreased labor supply and abandoning of terraces, 
+    (PNOA Reports of Ifugao, Benguet, Kalinga, Mountain Province, 2019). 
+    According to the farmers, they are worried that the younger generations are showing no interest 
+    in inheriting the heirloom rice terraces. They are apprehensive since youths prefer migrating in cities 
+    and working offices. A melancholy of Mr. Ruben Gumanga, 51-year-old farmer, 
+    “Nu matay kamin ket baka awanen makin ammo (If we die, maybe no one will know). 
+    (DA-RFO-CAR Heirloom Rice Project 2018). Agro-ecological, socio-economic, and cultural factors, 
+    as well as traditional agricultural practices, influence the continuing conservation and utilization 
+    of these diverse varieties. However, modern farming influences and changing preferences threaten 
+    the on-farm diversity of landraces (Sajise, et.al, 2012). Bairagi (2020) added that heritage (heirloom rice) 
+    farming is gradually being abandoned due to various constraints in the value chain (VC), 
+    on the supply as well as the demand side. In Ifugao, while most farmers in other areas in are using 
+    short maturing varieties, some farmers retained the heirloom rice varieties and are still practicing 
+    the old ways of farming (HRP PNOA Ifugao, 2019).
+    </p>
   </div>
 </BlogLayout>
 
