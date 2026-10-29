@@ -19,7 +19,7 @@ const availableTables = [
                 label: 'Blade Distribution of Anthocyanin Coloration', 
                 type: 'select', 
                 options: { '1': 'Tips Only', '2': 'On Margins Only', '3': 'In Blotches', '4': 'Even (Uniform Purple)' },
-                dependsOn: { param: 'bladeAnthocyaninColoration', value: '1' }
+                dependsOn: { param: 'plantbladeAnthocyaninColoration', value: '1' }
             },
             { id: 'plantbladeIntensityGreen', label: 'Blade Intensity of Green Color', type: 'select', options: { '0': 'No Green Color Due to Anthocyanin', '1': 'Light Green', '2': 'Medium Green', '3': 'Dark Green' } },
             { id: 'plantbladePubescence', label: 'Blade Pubescence', type: 'select', options: { '1': 'Glabrous', '2': 'Intermediate', '3': 'Pubescent' } },
