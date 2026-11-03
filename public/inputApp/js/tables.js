@@ -12,7 +12,7 @@ const availableTables = [
                 label: 'Blade Anthocyanin Coloration', 
                 type: 'select', 
                 options: { '0': 'Absent', '1': 'Present' },
-                controls: ['bladeDistAnthocyaninColoration']
+                controls: ['plantbladeDistAnthocyaninColoration']
             },
             { 
                 id: 'plantbladeDistAnthocyaninColoration', 
