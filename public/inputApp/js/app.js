@@ -1,3 +1,11 @@
+const generateId = () =>
+    (typeof crypto !== 'undefined' && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+            const r = Math.random() * 16 | 0;
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+
 function riceDataApp() {
     const STORAGE_KEY = 'heirloom_rice_records';
     const DEFAULT_TRIAL_COUNT = 5;
@@ -53,6 +61,9 @@ function riceDataApp() {
         editIndex: -1,
         isOnline: navigator.onLine,
         availableTables: window.availableTables,
+        collectionMode: 'stage',
+        currentStage: 'maturity',
+        currentSampleId: generateId(),
         currentTableId: 'plantvigorandleaf',
         currentTableName: '🍃 Plant Vigor and Leaf Characters',
         currentParameters: [],
@@ -70,6 +81,10 @@ function riceDataApp() {
             const requiredValue = param.dependsOn.value;
             const controlValue = this.trials[trialIndex]?.[controlParam];
             return controlValue === requiredValue;
+        },
+
+        get stages() {
+            return window.STAGES || [];
         },
 
         get filteredMunicipalities() {
@@ -145,15 +160,53 @@ function riceDataApp() {
             clearLocationStorage();
         },
         
-        changeTable() {
-            const selectedTable = this.availableTables.find(t => t.id === this.currentTableId);
-            if (!selectedTable) return;
-            this.currentTableName = selectedTable.name;
-            this.currentParameters = JSON.parse(JSON.stringify(selectedTable.parameters));
-            this.trials = buildTrials(this.trialCount, this.currentParameters);
+        rebuildParameters() {
+            let params, title;
+            if (this.collectionMode === 'stage') {
+                params = this.availableTables
+                    .flatMap(t => t.parameters)
+                    .filter(p => p.stage === this.currentStage);
+                title = (window.STAGES.find(s => s.id === this.currentStage)?.label) || this.currentStage;
+            } else {
+                const table = this.availableTables.find(t => t.id === this.currentTableId);
+                params = table ? table.parameters : [];
+                title = table ? table.name : '';
+            }
+            this.currentParameters = JSON.parse(JSON.stringify(params));
+            this.currentTableName = title;
+            this.trials = buildTrials(this.trialCount, this.currentParameters);;
             if (!this.editMode) this.loadDraft();
         },
+
+        changeTable() {
+            this.rebuildParameters();
+        },
         
+        onCollectionModeChange() {
+            this.rebuildParameters();
+        },
+
+        stageSpansMultipleTables() {
+            return new Set(this.currentParameters.map(p => p.tableId)).size > 1;
+        },
+
+        mergeTrials(existingTrials, newTrials, tableParams, overwriteIds) {
+            const maxLen = Math.max(existingTrials?.length || 0, newTrials?.length || 0);
+            const result = [];
+            for (let i = 0; i < maxLen; i++) {
+                const existing = existingTrials?.[i] || {};
+                const incoming = newTrials?.[i] || {};
+                const trial = {};
+                for (const p of tableParams) {
+                    trial[p.id] = overwriteIds.has(p.id)
+                        ? (incoming[p.id] ?? '')
+                        : (existting[p.id] ?? '');
+                }
+                result.push(trial);
+            }
+            return result;
+        },
+
         onControlChange(controlParamId, trialIndex) {
             const dependentParams = this.currentParameters.filter(p => 
                 p.dependsOn && p.dependsOn.param === controlParamId
@@ -210,12 +263,19 @@ function riceDataApp() {
             }
         },
         
+        draftKey() {
+            const suffix = this.collectionMode === 'stage'
+                ? `stage_${this.currentStage}`
+                : this.currentTableId;
+            return `rice_draft_${this.currentProvince || 'unknown'}_${suffix}`;
+        },
+        
         saveDraft() {
-            const draftKey = `rice_draft_${this.currentProvince || 'unknown'}_${this.currentTableId}`;
             const hasData = this.trials.some(trial => Object.values(trial).some(v => v !== '' && v !== null))
                   || this.treatmentNo || this.landrace || this.municipality || this.barangay || this.latitude || this.longitude;
             if (hasData) {
-                localStorage.setItem(draftKey, JSON.stringify({
+                localStorage.setItem(draftKey(), JSON.stringify({
+                    sampleId: this.currentSampleId,
                     treatmentNo: this.treatmentNo,
                     landrace: this.landrace,
                     municipality: this.municipality,
@@ -223,17 +283,19 @@ function riceDataApp() {
                     latitude: this.latitude,
                     longitude: this.longitude,
                     trialCount: this.trialCount,
+                    collectionMode: this.collectionMode,
                     tableId: this.currentTableId,
+                    stage: this.currentStage,
                     trials: this.trials
                 }));
             }
         },
-        
+
         loadDraft() {
             if (this.editMode) return;
-            const draftKey = `rice_draft_${this.currentProvince || 'unknown'}_${this.currentTableId}`;
-            const draft = JSON.parse(localStorage.getItem(draftKey));
+            const draft = JSON.parse(localStorage.getItem(draftKey()));
             if (draft) {
+                if (draft.sampleId) this.currentSampleId = draft.sampleId;
                 this.treatmentNo = draft.treatmentNo || '';
                 this.landrace = draft.landrace || '';
                 this.municipality = draft.municipality || '';
@@ -248,7 +310,7 @@ function riceDataApp() {
         },
         
         clearDraft() {
-            localStorage.removeItem(`rice_draft_${this.currentProvince || 'unknown'}_${this.currentTableId}`);
+            localStorage.removeItem(this.draftKey());
         },
         
         saveForm() {
@@ -256,14 +318,32 @@ function riceDataApp() {
                 alert('Please fill in Block/Treatment No. and Landrace Name');
                 return;
             }
+
+            saveLocation(this.municipality, this.barangay, this.latitude, this.longitude);
+
+            if (this.collectionMode === 'stage' && this.stageSpansMultipleTables()) {
+                this.saveStageForm();
+            } else {
+                this.saveTableForm();
+            }
+        },
+
+        saveTableForm() {
+            const tableId = this.collectionMode === 'stage'
+                ? this.currentParameters[0]?.tableId
+                : this.currentTableId;
+            const table = this.availableTables.find(t => t.id === tableId);
+
             const record = {
+                recordId: generateId(),
+                sampleId: this.currentSampleId,
                 province: this.currentProvince,
                 municipality: this.municipality,
                 barangay: this.barangay,
                 latitude: this.latitude,
                 longitude: this.longitude,
-                tableId: this.currentTableId,
-                tableName: this.currentTableName,
+                tableId: tableId,
+                tableName: table ? table.name : this.currentTableName,
                 treatmentNo: this.treatmentNo,
                 landrace: this.landrace,
                 trialCount: this.trialCount,
@@ -271,9 +351,8 @@ function riceDataApp() {
                 timestamp: Date.now()
             };
 
-            saveLocation(this.municipality, this.barangay, this.latitude, this.longitude);
-
             if (this.editMode && this.editIndex >= 0) {
+                record.recordId = this.records[this.editIndex].recordId || record.recordId;
                 this.records[this.editIndex] = record;
                 alert('Record updated successfully!');
                 this.clearDraft();
@@ -287,6 +366,83 @@ function riceDataApp() {
             saveRecords(this.records);
             this.records = loadRecords();
         },
+
+        saveStageForm() {
+            const byTable = {};
+            for (const p of this.currentParameters) {
+                if (!byTable[p.tableId]) byTable[p.tableId] = [];
+                byTable[p.tableId].push(p);
+            }
+            
+            let recordsSaved = 0;
+            let recordsMerged = 0;
+            
+            for (const [tableId, stageParams] of Object.entries(byTable)) {
+                const table = this.availableTables.find(t => t.id === tableId);
+                if (!table) continue;
+                
+                const allTableParams = table.parameters;
+                const stageParamIds = new Set(stageParams.map(p => p.id));
+                
+                const newTrials = [];
+                for (let i = 0; i < this.trialCount; i++) {
+                    const trial = {};
+                    for (const p of allTableParams) {
+                        trial[p.id] = stageParamIds.has(p.id) ? (this.trials[i]?.[p.id] ?? '') : '';
+                    }
+                    newTrials.push(trial);
+                }
+                
+                const existingIdx = this.records.findIndex(
+                    r => r.sampleId === this.currentSampleId && r.tableId === tableId
+                );
+                
+                if (existingIdx >= 0) {
+                    const existing = this.records[existingIdx];
+                    const mergedTrials = this.mergeTrials(existing.trials, newTrials, allTableParams, stageParamIds);
+                    this.records[existingIdx] = {
+                        ...existing,
+                        municipality: this.municipality || existing.municipality,
+                        barangay: this.barangay || existing.barangay,
+                        latitude: this.latitude || existing.latitude,
+                        longitude: this.longitude || existing.longitude,
+                        treatmentNo: this.treatmentNo,
+                        landrace: this.landrace,
+                        trialCount: mergedTrials.length,
+                        trials: mergedTrials,
+                        timestamp: Date.now()
+                    };
+                    recordsMerged++;
+                } else {
+                    this.records.push({
+                        recordId: generateId(),
+                        sampleId: this.currentSampleId,
+                        province: this.currentProvince,
+                        municipality: this.municipality,
+                        barangay: this.barangay,
+                        latitude: this.latitude,
+                        longitude: this.longitude,
+                        tableId: tableId,
+                        tableName: table.name,
+                        treatmentNo: this.treatmentNo,
+                        landrace: this.landrace,
+                        trialCount: newTrials.length,
+                        trials: newTrials,
+                        timestamp: Date.now()
+                    });
+                    recordsSaved++;
+                }
+            }
+            
+            saveRecords(this.records);
+            this.records = loadRecords();
+            this.clearDraft();
+            const parts = [];
+            if (recordsSaved) parts.push(`${recordsSaved} new`);
+            if (recordsMerged) parts.push(`${recordsMerged} merged`);
+            alert(`✅ Stage data saved successfully! (${parts.join(', ')} record(s))`);
+            this.resetForm();
+        },
         
         editForm(index) {
             const record = this.filteredRecords[index];
@@ -295,23 +451,25 @@ function riceDataApp() {
                return;
             }
 
-            const actualIndex = this.records.findIndex(r => r.timestamp === record.timestamp);
+            this.collectionMode = 'table';
+            const actualIndex = this.records.findIndex(r =>
+                (r.recordId && r.recordId === record.recordId) ||
+                (r.recordId && r.timestamp === record.timestamp &&
+                    r.treatmentNo === record.treatmentNo &&
+                    r.landrace === record.landrace)
+            );
 
             if (actualIndex !== -1) {
                 const fullRecord = this.records[actualIndex];
-
-                if (fullRecord.tableId !== this.currentTableId) {
-                    this.currentTableId = fullRecord.tableId
-                    this.changeTable()
-                }
-
+                this.currentTableId = fullRecord.tableId;
+                this.rebuildParameters();
                 this.editMode = true;
                 this.editIndex = actualIndex;
                 this.currentProvince = fullRecord.province;
                 this.treatmentNo = fullRecord.treatmentNo;
                 this.landrace = fullRecord.landrace;
                 this.trialCount = fullRecord.trialCount || DEFAULT_TRIAL_COUNT;
-                this.trials = JSON.parse(JSON.stringify(record.trials));
+                this.trials = JSON.parse(JSON.stringify(fullRecord.trials));
 
                 this.municipality = fullRecord.municipality || '';
                 this.barangay = fullRecord.barangay || '';
@@ -338,10 +496,19 @@ function riceDataApp() {
             if (this.currentProvince) this.loadDraft();
         },
 
+        startNewSample() {
+            this.currentSampleId = generateId();
+            this.treatmentNo = '';
+            this.landrace = '';
+            this.trialCount = DEFAULT_TRIAL_COUNT;
+            this.trials = buildTrials(DEFAULT_TRIAL_COUNT, this.currentParameters);
+            this.clearDraft();
+        },
+
         init() {
             window.addEventListener('online', () => this.isOnline = true);
             window.addEventListener('offline', () => this.isOnline = false);
-            this.changeTable();
+            this.rebuildParameters();
             this.loadDraft();
 
             if (!this.municipality && !this.barangay && !this.latitude && !this.longitude) {

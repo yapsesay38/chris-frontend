@@ -121,13 +121,26 @@
         </div>
 
         <div class="config-bar" style="background: var(--bg-input); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <label style="font-weight: 600;">Data Table:</label>
-                <select x-model="currentTableId" @change="changeTable()" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
-                    <template x-for="table in availableTables" :key="table.id">
-                        <option :value="table.id" x-text="table.name"></option>
-                    </template>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <label style="font-weight: 600;">Collect by:</label>
+                <select x-model="collectionMode" @change="onCollectionModeChange()" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
+                    <option value="stage">Growth Stage</option>
+                    <option value="table">Plant Part</option>
                 </select>
+                <template x-if="collectionMode === 'stage'">
+                    <select x-model="currentStage" @change="rebuildParameters()" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
+                        <template x-for="s in stages" :key="s.id">
+                            <option :value="s.id" x-text="s.label"></option>
+                        </template>
+                    </select>
+                </template>
+                <template x-if="collectionMode === 'table'">
+                    <select x-model="currentTableId" @change="changeTable()" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
+                        <template x-for="table in availableTables" :key="table.id">
+                            <option :value="table.id" x-text="table.name"></option>
+                        </template>
+                    </select>
+                </template>
             </div>
             
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -146,6 +159,17 @@
                     +
                 </button>
                 <span style="color: var(--text-muted); font-size: 12px;">(1-20 trials)</span>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button type="button" @click="startNewSample()"
+                        style="padding: 6px 12px; background: var(--accent-primary); border: 1px solid var(--border-color); color: white; border-radius: 6px; cursor: pointer; font-weight: 600;"
+                        class="border-hover">
+                    + New Sample
+                </button>
+                <span style="color: var(--text-muted); font-size: 12px;">
+                    Sample: <span x-text="currentSampleId ? currentSampleId.slice(0, 8) : '—'"></span>
+                </span>
             </div>
             
             <div style="color: var(--accent-success); font-size: 14px;">
