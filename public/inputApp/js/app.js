@@ -147,25 +147,25 @@ function riceDataApp() {
         
         changeTable() {
             const selectedTable = this.availableTables.find(t => t.id === this.currentTableId);
-            if (selectedTable) {
-                this.currentTableName = selectedTable.name;
-                this.currentParameters = JSON.parse(JSON.stringify(selectedTable.parameters));
-                this.trials = buildTrials(this.trialCount, this.currentParameters);
-                this.saveDraft();
-            }
+            if (!selectedTable) return;
+            this.currentTableName = selectedTable.name;
+            this.currentParameters = JSON.parse(JSON.stringify(selectedTable.parameters));
+            this.trials = buildTrials(this.trialCount, this.currentParameters);
+            if (!this.editMode) this.loadDraft();
         },
         
         onControlChange(controlParamId, trialIndex) {
             const dependentParams = this.currentParameters.filter(p => 
                 p.dependsOn && p.dependsOn.param === controlParamId
             );
-            if (dependentParams.length === 0) return;
-            const controlValue = this.trials[trialIndex]?.[controlParamId];
-            dependentParams.forEach(depParam => {
-                if (controlValue !== depParam.dependsOn.value) {
-                    this.trials[trialIndex][depParam.id] = '';
-                }
-            });
+            if (dependentParams.length > 0) {
+                const controlValue = this.trials[trialIndex]?.[controlParamId];
+                dependentParams.forEach(depParam => {
+                    if (controlValue !== depParam.dependsOn.value) {
+                        this.trials[trialIndex][depParam.id] = '';
+                    }
+                });
+            }
             this.saveDraft();
         },
         
@@ -319,8 +319,6 @@ function riceDataApp() {
                 this.longitude = fullRecord.longitude || '';
 
                 saveLocation(this.municipality, this.barangay, this.latitude, this.longitude);
-
-                this.$forceUpdate();
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -340,12 +338,6 @@ function riceDataApp() {
             if (this.currentProvince) this.loadDraft();
         },
 
-        buildEmptyTrial(params) {
-            const trial = {};
-            params.forEach(param => { trial[param.id] = ''; });
-            return trial;
-        },
-        
         init() {
             window.addEventListener('online', () => this.isOnline = true);
             window.addEventListener('offline', () => this.isOnline = false);
