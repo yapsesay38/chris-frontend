@@ -196,11 +196,12 @@ function riceDataApp() {
             for (let i = 0; i < maxLen; i++) {
                 const existing = existingTrials?.[i] || {};
                 const incoming = newTrials?.[i] || {};
+                const hasIncoming = incoming !== undefined;
                 const trial = {};
                 for (const p of tableParams) {
-                    trial[p.id] = overwriteIds.has(p.id)
+                    trial[p.id] = (overwriteIds.has(p.id) && hasIncoming)
                         ? (incoming[p.id] ?? '')
-                        : (existting[p.id] ?? '');
+                        : (existing[p.id] ?? '');
                 }
                 result.push(trial);
             }
@@ -274,7 +275,7 @@ function riceDataApp() {
             const hasData = this.trials.some(trial => Object.values(trial).some(v => v !== '' && v !== null))
                   || this.treatmentNo || this.landrace || this.municipality || this.barangay || this.latitude || this.longitude;
             if (hasData) {
-                localStorage.setItem(draftKey(), JSON.stringify({
+                localStorage.setItem(this.draftKey(), JSON.stringify({
                     sampleId: this.currentSampleId,
                     treatmentNo: this.treatmentNo,
                     landrace: this.landrace,
@@ -293,7 +294,7 @@ function riceDataApp() {
 
         loadDraft() {
             if (this.editMode) return;
-            const draft = JSON.parse(localStorage.getItem(draftKey()));
+            const draft = JSON.parse(localStorage.getItem(this.draftKey()));
             if (draft) {
                 if (draft.sampleId) this.currentSampleId = draft.sampleId;
                 this.treatmentNo = draft.treatmentNo || '';
@@ -454,7 +455,7 @@ function riceDataApp() {
             this.collectionMode = 'table';
             const actualIndex = this.records.findIndex(r =>
                 (r.recordId && r.recordId === record.recordId) ||
-                (r.recordId && r.timestamp === record.timestamp &&
+                (!r.recordId && r.timestamp === record.timestamp &&
                     r.treatmentNo === record.treatmentNo &&
                     r.landrace === record.landrace)
             );
