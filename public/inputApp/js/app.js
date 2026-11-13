@@ -337,7 +337,7 @@ function riceDataApp() {
             if (draft) {
                 const currentId = this.currentSampleId;
                 const draftId = computeSampleId(draft);
-                if (currentId && currentId !== draftL)) {
+                if (currentId && currentId !== draftId)) {
                     return;
                 }
 
@@ -366,15 +366,15 @@ function riceDataApp() {
                 if (munMatch) {
                     this.municipality = munMatch;
                     this.munSearch = munMatch;
-                    if (!this.barangay && this.barangaySearch) {
-                        const brgyMatch = this.barangays.find(
-                            b => b.toLowerCase() === this.barangaySearch.trim().toLowerCase()
-                        );
-                        if (brgyMatch) {
-                            this.barangay = brgyMatch;
-                            this.barangaySearch = brgyMatch;
-                        }
-                    }
+                }
+            }
+            if (!this.barangay && this.barangaySearch) {
+                const brgyMatch = this.barangays.find(
+                    b => b.toLowerCase() === this.barangaySearch.trim().toLowerCase()
+                );
+                if (brgyMatch) {
+                    this.barangay = brgyMatch;
+                    this.barangaySearch = brgyMatch;
                 }
             }
 
