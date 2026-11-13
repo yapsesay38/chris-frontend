@@ -207,12 +207,6 @@ function riceDataApp() {
             this.rebuildParameters();
         },
 
-        /*
-        stageSpansMultipleTables() {
-            return new Set(this.currentParameters.map(p => p.tableId)).size > 1;
-        },
-        */
-
         mergeTrials(existingTrials, newTrials, tableParams, overwriteIds) {
             const maxLen = Math.max(existingTrials?.length || 0, newTrials?.length || 0);
             const result = [];
@@ -296,6 +290,7 @@ function riceDataApp() {
         },
         
         saveDraft() {
+            if (this.editMode) return;
             const hasData = this.trials.some(trial => Object.values(trial).some(v => v !== '' && v !== null))
                   || this.treatmentNo || this.landrace || this.municipality || this.barangay || this.latitude || this.longitude;
             if (hasData) {
@@ -549,16 +544,12 @@ function riceDataApp() {
             const draft = JSON.parse(localStorage.getItem(this.draftKey()));
             if (draft) {
                 const draftMatches =
-                    (draft.sampleId && draft.sampleId === this.currentSampleId) ||
                     (draft.treatmentNo === this.treatmentNo &&
                      draft.landrace === this.landrace &&
                      draft.treatmentNo && draft.landrace);
                 if (!draftMatches) this.clearDraft();
             }
             this.rebuildParameters();
-            if (!localStorage.getItem(this.draftKey())) {
-                this.trials = buildTrials(this.trialCount, this.currentParameters);
-            }
             window.scrollTo({ top: 20, behavior: 'smooth'});
         },
 
@@ -566,7 +557,6 @@ function riceDataApp() {
             window.addEventListener('online', () => this.isOnline = true);
             window.addEventListener('offline', () => this.isOnline = false);
             this.rebuildParameters();
-            this.loadDraft();
 
             if (!this.municipality && !this.barangay && !this.latitude && !this.longitude) {
                 const last = loadLocation();
@@ -1245,7 +1235,6 @@ function allRecordsApp() {
             const actualIndex = this.allRecords.findIndex(r => 
                 (r.recordId && r.recordId === record.recordId) ||
                 (!r.recordId && r.province === record.province &&
-                    r.province === record.province &&
                     r.treatmentNo === record.treatmentNo &&
                     r.landrace === record.landrace &&
                     r.timestamp === record.timestamp)
