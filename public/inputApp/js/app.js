@@ -6,6 +6,16 @@ const generateId = () =>
             return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
 
+const computeSampleId = ({ province, municipality, barangay, treatmentNo, landrace }) => {
+    const p = (province || '').trim();
+    const m = (municipality || '').trim();
+    const b = (barangay || '').trim();
+    const t = (treatmentNo || '').trim();
+    const l = (landrace || '').trim();
+    if (!t || !l) return '';
+    return `${p}::${m}::${b}::${t}::${l}`;
+};
+
 function riceDataApp() {
     const STORAGE_KEY = 'heirloom_rice_records';
     const DEFAULT_TRIAL_COUNT = 5;
@@ -92,17 +102,24 @@ function riceDataApp() {
         },
 
         get currentSampleId() {
-            const t = (this.treatmentNo || '').trim();
-            const l = (this.landrace || '').trim();
-            if (!t || !l) return '';
-            return `${t}::${l}`;
+            return computeSampleId({
+                province: this.currentProvince,
+                municipality: this.municipality,
+                barangay: this.barangay,
+                treatmentNo: this.treatmentNo,
+                landrace: this.landrace,
+            });
         },
 
         get currentSampleLabel() {
+            const p = (this.currentProvince || '').trim();
+            const m = (this.municipality || '').trim();
+            const b = (this.barangay || '').trim();
             const t = (this.treatmentNo || '').trim();
             const l = (this.landrace || '').trim();
             if (!t || !l) return '(pending)';
-            return `${t} / ${l}`;
+            const loc = [m, b].filter(Boolean).join(', ');
+            return loc ? `${t} / ${l} - ${loc}` : `${t} / ${l}`;
         },
 
         get hasNextStage() {
@@ -298,10 +315,11 @@ function riceDataApp() {
                   || this.treatmentNo || this.landrace || this.municipality || this.barangay || this.latitude || this.longitude;
             if (hasData) {
                 localStorage.setItem(this.draftKey(), JSON.stringify({
-                    treatmentNo: this.treatmentNo,
-                    landrace: this.landrace,
+                    province: this.currentProvince,
                     municipality: this.municipality,
                     barangay: this.barangay,
+                    treatmentNo: this.treatmentNo,
+                    landrace: this.landrace,
                     latitude: this.latitude,
                     longitude: this.longitude,
                     trialCount: this.trialCount,
@@ -317,12 +335,9 @@ function riceDataApp() {
             if (this.editMode) return;
             const draft = JSON.parse(localStorage.getItem(this.draftKey()));
             if (draft) {
-                const currentT = (this.treatmentNo || '').trim();
-                const currentL = (this.landrace || '').trim();
-                const draftT = (draft.treatmentNo || '').trim();
-                const draftL = (draft.landrace || '').trim();
-
-                if (currentT && currentL && (currentT !== draftT || currentL !== draftL)) {
+                const currentId = this.currentSampleId;
+                const draftId = computeSampleId(draft);
+                if (currentId && currentId !== draftL)) {
                     return;
                 }
 
@@ -344,8 +359,33 @@ function riceDataApp() {
         },
         
         saveForm() {
-            if (!this.treatmentNo || !this.landrace) {
-                alert('Please fill in Block/Treatment No. and Landrace Name');
+            if (!this.municipality && this.munSearch) {
+                const munMatch = this.municipalities.find(
+                    m => m.toLowerCase() === this.munSearch.trim().toLowerCase()
+                );
+                if (munMatch) {
+                    this.municipality = munMatch;
+                    this.munSearch = munMatch;
+                    if (!this.barangay && this.barangaySearch) {
+                        const brgyMatch = this.barangays.find(
+                            b => b.toLowerCase() === this.barangaySearch.trim().toLowerCase()
+                        );
+                        if (brgyMatch) {
+                            this.barangay = brgyMatch;
+                            this.barangaySearch = brgyMatch;
+                        }
+                    }
+                }
+            }
+
+            const missing = [];
+            if (!this.municipality) missing.push('City / Municipality');
+            if (!this.barangay) missing.push('Barangay');
+            if (!this.treatmentNo) missing.push('Block No. / Treatment No.');
+            if (!this.landrace) missing.push('Landrace Name / Sample ID');
+
+            if (missing.length) {
+                alert(`Please fill in the following before saving:\n\n• ${missing.join('\n• ')}`);
                 return;
             }
 
@@ -573,12 +613,8 @@ function riceDataApp() {
                 this.currentStage = next.id;
             }
             const draft = JSON.parse(localStorage.getItem(this.draftKey()));
-            if (draft) {
-                const draftMatches =
-                    (draft.treatmentNo === this.treatmentNo &&
-                     draft.landrace === this.landrace &&
-                     draft.treatmentNo && draft.landrace);
-                if (!draftMatches) this.clearDraft();
+            if (draft && computeSampleId(draft) !== this.currentSampleId) {
+                this.clearDraft();
             }
             this.rebuildParameters();
             window.scrollTo({ top: 30, behavior: 'smooth'});
@@ -752,7 +788,7 @@ function allRecordsApp() {
                 const tableParams = tableConfig?.parameters || [];
                 const paramIds = tableParams.map(p => p.id);
                 
-                const headers = ['province', 'table_id', 'block_treatment_no', 'landrace_id', 'trial_number', 'record_date', 'sample_id'];
+                const headers = ['province', 'municipality', 'barangay', 'table_id', 'block_treatment_no', 'landrace_id', 'trial_number', 'record_date', 'sample_id'];
                 paramIds.forEach(paramId => {
                     headers.push(paramId.replace(/([A-Z])/g, '_$1').toLowerCase());
                 });
@@ -764,7 +800,7 @@ function allRecordsApp() {
                     const recordDate = new Date(record.timestamp).toISOString().slice(0, 10);
                     
                     for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
-                        const row = [record.province, record.tableId, record.treatmentNo, record.landrace, trialIdx + 1, recordDate, record.sampleId || `${record.treatmentNo}::${record.landrace}`];
+                        const row = [record.province, record.municipality || '', record.barangay || '', record.tableId, record.treatmentNo, record.landrace, trialIdx + 1, recordDate, record.sampleId || computeSampleId(record)];
                         
                         paramIds.forEach(paramId => {
                             let value = record.trials[trialIdx]?.[paramId] || '';
@@ -815,7 +851,7 @@ function allRecordsApp() {
             const tableParams = tableConfig.parameters;
             const paramIds = tableParams.map(p => p.id);
             
-            const headers = ['province', 'table_id', 'block_treatment_no', 'landrace_id', 'trial_number', 'record_date', 'sample_id'];
+            const headers = ['province', 'municipality', 'barangay', 'table_id', 'block_treatment_no', 'landrace_id', 'trial_number', 'record_date', 'sample_id'];
             paramIds.forEach(paramId => {
                 headers.push(paramId.replace(/([A-Z])/g, '_$1').toLowerCase());
             });
@@ -825,7 +861,7 @@ function allRecordsApp() {
             const recordDate = new Date(record.timestamp).toISOString().slice(0, 10);
             
             for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
-                const row = [record.province, record.tableId, record.treatmentNo, record.landrace, trialIdx + 1, recordDate, record.sampleId || `${record.treatmentNo}::${record.landrace}`];
+                const row = [record.province, record.municipality || '', record.barangay || '', record.tableId, record.treatmentNo, record.landrace, trialIdx + 1, recordDate, record.sampleId || computeSampleId(record)];
                 
                 paramIds.forEach(paramId => {
                     let value = record.trials[trialIdx]?.[paramId] || '';
@@ -1146,6 +1182,8 @@ function allRecordsApp() {
             }
             
             const provinceIdx = headers.indexOf('province');
+            const municipalityIdx = headers.indexOf('municipality');
+            const barangayIdx = headers.indexOf('barangay');
             const treatmentIdx = headers.indexOf('block_treatment_no');
             const landraceIdx = headers.indexOf('landrace_id');
             const trialNumIdx = headers.indexOf('trial_number');
@@ -1166,19 +1204,23 @@ function allRecordsApp() {
                 if (values.length < headers.length) continue;
                 
                 const province = values[provinceIdx];
+                const municipality = municipalityIdx !== -1 ? values[municipalityIdx] : '';
+                const barangay = barangayIdx !== -1 ? values[barangayIdx] : '';
                 const treatmentNo = values[treatmentIdx];
                 const landrace = values[landraceIdx];
                 const trialNumber = parseInt(values[trialNumIdx]);
                 const recordDate = recordDateIdx !== -1 ? values[recordDateIdx] : new Date().toISOString().slice(0, 10);
                 
-                const sampleKey = `${province}|${treatmentNo}|${landrace}`;
+                const sampleKey = `${province}|${municipality}|${barangay}|${treatmentNo}|${landrace}`;
                 
                 if (!sampleMap.has(sampleKey)) {
                     sampleMap.set(sampleKey, {
                         province: province,
+                        municipality: municipality,
+                        barangay: barangay,
                         treatmentNo: treatmentNo,
                         landrace: landrace,
-                        sampleId: (sampleIdIdx !== -1 && values[sampleIdIdx]) || `${treatmentNo}::${landrace}`,
+                        sampleId: (sampleIdIdx !== -1 && values[sampleIdIdx]) || computeSampleId({ province, municipality, barangay, treatmentNo, landrace }),
                         tableId: tableId,
                         tableName: tableConfig.name,
                         trials: {},
@@ -1220,6 +1262,8 @@ function allRecordsApp() {
                     recordId: generateId(),
                     sampleId: sample.sampleId,
                     province: sample.province,
+                    municipality: sample.municipality || '',
+                    barangay: sample.barangay || '',
                     tableId: sample.tableId,
                     tableName: sample.tableName,
                     treatmentNo: sample.treatmentNo,
