@@ -337,7 +337,7 @@ function riceDataApp() {
             if (draft) {
                 const currentId = this.currentSampleId;
                 const draftId = computeSampleId(draft);
-                if (currentId && currentId !== draftId)) {
+                if (currentId && currentId !== draftId) {
                     return;
                 }
 
