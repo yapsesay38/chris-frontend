@@ -44,6 +44,34 @@
          📡 You are offline. Data will be saved locally.
     </div>
     <div class="container" x-data="riceDataApp()">
+        <div x-show="showSamplePrompt" x-cloak class="modal-backdrop">
+            <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; width: 460px; max-width: 90%; box-shadow: var(--shadow-soft);">
+                <h2 style="margin-bottom: 0.5rem; color: var(--accent-success); font-size: 1.3rem;">✅ Data Saved</h2>
+                <p style="margin-bottom: 1.25rem; color: var(--text-muted); font-size: 0.85rem;">
+                    <span x-text="lastSaveSummary"></span> record(s) written for
+                    <code style="background: var(--bg-input); padding: 2px 6px; border-radius: 4px; color: var(--text-main);" x-text="currentSampleLabel"></code>
+                </p>
+                <p style="margin-bottom: 1.5rem; color: var(--text-main); font-size: 0.95rem; line-height: 1.5;">
+                    Starting a <strong>new sample</strong> (different plant or treatment), or <strong>continuing with this same sample</strong> (e.g., moving to the next growth stage)?
+                </p>
+                <div style="display: flex; gap: 1rem;">
+                    <button type="button" @click="continueCurrentSample()" x-show="hasNextStage"
+                            style="flex: 1; padding: 0.75rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-main); cursor: pointer; font-weight: 600; font-family: inherit;"
+                            class="border-hover">
+                        Continue to Next Stage
+                    </button>
+                    <button type="button" @click="closeSamplePrompt()" x-show="!hasNextStage"
+                            style="flex: 1; padding: 0.75rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-main); cursor: pointer; font-weight: 600; font-family: inherit;"
+                            class="border-hover">
+                        Dismiss
+                    </button>
+                    <button type="button" @click="confirmNewSample()"
+                            style="flex: 1; padding: 0.75rem; background: var(--accent-primary); border: none; border-radius: var(--radius-md); color: #fff; cursor: pointer; font-weight: 600; font-family: inherit;">
+                        + New Sample
+                    </button>
+                </div>
+            </div>
+        </div>
         <header class="app-header">
             <div class="header-content">
                 <a class='btn-back' href='index.html'>
@@ -123,19 +151,19 @@
         <div class="config-bar" style="background: var(--bg-input); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                 <label style="font-weight: 600;">Collect by:</label>
-                <select x-model="collectionMode" @change="onCollectionModeChange()" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
+                <select x-model="collectionMode" @change="onCollectionModeChange()" :disabled="editMode" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
                     <option value="stage">Growth Stage</option>
                     <option value="table">Plant Part</option>
                 </select>
                 <template x-if="collectionMode === 'stage'">
-                    <select x-model="currentStage" @change="rebuildParameters()" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
+                    <select x-model="currentStage" @change="rebuildParameters()" :disabled="editMode" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
                         <template x-for="s in stages" :key="s.id">
                             <option :value="s.id" x-text="s.label"></option>
                         </template>
                     </select>
                 </template>
                 <template x-if="collectionMode === 'table'">
-                    <select x-model="currentTableId" @change="changeTable()" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
+                    <select x-model="currentTableId" @change="changeTable()" :disabled="editMode" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
                         <template x-for="table in availableTables" :key="table.id">
                             <option :value="table.id" x-text="table.name"></option>
                         </template>
@@ -168,7 +196,7 @@
                     + New Sample
                 </button>
                 <span style="color: var(--text-muted); font-size: 12px;">
-                    Sample: <span x-text="currentSampleId ? currentSampleId.slice(0, 8) : '—'"></span>
+                    Sample: <span x-text="currentSampleLabel"></span>
                 </span>
             </div>
             

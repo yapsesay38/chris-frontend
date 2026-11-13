@@ -57,13 +57,14 @@ function riceDataApp() {
         barangaySearch: '',
         showMunDropdown: false,
         showBarangayDropdown: false,
+        showSamplePrompt: false,
+        lastSaveSummary: '',
         editMode: false,
         editIndex: -1,
         isOnline: navigator.onLine,
         availableTables: window.availableTables,
         collectionMode: 'stage',
-        currentStage: 'maturity',
-        currentSampleId: generateId(),
+        currentStage: 'vegetative',
         currentTableId: 'plantvigorandleaf',
         currentTableName: '🍃 Plant Vigor and Leaf Characters',
         currentParameters: [],
@@ -85,6 +86,26 @@ function riceDataApp() {
 
         get stages() {
             return window.STAGES || [];
+        },
+
+        get currentSampleId() {
+            const t = (this.treatmentNo || '').trim();
+            const l = (this.landrace || '').trim();
+            if (!t || !l) return '';
+            return `${t}::${l}`;
+        },
+
+        get currentSampleLabel() {
+            const t = (this.treatmentNo || '').trim();
+            const l = (this.landrace || '').trim();
+            if (!t || !l) return '(pending)';
+            return `${t} / ${l}`;
+        },
+
+        get hasNextStage() {
+            const sorted = [...(window.STAGES || [])].sort((a, b) => a.order - b.order);
+            const idx = sorted.findIndex(s => s.id === this.currentStage);
+            return idx >= 0 && idx < sorted.length - 1;
         },
 
         get filteredMunicipalities() {
@@ -174,7 +195,7 @@ function riceDataApp() {
             }
             this.currentParameters = JSON.parse(JSON.stringify(params));
             this.currentTableName = title;
-            this.trials = buildTrials(this.trialCount, this.currentParameters);;
+            this.trials = buildTrials(this.trialCount, this.currentParameters);
             if (!this.editMode) this.loadDraft();
         },
 
@@ -186,16 +207,18 @@ function riceDataApp() {
             this.rebuildParameters();
         },
 
+        /*
         stageSpansMultipleTables() {
             return new Set(this.currentParameters.map(p => p.tableId)).size > 1;
         },
+        */
 
         mergeTrials(existingTrials, newTrials, tableParams, overwriteIds) {
             const maxLen = Math.max(existingTrials?.length || 0, newTrials?.length || 0);
             const result = [];
             for (let i = 0; i < maxLen; i++) {
                 const existing = existingTrials?.[i] || {};
-                const incoming = newTrials?.[i] || {};
+                const incoming = newTrials?.[i];
                 const hasIncoming = incoming !== undefined;
                 const trial = {};
                 for (const p of tableParams) {
@@ -223,6 +246,7 @@ function riceDataApp() {
             this.saveDraft();
         },
         
+        // might produce a bug when text params are added to tables.js
         updateTrialValue(paramId, trialIndex) {
             let value = this.trials[trialIndex][paramId];
             if (value !== '' && !isNaN(value) && parseFloat(value) < 0) {
@@ -276,7 +300,6 @@ function riceDataApp() {
                   || this.treatmentNo || this.landrace || this.municipality || this.barangay || this.latitude || this.longitude;
             if (hasData) {
                 localStorage.setItem(this.draftKey(), JSON.stringify({
-                    sampleId: this.currentSampleId,
                     treatmentNo: this.treatmentNo,
                     landrace: this.landrace,
                     municipality: this.municipality,
@@ -296,7 +319,6 @@ function riceDataApp() {
             if (this.editMode) return;
             const draft = JSON.parse(localStorage.getItem(this.draftKey()));
             if (draft) {
-                if (draft.sampleId) this.currentSampleId = draft.sampleId;
                 this.treatmentNo = draft.treatmentNo || '';
                 this.landrace = draft.landrace || '';
                 this.municipality = draft.municipality || '';
@@ -322,7 +344,7 @@ function riceDataApp() {
 
             saveLocation(this.municipality, this.barangay, this.latitude, this.longitude);
 
-            if (this.collectionMode === 'stage' && this.stageSpansMultipleTables()) {
+            if (this.collectionMode === 'stage' && !this.editMode) {
                 this.saveStageForm();
             } else {
                 this.saveTableForm();
@@ -375,6 +397,7 @@ function riceDataApp() {
                 byTable[p.tableId].push(p);
             }
             
+            const now = Date.now();
             let recordsSaved = 0;
             let recordsMerged = 0;
             
@@ -411,7 +434,7 @@ function riceDataApp() {
                         landrace: this.landrace,
                         trialCount: mergedTrials.length,
                         trials: mergedTrials,
-                        timestamp: Date.now()
+                        timestamp: now
                     };
                     recordsMerged++;
                 } else {
@@ -429,7 +452,7 @@ function riceDataApp() {
                         landrace: this.landrace,
                         trialCount: newTrials.length,
                         trials: newTrials,
-                        timestamp: Date.now()
+                        timestamp: now
                     });
                     recordsSaved++;
                 }
@@ -441,8 +464,8 @@ function riceDataApp() {
             const parts = [];
             if (recordsSaved) parts.push(`${recordsSaved} new`);
             if (recordsMerged) parts.push(`${recordsMerged} merged`);
-            alert(`✅ Stage data saved successfully! (${parts.join(', ')} record(s))`);
-            this.resetForm();
+            this.lastSaveSummary = parts.join(', ') || '0';
+            this.showSamplePrompt = true;
         },
         
         editForm(index) {
@@ -463,9 +486,10 @@ function riceDataApp() {
             if (actualIndex !== -1) {
                 const fullRecord = this.records[actualIndex];
                 this.currentTableId = fullRecord.tableId;
-                this.rebuildParameters();
                 this.editMode = true;
                 this.editIndex = actualIndex;
+                this.rebuildParameters();
+
                 this.currentProvince = fullRecord.province;
                 this.treatmentNo = fullRecord.treatmentNo;
                 this.landrace = fullRecord.landrace;
@@ -480,7 +504,7 @@ function riceDataApp() {
                 saveLocation(this.municipality, this.barangay, this.latitude, this.longitude);
             }
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 20, behavior: 'smooth' });
         },
         
         cancelEdit() {
@@ -498,12 +522,44 @@ function riceDataApp() {
         },
 
         startNewSample() {
-            this.currentSampleId = generateId();
+            this.showSamplePrompt = false;
             this.treatmentNo = '';
             this.landrace = '';
             this.trialCount = DEFAULT_TRIAL_COUNT;
             this.trials = buildTrials(DEFAULT_TRIAL_COUNT, this.currentParameters);
             this.clearDraft();
+        },
+
+        confirmNewSample() {
+            this.startNewSample();
+        },
+
+        closeSamplePrompt() {
+            this.showSamplePrompt = false;
+        },
+
+        continueCurrentSample() {
+            this.showSamplePrompt = false;
+            const sorted = [...(window.STAGES || [])].sort((a, b) => a.order - b.order);
+            const idx = sorted.findIndex(s => s.id === this.currentStage);
+            const next = idx >= 0 ? sorted[idx + 1] : null;
+            if (next) {
+                this.currentStage = next.id;
+            }
+            const draft = JSON.parse(localStorage.getItem(this.draftKey()));
+            if (draft) {
+                const draftMatches =
+                    (draft.sampleId && draft.sampleId === this.currentSampleId) ||
+                    (draft.treatmentNo === this.treatmentNo &&
+                     draft.landrace === this.landrace &&
+                     draft.treatmentNo && draft.landrace);
+                if (!draftMatches) this.clearDraft();
+            }
+            this.rebuildParameters();
+            if (!localStorage.getItem(this.draftKey())) {
+                this.trials = buildTrials(this.trialCount, this.currentParameters);
+            }
+            window.scrollTo({ top: 20, behavior: 'smooth'});
         },
 
         init() {
@@ -675,7 +731,7 @@ function allRecordsApp() {
                 const tableParams = tableConfig?.parameters || [];
                 const paramIds = tableParams.map(p => p.id);
                 
-                const headers = ['province', 'table_id', 'block_treatment_no', 'landrace_id', 'trial_number', 'record_date'];
+                const headers = ['province', 'table_id', 'block_treatment_no', 'landrace_id', 'trial_number', 'record_date', 'sample_id'];
                 paramIds.forEach(paramId => {
                     headers.push(paramId.replace(/([A-Z])/g, '_$1').toLowerCase());
                 });
@@ -687,7 +743,7 @@ function allRecordsApp() {
                     const recordDate = new Date(record.timestamp).toISOString().slice(0, 10);
                     
                     for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
-                        const row = [record.province, record.tableId, record.treatmentNo, record.landrace, trialIdx + 1, recordDate];
+                        const row = [record.province, record.tableId, record.treatmentNo, record.landrace, trialIdx + 1, recordDate, record.sampleId || `${record.treatmentNo}::${record.landrace}`];
                         
                         paramIds.forEach(paramId => {
                             let value = record.trials[trialIdx]?.[paramId] || '';
@@ -738,7 +794,7 @@ function allRecordsApp() {
             const tableParams = tableConfig.parameters;
             const paramIds = tableParams.map(p => p.id);
             
-            const headers = ['province', 'table_id', 'block_treatment_no', 'landrace_id', 'trial_number', 'record_date'];
+            const headers = ['province', 'table_id', 'block_treatment_no', 'landrace_id', 'trial_number', 'record_date', 'sample_id'];
             paramIds.forEach(paramId => {
                 headers.push(paramId.replace(/([A-Z])/g, '_$1').toLowerCase());
             });
@@ -748,7 +804,7 @@ function allRecordsApp() {
             const recordDate = new Date(record.timestamp).toISOString().slice(0, 10);
             
             for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
-                const row = [record.province, record.tableId, record.treatmentNo, record.landrace, trialIdx + 1, recordDate];
+                const row = [record.province, record.tableId, record.treatmentNo, record.landrace, trialIdx + 1, recordDate, record.sampleId || `${record.treatmentNo}::${record.landrace}`];
                 
                 paramIds.forEach(paramId => {
                     let value = record.trials[trialIdx]?.[paramId] || '';
@@ -1073,6 +1129,7 @@ function allRecordsApp() {
             const landraceIdx = headers.indexOf('landrace_id');
             const trialNumIdx = headers.indexOf('trial_number');
             const recordDateIdx = headers.indexOf('record_date');
+            const sampleIdIdx = headers.indexOf('sample_id');
 
             if (provinceIdx === -1 || treatmentIdx === -1 || landraceIdx === -1 || trialNumIdx === -1) {
                 alert('CSV is missing required columns.');
@@ -1100,6 +1157,7 @@ function allRecordsApp() {
                         province: province,
                         treatmentNo: treatmentNo,
                         landrace: landrace,
+                        sampleId: (sampleIdIdx !== -1 && values[sampleIdIdx]) || `${treatmentNo}::${landrace}`,
                         tableId: tableId,
                         tableName: tableConfig.name,
                         trials: {},
@@ -1138,6 +1196,8 @@ function allRecordsApp() {
                 }
                 
                 importedRecords.push({
+                    recordId: generateId(),
+                    sampleId: sample.sampleId,
                     province: sample.province,
                     tableId: sample.tableId,
                     tableName: sample.tableName,
@@ -1183,10 +1243,12 @@ function allRecordsApp() {
         deleteRecord(index) {
             const record = this.filteredRecordsList[index];
             const actualIndex = this.allRecords.findIndex(r => 
-                r.province === record.province && 
-                r.treatmentNo === record.treatmentNo && 
-                r.landrace === record.landrace &&
-                r.timestamp === record.timestamp
+                (r.recordId && r.recordId === record.recordId) ||
+                (!r.recordId && r.province === record.province &&
+                    r.province === record.province &&
+                    r.treatmentNo === record.treatmentNo &&
+                    r.landrace === record.landrace &&
+                    r.timestamp === record.timestamp)
             );
             
             if (actualIndex !== -1 && confirm('Are you sure you want to delete this record?')) {
@@ -1204,7 +1266,7 @@ function allRecordsApp() {
                 return;
             }
             
-            const countToDelete = this.filteredRecordsList.length;  // ← STORE COUNT HERE
+            const countToDelete = this.filteredRecordsList.length;
             
             const confirmed = confirm(`⚠️ WARNING: You are about to delete ${countToDelete} record(s).\n\nThis action cannot be undone!`);
             
@@ -1216,8 +1278,16 @@ function allRecordsApp() {
                 return;
             }
             
-            const timestampsToDelete = new Set(this.filteredRecordsList.map(r => r.timestamp));
-            const remainingRecords = this.allRecords.filter(r => !timestampsToDelete.has(r.timestamp));
+            const recordIds = new Set(
+                this.filteredRecordsList.map(r => r.recordId).filter(Boolean)
+            );
+            const legacyTimestamps = new Set(
+                this.filteredRecordsList.filter(r => !r.recordId).map(r => r.timestamp)
+            );
+            const remainingRecords = this.allRecords.filter(r =>
+                (r.recordId && !recordIds.has(r.recordId)) ||
+                (!r.recordId && !legacyTimestamps.has(r.timestamp))
+            );
             
             localStorage.setItem('heirloom_rice_records', JSON.stringify(remainingRecords));
             
