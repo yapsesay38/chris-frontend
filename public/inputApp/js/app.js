@@ -71,9 +71,7 @@ function riceDataApp() {
         lastSaveSummary: '',
         editMode: false,
         editIndex: -1,
-        editReturnMode: 'stage',
-        editReturnStage: 'vegetative',
-        editReturnTableId: 'plantvigorandleaf',
+        editReturnSnapshot: null,
         isOnline: navigator.onLine,
         availableTables: window.availableTables,
         collectionMode: 'stage',
@@ -524,9 +522,21 @@ function riceDataApp() {
                return;
             }
 
-            this.editReturnMode = this.collectionMode;
-            this.editReturnStage = this.currentStage;
-            this.editReturnTableId = this.currentTableId;
+            this.editReturnSnapshot = {
+                collectionMode: this.collectionMode,
+                currentStage: this.currentStage,
+                currentTableId: this.currentTableId,
+                treatmentNo: this.treatmentNo,
+                landrace: this.landrace,
+                municipality: this.municipality,
+                munSearch: this.munSearch,
+                barangay: this.barangay,
+                barangaySearch: this.barangaySearch,
+                latitude: this.latitude,
+                longitude: this.longitude,
+                currentSampleDate: this.currentSampleDate,
+                trialCount: this.trialCount,
+            };
 
             this.collectionMode = 'table';
             const actualIndex = this.records.findIndex(r =>
@@ -555,8 +565,6 @@ function riceDataApp() {
                 this.barangaySearch = fullRecord.barangay || '';
                 this.latitude = fullRecord.latitude || '';
                 this.longitude = fullRecord.longitude || '';
-
-                saveLocation(this.municipality, this.barangay, this.latitude, this.longitude);
             }
 
             window.scrollTo({ top: 30, behavior: 'smooth' });
@@ -566,17 +574,28 @@ function riceDataApp() {
             this.editMode = false;
             this.editIndex = -1;
             
-            this.collectionMode = this.editReturnMode || 'stage';
+            const snap = this.editReturnSnapshot || {};
+            
+            this.collectionMode = snap.collectionMode || 'stage';
             if (this.collectionMode === 'stage') {
-                this.currentStage = this.editReturnStage || 'vegetative';
+                this.currentStage = snap.currentStage || 'vegetative';
             } else {
-                this.currentTableId = this.editReturnTableId || 'plantvigorandleaf';
+                this.currentTableId = snap.currentTableId || 'plantvigorandleaf';
             }
+             
+            this.treatmentNo = snap.treatmentNo || '';
+            this.landrace = snap.landrace || '';
+            this.municipality = snap.municipality || '';
+            this.munSearch = snap.munSearch || '';
+            this.barangay = snap.barangay || '';
+            this.barangaySearch = snap.barangaySearch || '';
+            this.latitude = snap.latitude || '';
+            this.longitude = snap.longitude || '';
+            this.currentSampleDate = snap.currentSampleDate || todayLocalISO();
+            this.trialCount = snap.trialCount || DEFAULT_TRIAL_COUNT;
             
-            this.treatmentNo = '';
-            this.landrace = '';
-            this.trialCount = DEFAULT_TRIAL_COUNT;
-            
+            this.editReturnSnapshot = null;
+
             this.rebuildParameters();
             window.scrollTo({ top: 30, behavior: 'smooth' });
         },
