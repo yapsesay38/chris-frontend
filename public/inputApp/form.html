@@ -198,7 +198,10 @@
                       + New Sample
                   </button>
                   <span style="color: var(--text-muted); font-size: 12px;">
-                      Sample: <span x-text="currentSampleLabel"></span>
+                      Sample: <span x-text="currentSampleLabel"
+                                    :title="currentSampleLabel"
+                                    :xtext="currentSampleLabel.length > 30 ? currentSampleLabel.slice(0, 30) + '...' : currentSampleLabel">
+                              </span>
                   </span>
               </div>
               

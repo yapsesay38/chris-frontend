@@ -26,7 +26,7 @@ const computeSampleId = ({ province, municipality, barangay, treatmentNo, landra
     }
     d = d.replace(/-/g, '').slice(0, 8);
     if (!t || !l) return '';
-    return `${p}::${m}::${b}::${t}::${l}::${d}`;
+    return `${d}::${p}::${m}::${b}::${t}::${l}`;
 };
 
 function riceDataApp() {
@@ -132,7 +132,7 @@ function riceDataApp() {
             const l = (this.landrace || '').trim();
             if (!t || !l) return '(pending)';
             const loc = [m, b].filter(Boolean).join(', ');
-            return loc ? `${t} / ${l} - ${loc}` : `${t} / ${l}`;
+            return this.currentSampleId || '(pending)';
         },
 
         get hasNextStage() {
