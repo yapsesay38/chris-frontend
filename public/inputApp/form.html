@@ -87,232 +87,234 @@
             </div>
         </header>
 
-        <div class="location-section" style="background: var(--bg-secondary); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                <div class="input-group" style="position: relative;">
-                    <label for="municipality">City / Municipality</label>
-                    <input type="text" id="municipality"
-                           x-model="munSearch"
-                           @input="if (!munSearch) { municipality = ''; barangay = ''; barangaySearch = ''; } showMunDropdown = true"
-                           @focus="showMunDropdown = true"
-                           @blur="setTimeout(() => showMunDropdown = false, 200)"
-                           placeholder="Search Municipality..."
-                           style="width:100%; padding:0.9rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-md); color:var(--text-main);">
-                    <div x-show="showMunDropdown && filteredMunicipalities.length > 0"
-                         style="position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); max-height: 200px; overflow-y: auto; z-index: 1000; margin-top: 4px;">
-                        <template x-for="mun in filteredMunicipalities" :key="mun">
-                            <div @mousedown.prevent="selectMunicipality(mun)"
-                                 style="padding: 8px 12px; cursor: pointer; color: var(--text-main);"
-                                 class="hover:bg-[var(--bg-input)]">
-                                <span x-text="mun"></span>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-                <div class="input-group" style="position: relative;">
-                    <label for="barangay">Barangay</label>
-                    <input type="text" id="barangay"
-                           x-model="barangaySearch"
-                           @input="if (!barangaySearch) { barangay = ''; } showBarangayDropdown = true"
-                           @focus="showBarangayDropdown = true"
-                           @blur="setTimeout(() => showBarangayDropdown = false, 200)"
-                           placeholder="Search Barangay..."
-                           style="width:100%; padding:0.9rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-md); color:var(--text-main);">
-                    <div x-show="showBarangayDropdown && filteredBarangays.length > 0"
-                         style="position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); max-height: 200px; overflow-y: auto; z-index: 1000; margin-top: 4px;">
-                        <template x-for="bgy in filteredBarangays" :key="bgy">
-                            <div @mousedown.prevent="selectBarangay(bgy)"
-                                 style="padding: 8px 12px; cursor: pointer; color: var(--text-main);"
-                                 class="hover:bg-[var(--bg-input)]">
-                                <span x-text="bgy"></span>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-                <div class="input-group" style="grid-column: span 2;">
-                    <label>GNSS Location</label>
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        <button type="button" @click="geoLocation()" class="btn btn-secondary" style="flex: 0 1 auto; padding: 0.5rem 1rem;">
-                            📍 Get Current Location
-                        </button>
-                        <input type="text" id="latitude" placeholder="Latitude" x-model="latitude" style="flex: 1; min-width: 100px;">
-                        <input type="text" id="longitude" placeholder="Longitude" x-model="longitude" style="flex: 1; min-width: 100px;">
-                        <button type="button" @click="clearLocation()" class="btn btn-secondary" style="flex: 0 1 auto; padding: 0.5rem 1rem; background: #6b7280;">
-                            🗑️ Clear Locations
-                        </button>
-                    </div>
-                    <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.3rem;">
-                        Click the button to automatically fill your current coordinates (requires permission).
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="config-bar" style="background: var(--bg-input); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <label style="font-weight: 600;">Collect by:</label>
-                <select x-model="collectionMode" @change="onCollectionModeChange()" :disabled="editMode" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
-                    <option value="stage">Growth Stage</option>
-                    <option value="table">Plant Part</option>
-                </select>
-                <template x-if="collectionMode === 'stage'">
-                    <select x-model="currentStage" @change="rebuildParameters()" :disabled="editMode" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
-                        <template x-for="s in stages" :key="s.id">
-                            <option :value="s.id" x-text="s.label"></option>
-                        </template>
-                    </select>
-                </template>
-                <template x-if="collectionMode === 'table'">
-                    <select x-model="currentTableId" @change="changeTable()" :disabled="editMode" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
-                        <template x-for="table in availableTables" :key="table.id">
-                            <option :value="table.id" x-text="table.name"></option>
-                        </template>
-                    </select>
-                </template>
-            </div>
-            
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <label style="font-weight: 600;">Number of Trials:</label>
-                <button type="button" @click="decrementTrials()" 
-                        style="width: 32px; height: 32px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center;"
-                        class="border-hover"
-                >
-                    −
-                </button>
-                <span x-text="trialCount" style="min-width: 40px; text-align: center; font-size: 16px; font-weight: 600;"></span>
-                <button type="button" @click="incrementTrials()" 
-                        style="width: 32px; height: 32px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center;"
-                        class="border-hover"
-                >
-                    +
-                </button>
-                <span style="color: var(--text-muted); font-size: 12px;">(1-20 trials)</span>
-            </div>
-
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <button type="button" @click="startNewSample()"
-                        style="padding: 6px 12px; background: var(--accent-primary); border: 1px solid var(--border-color); color: white; border-radius: 6px; cursor: pointer; font-weight: 600;"
-                        class="border-hover">
-                    + New Sample
-                </button>
-                <span style="color: var(--text-muted); font-size: 12px;">
-                    Sample: <span x-text="currentSampleLabel"></span>
-                </span>
-            </div>
-            
-            <div style="color: var(--accent-success); font-size: 14px;">
-                📊 <span x-text="currentTableName"></span> | 📏 <span x-text="trialCount"></span> trials | 📋 <span x-text="parameters.length"></span> parameters
-            </div>
-        </div>
-
-        <div class="form-container">
-            <form @submit.prevent="saveForm()">
-                <input type="hidden" name="province" x-model="currentProvince">
-                <input type="hidden" name="edit-index" x-model="editIndex">
-                <input type="hidden" name="tableId" x-model="currentTableId">
-                
-                <div class="metadata-grid">
-                    <div class="input-group">
-                        <label for="treatment-no">Block No. / Treatment No.</label>
-                        <input type="text" id="treatment-no" name="treatment-no" required 
-                               x-model="treatmentNo"
-                               placeholder="e.g. B1-T1">
-                    </div>
-                    <div class="input-group">
-                        <label for="landrace">Landrace Name / Sample ID</label>
-                        <input type="text" id="landrace" name="landrace" required 
-                               x-model="landrace"
-                               placeholder="e.g. Traditional Rice A">
-                    </div>
-                </div>
-
-                <div class="section-divider">
-                    <span x-text="`${currentTableName} (${trialCount} Trials per Sample)`"></span>
-                </div>
-
-          <template x-for="param in parameters" :key="param.id">
-              <div class="form-group">
-                  <label x-text="param.label"></label>
-                  <div class="trial-row" :style="`grid-template-columns: repeat(${trialCount}, 1fr);`">
-            
-                      <template x-if="param.type === 'select'">
-                          <template x-for="(trial, idx) in trials" :key="idx">
-                              <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
-                                  <select x-show="isParamVisibleForTrial(param, idx)"
-                                          x-model="trials[idx][param.id]"
-                                          @change="onControlChange(param.id, idx)">
-                                      <option value="">Select...</option>
-                                      <template x-for="(label, value) in param.options">
-                                          <option :value="value" x-text="`${value}-${label}`"></option>
-                                      </template>
-                                  </select>
-                                  <div x-show="!isParamVisibleForTrial(param, idx)"
-                                       style="color: var(--text-muted); text-align: center; padding: 8px; background: var(--bg-input); border-radius: 6px; font-size: 12px;">
-                                      ⚡ Not applicable
-                                  </div>
+        <form @submit.prevent="saveForm()">
+          <div class="location-section" style="background: var(--bg-secondary); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                  <div class="input-group" style="position: relative;">
+                      <label for="municipality">City / Municipality</label>
+                      <input type="text" id="municipality" name="city / municipality"
+                             x-model="munSearch"
+                             required
+                             @input="if (!munSearch) { municipality = ''; barangay = ''; barangaySearch = ''; } showMunDropdown = true"
+                             @focus="showMunDropdown = true"
+                             @blur="setTimeout(() => showMunDropdown = false, 200)"
+                             placeholder="Search Municipality..."
+                             style="width:100%; padding:0.9rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-md); color:var(--text-main);">
+                      <div x-show="showMunDropdown && filteredMunicipalities.length > 0"
+                           style="position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); max-height: 200px; overflow-y: auto; z-index: 1000; margin-top: 4px;">
+                          <template x-for="mun in filteredMunicipalities" :key="mun">
+                              <div @mousedown.prevent="selectMunicipality(mun)"
+                                   style="padding: 8px 12px; cursor: pointer; color: var(--text-main);"
+                                   class="hover:bg-[var(--bg-input)]">
+                                  <span x-text="mun"></span>
                               </div>
                           </template>
-                      </template>
-            
-                      <template x-if="param.type === 'number'">
-                          <template x-for="(trial, idx) in trials" :key="idx">
-                              <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
-                                  <input x-show="isParamVisibleForTrial(param, idx)"
-                                         type="number" 
-                                         :step="param.step || '1'"
-                                         :min="param.min || 0"
-                                         x-model="trials[idx][param.id]"
-                                         @input="updateTrialValue(param.id, idx)"
-                                         :placeholder="`T${idx + 1}`">
-                                  <div x-show="!isParamVisibleForTrial(param, idx)"
-                                       style="color: var(--text-muted); text-align: center; padding: 8px; background: var(--bg-input); border-radius: 6px; font-size: 12px;">
-                                      ⚡ Not applicable
-                                  </div>
+                      </div>
+                  </div>
+                  <div class="input-group" style="position: relative;">
+                      <label for="barangay">Barangay</label>
+                      <input type="text" id="barangay" name="barangay"
+                             x-model="barangaySearch"
+                             required
+                             @input="if (!barangaySearch) { barangay = ''; } showBarangayDropdown = true"
+                             @focus="showBarangayDropdown = true"
+                             @blur="setTimeout(() => showBarangayDropdown = false, 200)"
+                             placeholder="Search Barangay..."
+                             style="width:100%; padding:0.9rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-md); color:var(--text-main);">
+                      <div x-show="showBarangayDropdown && filteredBarangays.length > 0"
+                           style="position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); max-height: 200px; overflow-y: auto; z-index: 1000; margin-top: 4px;">
+                          <template x-for="bgy in filteredBarangays" :key="bgy">
+                              <div @mousedown.prevent="selectBarangay(bgy)"
+                                   style="padding: 8px 12px; cursor: pointer; color: var(--text-main);"
+                                   class="hover:bg-[var(--bg-input)]">
+                                  <span x-text="bgy"></span>
                               </div>
                           </template>
-                      </template>
-            
-                      <template x-if="param.type === 'text'">
-                          <template x-for="(trial, idx) in trials" :key="idx">
-                              <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
-                                  <input x-show="isParamVisibleForTrial(param, idx)"
-                                         type="text" 
-                                         x-model="trials[idx][param.id]"
-                                         :placeholder="`T${idx + 1}`">
-                                  <div x-show="!isParamVisibleForTrial(param, idx)"
-                                       style="color: var(--text-muted); text-align: center; padding: 8px; background: var(--bg-input); border-radius: 6px; font-size: 12px;">
-                                      ⚡ Not applicable
-                                  </div>
-                              </div>
-                          </template>
-                      </template>
+                      </div>
+                  </div>
+                  <div class="input-group" style="grid-column: span 2;">
+                      <label>GNSS Location</label>
+                      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                          <button type="button" @click="geoLocation()" class="btn btn-secondary" style="flex: 0 1 auto; padding: 0.5rem 1rem;">
+                              📍 Get Current Location
+                          </button>
+                          <input type="text" id="latitude" placeholder="Latitude" x-model="latitude" style="flex: 1; min-width: 100px;">
+                          <input type="text" id="longitude" placeholder="Longitude" x-model="longitude" style="flex: 1; min-width: 100px;">
+                          <button type="button" @click="clearLocation()" class="btn btn-secondary" style="flex: 0 1 auto; padding: 0.5rem 1rem; background: #6b7280;">
+                              🗑️ Clear Locations
+                          </button>
+                      </div>
+                      <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.3rem;">
+                          Click the button to automatically fill your current coordinates (requires permission).
+                      </p>
                   </div>
               </div>
-          </template>
+          </div>
 
-                <div class="button-group">
-                    <a class='btn btn-secondary' href='index.html' x-show="!editMode" style="transition: background 0.2s ease;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="19" y1="12" x2="5" y2="12"></line>
-                            <polyline points="12 19 5 12 12 5"></polyline>
-                        </svg>
-                        Back
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                            <polyline points="7 3 7 8 15 8"></polyline>
-                        </svg>
-                        <span x-text="editMode ? 'Update Record' : 'Save Data'"></span>
-                    </button>
-                    <button type="button" class="btn btn-tertiary" style="transition: background 0.2s ease;"
-                            x-show="editMode" 
-                            @click="cancelEdit()"
-                            style="display: none;">Cancel</button>
-                </div>
-            </form>
-        </div>
+          <div class="config-bar" style="background: var(--bg-input); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                  <label style="font-weight: 600;">Collect by:</label>
+                  <select x-model="collectionMode" @change="onCollectionModeChange()" :disabled="editMode" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
+                      <option value="stage">Growth Stage</option>
+                      <option value="table">Plant Part</option>
+                  </select>
+                  <template x-if="collectionMode === 'stage'">
+                      <select x-model="currentStage" @change="rebuildParameters()" :disabled="editMode" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
+                          <template x-for="s in stages" :key="s.id">
+                              <option :value="s.id" x-text="s.label"></option>
+                          </template>
+                      </select>
+                  </template>
+                  <template x-if="collectionMode === 'table'">
+                      <select x-model="currentTableId" @change="changeTable()" :disabled="editMode" style="padding: 6px 10px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px;" class="border-hover">
+                          <template x-for="table in availableTables" :key="table.id">
+                              <option :value="table.id" x-text="table.name"></option>
+                          </template>
+                      </select>
+                  </template>
+              </div>
+              
+              <div style="display: flex; align-items: center; gap: 8px;">
+                  <label style="font-weight: 600;">Number of Trials:</label>
+                  <button type="button" @click="decrementTrials()" 
+                          style="width: 32px; height: 32px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center;"
+                          class="border-hover"
+                  >
+                      −
+                  </button>
+                  <span x-text="trialCount" style="min-width: 40px; text-align: center; font-size: 16px; font-weight: 600;"></span>
+                  <button type="button" @click="incrementTrials()" 
+                          style="width: 32px; height: 32px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: white; border-radius: 6px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center;"
+                          class="border-hover"
+                  >
+                      +
+                  </button>
+                  <span style="color: var(--text-muted); font-size: 12px;">(1-20 trials)</span>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 8px;">
+                  <button type="button" @click="startNewSample()"
+                          style="padding: 6px 12px; background: var(--accent-primary); border: 1px solid var(--border-color); color: white; border-radius: 6px; cursor: pointer; font-weight: 600;"
+                          class="border-hover">
+                      + New Sample
+                  </button>
+                  <span style="color: var(--text-muted); font-size: 12px;">
+                      Sample: <span x-text="currentSampleLabel"></span>
+                  </span>
+              </div>
+              
+              <div style="color: var(--accent-success); font-size: 14px;">
+                  📊 <span x-text="currentTableName"></span> | 📏 <span x-text="trialCount"></span> trials | 📋 <span x-text="parameters.length"></span> parameters
+              </div>
+          </div>
+
+          <div class="form-container">
+                 <input type="hidden" name="province" x-model="currentProvince">
+                 <input type="hidden" name="edit-index" x-model="editIndex">
+                 <input type="hidden" name="tableId" x-model="currentTableId">
+                 
+                 <div class="metadata-grid">
+                     <div class="input-group">
+                         <label for="treatment-no">Block No. / Treatment No.</label>
+                         <input type="text" id="treatment-no" name="treatment-no" required
+                                x-model="treatmentNo"
+                                placeholder="e.g. B1-T1">
+                     </div>
+                     <div class="input-group">
+                         <label for="landrace">Landrace Name / Sample ID</label>
+                         <input type="text" id="landrace" name="landrace" required
+                                x-model="landrace"
+                                placeholder="e.g. Traditional Rice A">
+                     </div>
+                 </div>
+
+                 <div class="section-divider">
+                     <span x-text="`${currentTableName} (${trialCount} Trials per Sample)`"></span>
+                 </div>
+
+           <template x-for="param in parameters" :key="param.id">
+               <div class="form-group">
+                   <label x-text="param.label"></label>
+                   <div class="trial-row" :style="`grid-template-columns: repeat(${trialCount}, 1fr);`">
+             
+                       <template x-if="param.type === 'select'">
+                           <template x-for="(trial, idx) in trials" :key="idx">
+                               <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
+                                   <select x-show="isParamVisibleForTrial(param, idx)"
+                                           x-model="trials[idx][param.id]"
+                                           @change="onControlChange(param.id, idx)">
+                                       <option value="">Select...</option>
+                                       <template x-for="(label, value) in param.options">
+                                           <option :value="value" x-text="`${value}-${label}`"></option>
+                                       </template>
+                                   </select>
+                                   <div x-show="!isParamVisibleForTrial(param, idx)"
+                                        style="color: var(--text-muted); text-align: center; padding: 8px; background: var(--bg-input); border-radius: 6px; font-size: 12px;">
+                                       ⚡ Not applicable
+                                   </div>
+                               </div>
+                           </template>
+                       </template>
+             
+                       <template x-if="param.type === 'number'">
+                           <template x-for="(trial, idx) in trials" :key="idx">
+                               <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
+                                   <input x-show="isParamVisibleForTrial(param, idx)"
+                                          type="number" 
+                                          :step="param.step || '1'"
+                                          :min="param.min || 0"
+                                          x-model="trials[idx][param.id]"
+                                          @input="updateTrialValue(param.id, idx)"
+                                          :placeholder="`T${idx + 1}`">
+                                   <div x-show="!isParamVisibleForTrial(param, idx)"
+                                        style="color: var(--text-muted); text-align: center; padding: 8px; background: var(--bg-input); border-radius: 6px; font-size: 12px;">
+                                       ⚡ Not applicable
+                                   </div>
+                               </div>
+                           </template>
+                       </template>
+             
+                       <template x-if="param.type === 'text'">
+                           <template x-for="(trial, idx) in trials" :key="idx">
+                               <div class="trial-input-wrapper" :data-trial="`T${idx + 1}`">
+                                   <input x-show="isParamVisibleForTrial(param, idx)"
+                                          type="text" 
+                                          x-model="trials[idx][param.id]"
+                                          :placeholder="`T${idx + 1}`">
+                                   <div x-show="!isParamVisibleForTrial(param, idx)"
+                                        style="color: var(--text-muted); text-align: center; padding: 8px; background: var(--bg-input); border-radius: 6px; font-size: 12px;">
+                                       ⚡ Not applicable
+                                   </div>
+                               </div>
+                           </template>
+                       </template>
+                   </div>
+               </div>
+           </template>
+
+                 <div class="button-group">
+                     <a class='btn btn-secondary' href='index.html' x-show="!editMode" style="transition: background 0.2s ease;">
+                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                             <line x1="19" y1="12" x2="5" y2="12"></line>
+                             <polyline points="12 19 5 12 12 5"></polyline>
+                         </svg>
+                         Back
+                     </a>
+                     <button type="submit" class="btn btn-primary">
+                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                             <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                             <polyline points="7 3 7 8 15 8"></polyline>
+                         </svg>
+                         <span x-text="editMode ? 'Update Record' : 'Save Data'"></span>
+                     </button>
+                     <button type="button" class="btn btn-tertiary" style="transition: background 0.2s ease;"
+                             x-show="editMode" 
+                             @click="cancelEdit()"
+                             style="display: none;">Cancel</button>
+                 </div>
+          </div>
+        </form>
 
         <div class="records-section">
             <div class="section-header">
