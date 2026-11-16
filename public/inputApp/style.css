@@ -255,6 +255,11 @@ footer {
     font-family: inherit;
 }
 
+.input-group input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .section-divider {
     position: relative;
     text-align: center;

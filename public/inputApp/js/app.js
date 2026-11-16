@@ -344,7 +344,9 @@ function riceDataApp() {
                 this.treatmentNo = draft.treatmentNo || '';
                 this.landrace = draft.landrace || '';
                 this.municipality = draft.municipality || '';
+                this.munSearch = draft.municipality || '';
                 this.barangay = draft.barangay || '';
+                this.barangaySearch = draft.barangay || '';
                 this.latitude = draft.latitude || '';
                 this.longitude = draft.longitude || '';
                 if (draft.trialCount) {
@@ -548,7 +550,9 @@ function riceDataApp() {
                 this.trials = JSON.parse(JSON.stringify(fullRecord.trials));
 
                 this.municipality = fullRecord.municipality || '';
+                this.munSearch = fullRecord.municipality || '';
                 this.barangay = fullRecord.barangay || '';
+                this.barangaySearch = fullRecord.barangay || '';
                 this.latitude = fullRecord.latitude || '';
                 this.longitude = fullRecord.longitude || '';
 
@@ -628,7 +632,9 @@ function riceDataApp() {
             if (!this.municipality && !this.barangay && !this.latitude && !this.longitude) {
                 const last = loadLocation();
                 this.municipality = last.municipality || '';
+                this.munSearch = last.municipality || '';
                 this.barangay = last.barangay || '';
+                this.barangaySearch = last.barangay || '';
                 this.latitude = last.latitude || '';
                 this.longitude = last.longitude || '';
             }

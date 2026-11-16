@@ -93,8 +93,7 @@
                   <div class="input-group" style="position: relative;">
                       <label for="municipality">City / Municipality</label>
                       <input type="text" id="municipality" name="city / municipality"
-                             x-model="munSearch"
-                             required
+                             x-model="munSearch" required
                              @input="if (!munSearch) { municipality = ''; barangay = ''; barangaySearch = ''; } showMunDropdown = true"
                              @focus="showMunDropdown = true"
                              @blur="setTimeout(() => showMunDropdown = false, 200)"
@@ -114,12 +113,12 @@
                   <div class="input-group" style="position: relative;">
                       <label for="barangay">Barangay</label>
                       <input type="text" id="barangay" name="barangay"
-                             x-model="barangaySearch"
-                             required
+                             x-model="barangaySearch" required
+                             :disabled="!municipality"
                              @input="if (!barangaySearch) { barangay = ''; } showBarangayDropdown = true"
                              @focus="showBarangayDropdown = true"
                              @blur="setTimeout(() => showBarangayDropdown = false, 200)"
-                             placeholder="Search Barangay..."
+                             :placeholder="municipality ? 'Search Barangay...' : 'Select a City / Municipality first'"
                              style="width:100%; padding:0.9rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:var(--radius-md); color:var(--text-main);">
                       <div x-show="showBarangayDropdown && filteredBarangays.length > 0"
                            style="position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); max-height: 200px; overflow-y: auto; z-index: 1000; margin-top: 4px;">

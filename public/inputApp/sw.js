@@ -1,4 +1,4 @@
-const CACHE_NAME = 'input-app-v5.1.0';
+const CACHE_NAME = 'input-app-v5.1.1';
 const INPUT_APP_ASSETS = [
   'index.html',
   'form.html',
