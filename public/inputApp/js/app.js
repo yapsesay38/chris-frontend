@@ -6,14 +6,27 @@ const generateId = () =>
             return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
 
-const computeSampleId = ({ province, municipality, barangay, treatmentNo, landrace }) => {
+const todayLocalISO = () => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+}
+
+const computeSampleId = ({ province, municipality, barangay, treatmentNo, landrace, sampleDate, timestamp }) => {
     const p = (province || '').trim();
     const m = (municipality || '').trim();
     const b = (barangay || '').trim();
     const t = (treatmentNo || '').trim();
     const l = (landrace || '').trim();
+    let d = (sampleDate || '').trim();
+    if (!d && timestamp) {
+        d = new Date(timestamp).toISOString().slice(0, 10);
+    }
+    d = d.replace(/-/g, '').slice(0, 8);
     if (!t || !l) return '';
-    return `${p}::${m}::${b}::${t}::${l}`;
+    return `${p}::${m}::${b}::${t}::${l}::${d}`;
 };
 
 function riceDataApp() {
@@ -76,6 +89,7 @@ function riceDataApp() {
         availableTables: window.availableTables,
         collectionMode: 'stage',
         currentStage: 'vegetative',
+        currentSampleDate: todayLocalISO(),
         currentTableId: 'plantvigorandleaf',
         currentTableName: '🍃 Plant Vigor and Leaf Characters',
         currentParameters: [],
@@ -106,6 +120,7 @@ function riceDataApp() {
                 barangay: this.barangay,
                 treatmentNo: this.treatmentNo,
                 landrace: this.landrace,
+                sampleDate: this.currentSampleDate,
             });
         },
 
@@ -318,6 +333,7 @@ function riceDataApp() {
                     barangay: this.barangay,
                     treatmentNo: this.treatmentNo,
                     landrace: this.landrace,
+                    sampleDate: this.currentSampleDate,
                     latitude: this.latitude,
                     longitude: this.longitude,
                     trialCount: this.trialCount,
@@ -347,6 +363,7 @@ function riceDataApp() {
                 this.barangaySearch = draft.barangay || '';
                 this.latitude = draft.latitude || '';
                 this.longitude = draft.longitude || '';
+                this.currentSampleDate = draft.sampleDate || todayLocalISO();
                 if (draft.trialCount) {
                     this.trialCount = draft.trialCount;
                     this.trials = draft.trials || buildTrials(this.trialCount, this.currentParameters);
@@ -416,6 +433,7 @@ function riceDataApp() {
                 tableName: table ? table.name : this.currentTableName,
                 treatmentNo: this.treatmentNo,
                 landrace: this.landrace,
+                sampleDate: this.currentSampleDate,
                 trialCount: this.trialCount,
                 trials: JSON.parse(JSON.stringify(this.trials)),
                 timestamp: Date.now()
@@ -497,6 +515,7 @@ function riceDataApp() {
                         tableName: table.name,
                         treatmentNo: this.treatmentNo,
                         landrace: this.landrace,
+                        sampleDate: this.currentSampleDate,
                         trialCount: newTrials.length,
                         trials: newTrials,
                         timestamp: now
@@ -559,6 +578,7 @@ function riceDataApp() {
                 this.trialCount = fullRecord.trialCount || DEFAULT_TRIAL_COUNT;
                 this.trials = JSON.parse(JSON.stringify(fullRecord.trials));
 
+                this.currentSampleDate = fullRecord.sampleDate || new Date(fullRecord.timestamp).toISOString().slice(0, 10);
                 this.municipality = fullRecord.municipality || '';
                 this.munSearch = fullRecord.municipality || '';
                 this.barangay = fullRecord.barangay || '';
@@ -612,6 +632,7 @@ function riceDataApp() {
             this.showSamplePrompt = false;
             this.treatmentNo = '';
             this.landrace = '';
+            this.currentSampleDate = todayLocalISO();
             this.trialCount = DEFAULT_TRIAL_COUNT;
             this.trials = buildTrials(DEFAULT_TRIAL_COUNT, this.currentParameters);
             this.clearDraft();
@@ -822,7 +843,7 @@ function allRecordsApp() {
                 
                 tableRecords.forEach(record => {
                     const trialCount = record.trialCount || 5;
-                    const recordDate = new Date(record.timestamp).toISOString().slice(0, 10);
+                    const recordDate = record.sampleDate || new Date(record.timestamp).toISOString().slice(0, 10);
                     
                     for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
                         const row = [record.province, record.municipality || '', record.barangay || '', record.tableId, record.treatmentNo, record.landrace, trialIdx + 1, recordDate, record.sampleId || computeSampleId(record)];
@@ -883,7 +904,7 @@ function allRecordsApp() {
             
             const csvRows = [headers.join(',')];
             const trialCount = record.trialCount || 5;
-            const recordDate = new Date(record.timestamp).toISOString().slice(0, 10);
+            const recordDate = record.sampleDate || new Date(record.timestamp).toISOString().slice(0, 10);
             
             for (let trialIdx = 0; trialIdx < trialCount; trialIdx++) {
                 const row = [record.province, record.municipality || '', record.barangay || '', record.tableId, record.treatmentNo, record.landrace, trialIdx + 1, recordDate, record.sampleId || computeSampleId(record)];
@@ -1234,9 +1255,9 @@ function allRecordsApp() {
                 const treatmentNo = values[treatmentIdx];
                 const landrace = values[landraceIdx];
                 const trialNumber = parseInt(values[trialNumIdx]);
-                const recordDate = recordDateIdx !== -1 ? values[recordDateIdx] : new Date().toISOString().slice(0, 10);
+                const recordDate = recordDateIdx !== -1 ? values[recordDateIdx] : todayLocalISO();
                 
-                const sampleKey = `${province}|${municipality}|${barangay}|${treatmentNo}|${landrace}`;
+                const sampleKey = `${province}|${municipality}|${barangay}|${treatmentNo}|${landrace}|${recordDate}`;
                 
                 if (!sampleMap.has(sampleKey)) {
                     sampleMap.set(sampleKey, {
@@ -1245,7 +1266,8 @@ function allRecordsApp() {
                         barangay: barangay,
                         treatmentNo: treatmentNo,
                         landrace: landrace,
-                        sampleId: (sampleIdIdx !== -1 && values[sampleIdIdx]) || computeSampleId({ province, municipality, barangay, treatmentNo, landrace }),
+                        sampleDate: recordDate,
+                        sampleId: (sampleIdIdx !== -1 && values[sampleIdIdx]) || computeSampleId({ province, municipality, barangay, treatmentNo, landrace, sampleDate: recordDate }),
                         tableId: tableId,
                         tableName: tableConfig.name,
                         trials: {},
@@ -1293,6 +1315,7 @@ function allRecordsApp() {
                     tableName: sample.tableName,
                     treatmentNo: sample.treatmentNo,
                     landrace: sample.landrace,
+                    sampleDate: sample.sampleDate,
                     trialCount: sample.trialCount,
                     trials: trialsArray,
                     timestamp: sample.timestamp

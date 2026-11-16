@@ -214,6 +214,12 @@
                  
                  <div class="metadata-grid">
                      <div class="input-group">
+                         <label for="sample-date">Sample Collection Date</label>
+                         <input type="date" id="sample-date" name="sample-date" required
+                                x-model="currentSampleDate"
+                                @change="saveDraft()">
+                     </div>
+                     <div class="input-group">
                          <label for="treatment-no">Block No. / Treatment No.</label>
                          <input type="text" id="treatment-no" name="treatment-no" required
                                 x-model="treatmentNo"
